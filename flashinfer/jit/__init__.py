@@ -98,8 +98,58 @@ from .fp4_kv_quantization import (
 )
 
 
-cuda_lib_path = os.environ.get(
-    "CUDA_LIB_PATH", "/usr/local/cuda/targets/x86_64-linux/lib/"
-)
-if os.path.exists(f"{cuda_lib_path}/libcudart.so.12"):
-    ctypes.CDLL(f"{cuda_lib_path}/libcudart.so.12", mode=ctypes.RTLD_GLOBAL)
+def _preload_cudart() -> None:
+    """Preload libcudart so JIT-built modules can resolve CUDA runtime symbols.
+
+    On Linux we promote libcudart to ``RTLD_GLOBAL`` so that downstream JIT
+    modules link against the same instance. Windows has no notion of
+    ``RTLD_GLOBAL`` in ctypes — DLL search is governed by the loader's
+    directory list — so we simply ensure ``cudart64_*.dll`` is reachable via
+    ``CUDA_PATH``/``CUDA_LIB_PATH`` (or already on PATH) and load it.
+    """
+    import sys
+    import glob
+
+    if sys.platform == "win32":
+        # Allow the user to point at an explicit CUDA bin directory; otherwise
+        # rely on CUDA_PATH (set by the CUDA installer) and finally on PATH.
+        candidate_dirs = []
+        env_dir = os.environ.get("CUDA_LIB_PATH")
+        if env_dir:
+            candidate_dirs.append(env_dir)
+        cuda_path = os.environ.get("CUDA_PATH")
+        if cuda_path:
+            candidate_dirs.append(os.path.join(cuda_path, "bin"))
+
+        # Python 3.8+ on Windows ignores PATH for DLL resolution; explicitly
+        # register any candidate directories so cudart is discoverable when
+        # later loaded by tvm_ffi-loaded modules.
+        for d in candidate_dirs:
+            if os.path.isdir(d) and hasattr(os, "add_dll_directory"):
+                try:
+                    os.add_dll_directory(d)
+                except (OSError, FileNotFoundError):
+                    pass
+
+        # cudart on Windows is named cudart64_<major>.dll (e.g. cudart64_12.dll).
+        for d in candidate_dirs + [""]:
+            pattern = os.path.join(d, "cudart64_*.dll") if d else "cudart64_*.dll"
+            matches = sorted(glob.glob(pattern))
+            if matches:
+                try:
+                    ctypes.CDLL(matches[-1])
+                except OSError:
+                    pass
+                return
+        # Fall through silently: tvm_ffi will surface a clear error if cudart
+        # cannot be located when the first JIT module is loaded.
+        return
+
+    cuda_lib_path = os.environ.get(
+        "CUDA_LIB_PATH", "/usr/local/cuda/targets/x86_64-linux/lib/"
+    )
+    if os.path.exists(f"{cuda_lib_path}/libcudart.so.12"):
+        ctypes.CDLL(f"{cuda_lib_path}/libcudart.so.12", mode=ctypes.RTLD_GLOBAL)
+
+
+_preload_cudart()

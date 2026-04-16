@@ -18,6 +18,7 @@ import ctypes
 import hashlib
 import os
 import pathlib
+import sys
 from urllib.parse import urljoin
 import shutil
 import time
@@ -230,14 +231,68 @@ def get_artifact(file_name: str, sha256: str, session=None) -> bytes:
 get_cubin = get_artifact
 
 
+def _create_dir_link(link: pathlib.Path, target: pathlib.Path) -> None:
+    """Best-effort directory link from ``link`` -> ``target``.
+
+    Strategy by platform:
+
+    * POSIX: a regular symlink (cheap, atomic, no admin rights needed).
+    * Windows: try a directory junction via ``mklink /J`` (works without
+      Developer Mode and without admin rights). If that fails, fall back to
+      ``shutil.copytree`` so the include paths are still resolvable — at the
+      cost of duplicating the artifact tree on disk.
+    """
+    if sys.platform != "win32":
+        link.symlink_to(target, target_is_directory=True)
+        return
+
+    # Prefer a directory junction (NTFS-only, but always available on the
+    # system drive that hosts the user profile). ``mklink`` is a cmd.exe
+    # builtin, so we must shell out via cmd /c.
+    import subprocess
+
+    try:
+        subprocess.run(
+            ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+            check=True,
+            capture_output=True,
+        )
+        return
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+
+    # Last resort: copy the entire directory tree. This is slower and uses
+    # more disk space, but it preserves correctness on filesystems where
+    # neither symlinks nor junctions are available.
+    shutil.copytree(target, link, symlinks=False, dirs_exist_ok=True)
+
+
+def _is_link(path: pathlib.Path) -> bool:
+    """Return True if ``path`` is a symlink or a Windows directory junction."""
+    if path.is_symlink():
+        return True
+    if sys.platform == "win32" and path.is_dir():
+        # ``os.path.realpath`` resolves junctions on Windows; if the resolved
+        # path differs from the lexical path we have a reparse point.
+        try:
+            real = os.path.realpath(str(path))
+            return os.path.normcase(real) != os.path.normcase(str(path.resolve(strict=False)))
+        except OSError:
+            return False
+    return False
+
+
 def ensure_symlink(
     link: Union[str, pathlib.Path], target: Union[str, pathlib.Path]
 ) -> None:
-    """Create or update a symlink, removing any stale file/directory at *link*.
+    """Create or update a symlink (or junction on Windows), removing stale entries.
 
     This is used to map C++ include paths (e.g.
     ``CUBIN_DIR/flashinfer/trtllm/batched_gemm/trtllmGen_bmm_export``) to the
     canonical artifact directory where ``get_artifact()`` stores downloaded files.
+
+    On Windows where unprivileged users cannot create symlinks, we fall back to
+    NTFS directory junctions and finally to a directory copy.
     """
     link = pathlib.Path(link)
     target = pathlib.Path(target)
@@ -246,15 +301,24 @@ def ensure_symlink(
     lock_path = str(link) + ".lock"
     lock = filelock.FileLock(lock_path, timeout=60)
     with lock:
-        if link.is_symlink() or link.exists():
-            if link.is_symlink() and link.resolve() == target.resolve():
-                return  # already correct
-            # Stale symlink or directory from a previous version; remove it.
+        if _is_link(link) or link.exists():
+            try:
+                if _is_link(link) and link.resolve() == target.resolve():
+                    return  # already correct
+            except OSError:
+                pass
+            # Stale link, file, or directory from a previous version; remove it.
             if link.is_symlink() or link.is_file():
                 link.unlink()
+            elif sys.platform == "win32" and _is_link(link):
+                # Junctions are removed via os.unlink on Windows.
+                try:
+                    os.unlink(str(link))
+                except OSError:
+                    shutil.rmtree(link, ignore_errors=True)
             else:
                 shutil.rmtree(link)
-        link.symlink_to(target)
+        _create_dir_link(link, target)
 
 
 def verify_symlinked_headers(

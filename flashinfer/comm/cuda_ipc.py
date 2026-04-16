@@ -15,6 +15,10 @@ limitations under the License.
 """
 
 import ctypes
+import ctypes.util
+import glob
+import os
+import sys
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -40,13 +44,73 @@ class Function:
     argtypes: List[Any]
 
 
-def find_loaded_library(lib_name) -> Optional[str]:
+def _find_loaded_library_windows(lib_name: str) -> Optional[str]:
+    """Locate ``lib_name`` among DLLs loaded into the current Windows process.
+
+    Uses the Win32 ``EnumProcessModules``/``GetModuleFileNameExW`` APIs from
+    psapi (re-exported via kernel32 since Windows 7) to enumerate loaded
+    modules. ``lib_name`` is matched against the basename without extension,
+    case-insensitively (e.g. ``libcudart`` matches ``cudart64_12.dll``).
     """
-    According to according to https://man7.org/linux/man-pages/man5/proc_pid_maps.5.html,
-    the file `/proc/self/maps` contains the memory maps of the process, which includes the
-    shared libraries loaded by the process. We can use this file to find the path of the
-    a loaded library.
-    """  # noqa
+    try:
+        psapi = ctypes.WinDLL("psapi.dll")
+        kernel32 = ctypes.WinDLL("kernel32.dll", use_last_error=True)
+    except OSError:
+        return None
+
+    GetCurrentProcess = kernel32.GetCurrentProcess
+    GetCurrentProcess.restype = ctypes.c_void_p
+
+    EnumProcessModules = psapi.EnumProcessModules
+    EnumProcessModules.argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_ulong,
+        ctypes.POINTER(ctypes.c_ulong),
+    ]
+    EnumProcessModules.restype = ctypes.c_int
+
+    GetModuleFileNameExW = psapi.GetModuleFileNameExW
+    GetModuleFileNameExW.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_wchar_p,
+        ctypes.c_ulong,
+    ]
+    GetModuleFileNameExW.restype = ctypes.c_ulong
+
+    process = GetCurrentProcess()
+    needed = ctypes.c_ulong(0)
+    # First call to discover the buffer size needed.
+    EnumProcessModules(process, None, 0, ctypes.byref(needed))
+    count = needed.value // ctypes.sizeof(ctypes.c_void_p)
+    if count == 0:
+        return None
+    modules = (ctypes.c_void_p * count)()
+    if not EnumProcessModules(
+        process, modules, ctypes.sizeof(modules), ctypes.byref(needed)
+    ):
+        return None
+
+    # Strip optional ``lib`` prefix so callers can use Linux-flavored names
+    # (``libcudart``) on Windows where the real DLL is ``cudart64_12.dll``.
+    needle = lib_name.lower()
+    if needle.startswith("lib"):
+        needle = needle[3:]
+
+    buf = ctypes.create_unicode_buffer(1024)
+    for i in range(count):
+        if GetModuleFileNameExW(process, modules[i], buf, len(buf)):
+            path = buf.value
+            base = os.path.basename(path).lower()
+            base_noext = os.path.splitext(base)[0]
+            if base_noext.startswith(needle):
+                return path
+    return None
+
+
+def _find_loaded_library_posix(lib_name: str) -> Optional[str]:
+    """Locate ``lib_name`` via ``/proc/self/maps`` (Linux)."""
     found = False
     with open("/proc/self/maps") as f:
         for line in f:
@@ -65,6 +129,35 @@ def find_loaded_library(lib_name) -> Optional[str]:
         f"Unexpected filename: {filename} for library {lib_name}"
     )
     return path
+
+
+def find_loaded_library(lib_name) -> Optional[str]:
+    """Return the path of a loaded shared library, or ``None`` if not loaded.
+
+    On Linux this consults ``/proc/self/maps``. On Windows we enumerate process
+    modules via ``psapi.EnumProcessModules``. macOS is unsupported (CUDA does
+    not ship there) but we degrade to ``ctypes.util.find_library`` so callers
+    do not crash on import.
+    """
+    if sys.platform == "win32":
+        path = _find_loaded_library_windows(lib_name)
+        if path:
+            return path
+        # Fallback: search the loader path. Useful when the DLL is not yet
+        # mapped into the process (e.g. before the first CUDA call).
+        needle = lib_name.lower()
+        if needle.startswith("lib"):
+            needle = needle[3:]
+        for d in (os.environ.get("CUDA_PATH"), None):
+            if d is None:
+                continue
+            for candidate in glob.glob(os.path.join(d, "bin", f"{needle}*.dll")):
+                return candidate
+        return None
+    if sys.platform.startswith("linux"):
+        return _find_loaded_library_posix(lib_name)
+    # Best-effort fallback for other POSIX-y systems.
+    return ctypes.util.find_library(lib_name.removeprefix("lib"))
 
 
 class CudaRTLibrary:

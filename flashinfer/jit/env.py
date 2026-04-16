@@ -49,7 +49,7 @@ def has_flashinfer_cubin() -> bool:
 
 
 FLASHINFER_BASE_DIR: pathlib.Path = pathlib.Path(
-    os.getenv("FLASHINFER_WORKSPACE_BASE", pathlib.Path.home().as_posix())
+    os.getenv("FLASHINFER_WORKSPACE_BASE") or str(pathlib.Path.home())
 )
 
 FLASHINFER_CACHE_DIR: pathlib.Path = FLASHINFER_BASE_DIR / ".cache" / "flashinfer"

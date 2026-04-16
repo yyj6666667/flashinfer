@@ -16,10 +16,14 @@ limitations under the License.
 
 import os
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 from setuptools import build_meta as orig
 from build_utils import get_git_version
+
+_IS_WINDOWS = sys.platform == "win32"
 
 _root = Path(__file__).parent.resolve()
 _data_dir = _root / "flashinfer" / "data"
@@ -85,18 +89,38 @@ def write_if_different(path: Path, content: str) -> None:
 def _create_data_dir(use_symlinks=True):
     _data_dir.mkdir(parents=True, exist_ok=True)
 
+    def _try_windows_junction(src: Path, dst: Path) -> bool:
+        """Attempt to create an NTFS directory junction (no admin needed)."""
+        try:
+            subprocess.run(
+                ["cmd", "/c", "mklink", "/J", str(dst), str(src)],
+                check=True,
+                capture_output=True,
+            )
+            return True
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return False
+
     def ln(source: str, target: str) -> None:
         src = _root / source
         dst = _data_dir / target
-        if dst.exists():
-            if dst.is_symlink():
+        if dst.exists() or dst.is_symlink():
+            if dst.is_symlink() or dst.is_file():
                 dst.unlink()
-            elif dst.is_dir():
-                shutil.rmtree(dst)
             else:
-                dst.unlink()
+                shutil.rmtree(dst)
 
         if use_symlinks:
+            if _IS_WINDOWS:
+                # Unprivileged Windows users cannot create symlinks. Try a
+                # directory junction first; fall back to a copy so the editable
+                # install remains functional, at the cost of losing the live
+                # source-edit reload behaviour for the linked trees.
+                if _try_windows_junction(src, dst):
+                    return
+                if src.exists():
+                    shutil.copytree(src, dst, symlinks=False, dirs_exist_ok=True)
+                return
             dst.symlink_to(src, target_is_directory=True)
         else:
             # For wheel/sdist, copy actual files instead of symlinks

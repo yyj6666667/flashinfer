@@ -12,7 +12,16 @@ from filelock import FileLock
 
 from ..compilation_context import CompilationContext
 from . import env as jit_env
-from .cpp_ext import generate_ninja_build_for_op, run_ninja
+from .cpp_ext import (
+    CUDA_OBJ_EXT,
+    DEFAULT_CXX,
+    IS_WINDOWS,
+    OBJ_EXT,
+    SHARED_LIB_EXT,
+    _nvcc_bin_path,
+    generate_ninja_build_for_op,
+    run_ninja,
+)
 from .utils import write_if_different
 
 os.makedirs(jit_env.FLASHINFER_WORKSPACE_DIR, exist_ok=True)
@@ -235,7 +244,7 @@ class JitSpec:
 
     @property
     def jit_library_path(self) -> Path:
-        return jit_env.FLASHINFER_JIT_DIR / self.name / f"{self.name}.so"
+        return jit_env.FLASHINFER_JIT_DIR / self.name / f"{self.name}{SHARED_LIB_EXT}"
 
     def get_library_path(self) -> Path:
         if self.is_aot:
@@ -247,14 +256,14 @@ class JitSpec:
         jit_dir = self.build_dir
         for source in self.sources:
             is_cuda = source.suffix == ".cu"
-            object_suffix = ".cuda.o" if is_cuda else ".o"
+            object_suffix = CUDA_OBJ_EXT if is_cuda else OBJ_EXT
             obj_name = source.with_suffix(object_suffix).name
             object_paths.append(jit_dir / obj_name)
         return object_paths
 
     @property
     def aot_path(self) -> Path:
-        return jit_env.FLASHINFER_AOT_DIR / self.name / f"{self.name}.so"
+        return jit_env.FLASHINFER_AOT_DIR / self.name / f"{self.name}{SHARED_LIB_EXT}"
 
     @property
     def is_aot(self) -> bool:
@@ -364,8 +373,8 @@ class JitSpec:
         cuda_cflags_expanded = expand_flags(cuda_cflags, common_cflags_expanded)
 
         # Get compilers
-        cxx = os.environ.get("CXX", "c++")
-        nvcc = os.environ.get("FLASHINFER_NVCC", f"{cuda_home}/bin/nvcc")
+        cxx = os.environ.get("CXX", DEFAULT_CXX)
+        nvcc = os.environ.get("FLASHINFER_NVCC", _nvcc_bin_path(cuda_home))
 
         # Build directory
         build_dir = str(self.build_dir.resolve())
@@ -378,19 +387,27 @@ class JitSpec:
             if is_cuda:
                 compiler = nvcc
                 flags = cuda_cflags_expanded
-                object_suffix = ".cuda.o"
+                object_suffix = CUDA_OBJ_EXT
             else:
                 compiler = cxx
                 flags = cflags_expanded
-                object_suffix = ".o"
+                object_suffix = OBJ_EXT
 
             obj_name = source.with_suffix(object_suffix).name
             output_file = os.path.join(build_dir, obj_name)
 
-            # Build the command string
-            command_parts = [compiler, "-c", str(source.resolve())]
-            command_parts += flags
-            command_parts += ["-o", output_file]
+            # Build the command string. MSVC uses ``/Fo<file>`` rather than
+            # ``-o`` to designate the object output, while nvcc keeps the
+            # POSIX-style ``-o`` regardless of host compiler.
+            command_parts = [compiler]
+            if is_cuda or not IS_WINDOWS:
+                command_parts += ["-c", str(source.resolve())]
+                command_parts += flags
+                command_parts += ["-o", output_file]
+            else:
+                command_parts += ["/c", str(source.resolve())]
+                command_parts += flags
+                command_parts += [f"/Fo{output_file}"]
 
             compile_commands.append(
                 {
@@ -418,18 +435,30 @@ def gen_jit_spec(
     verbose_env = os.environ.get("FLASHINFER_JIT_VERBOSE", "0")
     debug = (debug_env if debug_env is not None else verbose_env) == "1"
 
-    # Only add default C++ standard if not specified in extra flags
-    cflags_has_std = extra_cflags is not None and any(
-        f.startswith("-std=") for f in extra_cflags
-    )
-    cuda_cflags_has_std = extra_cuda_cflags is not None and any(
-        f.startswith("-std=") for f in extra_cuda_cflags
-    )
+    # Only add default C++ standard if not specified in extra flags. We accept
+    # both POSIX-style (``-std=``) and MSVC-style (``/std:``) opt-ins so that
+    # callers can target either toolchain explicitly.
+    def _has_std(flags):
+        return flags is not None and any(
+            f.startswith("-std=") or f.startswith("/std:") for f in flags
+        )
 
-    cflags = ["-Wno-switch-bool"]
-    if not cflags_has_std:
-        cflags.insert(0, "-std=c++17")
+    cflags_has_std = _has_std(extra_cflags)
+    cuda_cflags_has_std = _has_std(extra_cuda_cflags)
 
+    if IS_WINDOWS:
+        # MSVC equivalents: /std:c++17 selects the standard, /wd4065 silences
+        # "switch with default but no case" (closest to -Wno-switch-bool).
+        cflags = ["/wd4065"]
+        if not cflags_has_std:
+            cflags.insert(0, "/std:c++17")
+    else:
+        cflags = ["-Wno-switch-bool"]
+        if not cflags_has_std:
+            cflags.insert(0, "-std=c++17")
+
+    # nvcc accepts the same flag syntax on Windows and Linux for these options,
+    # so the CUDA flags below are intentionally identical across platforms.
     cuda_cflags = [
         f"--threads={os.environ.get('FLASHINFER_NVCC_THREADS', '1')}",
         "-use_fast_math",
@@ -442,7 +471,12 @@ def gen_jit_spec(
         cuda_cflags.insert(0, "-std=c++17")
 
     if debug:
-        cflags += ["-O0", "-g"]
+        if IS_WINDOWS:
+            # /Od disables optimisation; /Z7 puts debug info into .obj so
+            # link.exe does not require a separate .pdb at link time.
+            cflags += ["/Od", "/Z7"]
+        else:
+            cflags += ["-O0", "-g"]
         cuda_cflags += [
             "-g",
             "-O0",
@@ -454,7 +488,7 @@ def gen_jit_spec(
     else:
         # non debug mode
         cuda_cflags += ["-DNDEBUG", "-O3"]
-        cflags += ["-O3"]
+        cflags += ["/O2"] if IS_WINDOWS else ["-O3"]
 
     # useful for ncu source correlation
     if os.environ.get("FLASHINFER_JIT_LINEINFO", "0") == "1":
