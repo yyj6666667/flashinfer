@@ -34,6 +34,47 @@ function Write-OK($msg)    { Write-Host "[OK]   $msg"    -ForegroundColor Green 
 function Write-Warn2($msg) { Write-Host "[WARN] $msg"    -ForegroundColor Yellow }
 function Write-Err2($msg)  { Write-Host "[ERR]  $msg"    -ForegroundColor Red }
 
+# Null/array-safe version-string capture. Any output from the command (stdout
+# or stderr) is coerced to a single trimmed string. Returns '' if the command
+# produces nothing (e.g. the Microsoft Store App Execution Alias for python,
+# which silently drops --version and triggers a NullReference on .Trim()).
+function Invoke-Capture {
+    param([Parameter(Mandatory)][string]$Exe, [string[]]$Arguments = @())
+    try {
+        $out = & $Exe @Arguments 2>&1
+    } catch {
+        return ''
+    }
+    if ($null -eq $out) { return '' }
+    # Flatten arrays and coerce ErrorRecords / other objects to string.
+    return (($out | ForEach-Object { "$_" }) -join "`n").Trim()
+}
+
+# A command is "really present" only if (a) Get-Command finds it AND (b) the
+# executable actually produces output for the supplied probe arguments. This
+# distinguishes real installs from WindowsApps Microsoft Store redirect stubs.
+function Test-Usable {
+    param(
+        [Parameter(Mandatory)][string]$Name,
+        [string[]]$ProbeArgs = @('--version')
+    )
+    $cmd = Get-Command $Name -ErrorAction SilentlyContinue
+    if (-not $cmd) { return $null }
+    # Detect python/python3 WindowsApps aliases specifically — they live under
+    # %LOCALAPPDATA%\Microsoft\WindowsApps and are usually the reason probe
+    # commands return empty strings non-interactively.
+    $src = if ($cmd.Source) { $cmd.Source } else { '' }
+    $isStoreAlias = $src -match 'WindowsApps\\(python|python3)\.exe$'
+    $ver = Invoke-Capture -Exe $Name -Arguments $ProbeArgs
+    if ([string]::IsNullOrWhiteSpace($ver)) {
+        if ($isStoreAlias) {
+            return [PSCustomObject]@{ Version = ''; Source = $src; StoreAlias = $true }
+        }
+        return [PSCustomObject]@{ Version = ''; Source = $src; StoreAlias = $false }
+    }
+    return [PSCustomObject]@{ Version = $ver; Source = $src; StoreAlias = $false }
+}
+
 # Parse plain-argv variants passed through from build.bat.
 foreach ($arg in $args) {
     switch -Regex ($arg) {
@@ -107,36 +148,44 @@ if (-not $hasWinget) {
 Write-Step "Checking prerequisites"
 
 # ---- Git ----
-$git = Get-Command git -ErrorAction SilentlyContinue
-if (-not $git) {
+$gitInfo = Test-Usable -Name 'git' -ProbeArgs @('--version')
+if (-not $gitInfo -or [string]::IsNullOrWhiteSpace($gitInfo.Version)) {
     Add-Missing -Name "Git for Windows" `
         -Why "git.exe not on PATH (needed for submodule init and version stamping)" `
         -Winget "winget install -e --id Git.Git" `
         -Manual "https://git-scm.com/download/win"
 } else {
-    Write-OK ("git: " + (git --version).Trim())
+    Write-OK ("git: " + $gitInfo.Version)
 }
 
 # ---- Python ----
-$py = Get-Command python -ErrorAction SilentlyContinue
-if (-not $py) {
+$pyInfo = Test-Usable -Name 'python' -ProbeArgs @('--version')
+if ((-not $pyInfo) -or [string]::IsNullOrWhiteSpace($pyInfo.Version) -or $pyInfo.StoreAlias) {
+    $why = if ($pyInfo -and $pyInfo.StoreAlias) {
+        "python.exe on PATH resolves to the Microsoft Store App Execution Alias ($($pyInfo.Source)), which is a stub, not a real interpreter. Disable the alias under Settings -> Apps -> Advanced app settings -> App execution aliases, or install Python separately."
+    } else {
+        "python.exe not on PATH"
+    }
     Add-Missing -Name "Python 3.10 - 3.12" `
-        -Why "python.exe not on PATH" `
+        -Why $why `
         -Winget "winget install -e --id Python.Python.3.12" `
         -Manual "https://www.python.org/downloads/windows/" `
         -Notes "Check 'Add python.exe to PATH' during install. Python 3.13/3.14 are not yet supported by PyTorch on Windows."
 } else {
-    $pyVer = (python --version 2>&1).Trim()
-    Write-OK "Python: $pyVer"
-    try {
-        $verStr = (python -c "import sys; print('{0}.{1}'.format(*sys.version_info[:2]))").Trim()
-        $v = [Version]$verStr
-        if ($v.Major -ne 3 -or $v.Minor -lt 9 -or $v.Minor -gt 12) {
-            Write-Warn2 "Python $verStr detected; torch Windows wheels currently target 3.9-3.12."
-            Write-Warn2 "  Consider installing Python 3.12 alongside your current version:"
-            Write-Warn2 "    winget install -e --id Python.Python.3.12"
+    Write-OK "Python: $($pyInfo.Version)"
+    $verStr = Invoke-Capture -Exe 'python' -Arguments @('-c', "import sys; print('{0}.{1}'.format(*sys.version_info[:2]))")
+    if ($verStr) {
+        try {
+            $v = [Version]$verStr
+            if ($v.Major -ne 3 -or $v.Minor -lt 9 -or $v.Minor -gt 12) {
+                Write-Warn2 "Python $verStr detected; torch Windows wheels currently target 3.9-3.12."
+                Write-Warn2 "  Consider installing Python 3.12 alongside your current version:"
+                Write-Warn2 "    winget install -e --id Python.Python.3.12"
+            }
+        } catch {
+            Write-Warn2 "Could not parse Python version string: $verStr"
         }
-    } catch {}
+    }
 }
 
 # ---- CUDA toolkit (nvcc) ----
@@ -146,8 +195,8 @@ if (-not (Get-Command nvcc -ErrorAction SilentlyContinue)) {
         $env:PATH = "$env:CUDA_PATH\bin;$env:PATH"
     }
 }
-$nv = Get-Command nvcc -ErrorAction SilentlyContinue
-if (-not $nv) {
+$nvInfo = Test-Usable -Name 'nvcc' -ProbeArgs @('--version')
+if (-not $nvInfo -or [string]::IsNullOrWhiteSpace($nvInfo.Version)) {
     $why = if ($env:CUDA_PATH) {
         "CUDA_PATH=$($env:CUDA_PATH) but nvcc.exe not found under its bin\ directory"
     } else {
@@ -159,13 +208,17 @@ if (-not $nv) {
         -Manual "https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64" `
         -Notes "After install, close and reopen the shell so CUDA_PATH (set by the installer) takes effect. Choose a version matching your NVIDIA driver; run 'nvidia-smi' to see the max supported CUDA version."
 } else {
-    $nvccVer = (nvcc --version 2>&1 | Select-String 'release' | ForEach-Object { $_.Line }).Trim()
-    Write-OK "nvcc: $nvccVer"
+    $releaseLine = ($nvInfo.Version -split "`n" | Where-Object { $_ -match 'release' } | Select-Object -First 1)
+    if (-not $releaseLine) { $releaseLine = ($nvInfo.Version -split "`n")[0] }
+    Write-OK "nvcc: $($releaseLine.Trim())"
 }
 
 # ---- MSVC host compiler (cl.exe) ----
-$cl = Get-Command cl -ErrorAction SilentlyContinue
-if (-not $cl) {
+# ``cl`` does not accept --version; without args it prints its banner on
+# stderr and waits on stdin. We probe with /? which exits immediately with
+# the same banner and exit code 0.
+$clInfo = Test-Usable -Name 'cl' -ProbeArgs @('/?')
+if (-not $clInfo -or [string]::IsNullOrWhiteSpace($clInfo.Version)) {
     $wingetCmd = 'winget install -e --id Microsoft.VisualStudio.2022.BuildTools --override "--passive --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --add Microsoft.VisualStudio.Component.VC.CMake.Project"'
     Add-Missing -Name "Visual Studio 2022 Build Tools (MSVC x64)" `
         -Why "cl.exe not on PATH; MSVC is required as the host compiler for nvcc" `
@@ -173,23 +226,20 @@ if (-not $cl) {
         -Manual "https://visualstudio.microsoft.com/downloads/?q=build+tools" `
         -Notes "If you installed via the VS Installer UI, enable the 'Desktop development with C++' workload. After install, relaunch scripts\windows\build.bat — it will auto-activate vcvars64.bat."
 } else {
-    try {
-        $clVer = (cl 2>&1 | Select-Object -First 1).ToString().Trim()
-        Write-OK "cl.exe: $clVer"
-    } catch {
-        Write-OK "cl.exe: found (version output unavailable)"
-    }
+    $firstLine = ($clInfo.Version -split "`n" | Where-Object { $_ -match 'Microsoft' } | Select-Object -First 1)
+    if (-not $firstLine) { $firstLine = ($clInfo.Version -split "`n")[0] }
+    Write-OK "cl.exe: $($firstLine.Trim())"
 }
 
 # ---- NVIDIA driver sanity (informational only) ----
-$smi = Get-Command nvidia-smi -ErrorAction SilentlyContinue
-if (-not $smi) {
-    Write-Warn2 "nvidia-smi not on PATH. You likely do not have an NVIDIA GPU or driver."
-    Write-Warn2 "  FlashInfer needs a CUDA-capable GPU at runtime."
+$smiInfo = Test-Usable -Name 'nvidia-smi' -ProbeArgs @('--query-gpu=driver_version,name', '--format=csv,noheader')
+if (-not $smiInfo -or [string]::IsNullOrWhiteSpace($smiInfo.Version)) {
+    Write-Warn2 "nvidia-smi not on PATH or returned no output."
+    Write-Warn2 "  FlashInfer needs an NVIDIA GPU and driver at runtime."
     Write-Warn2 "  Download driver: https://www.nvidia.com/Download/index.aspx"
 } else {
-    $drvLine = (nvidia-smi --query-gpu=driver_version,name --format=csv,noheader 2>&1 | Select-Object -First 1)
-    Write-OK "GPU driver: $drvLine"
+    $firstGpu = ($smiInfo.Version -split "`n")[0].Trim()
+    Write-OK "GPU driver: $firstGpu"
 }
 
 # Show all missing items and stop — installing components incrementally is
