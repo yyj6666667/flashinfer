@@ -38,12 +38,29 @@ function Write-Err2($msg)  { Write-Host "[ERR]  $msg"    -ForegroundColor Red }
 # or stderr) is coerced to a single trimmed string. Returns '' if the command
 # produces nothing (e.g. the Microsoft Store App Execution Alias for python,
 # which silently drops --version and triggers a NullReference on .Trim()).
+#
+# We locally override ErrorActionPreference to 'Continue' so that tools that
+# legitimately write to stderr (e.g. cl.exe prints its banner on stderr) do
+# not trigger the script-level Stop-on-error behaviour and blow away the
+# output we are trying to collect.
 function Invoke-Capture {
     param([Parameter(Mandatory)][string]$Exe, [string[]]$Arguments = @())
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $oldPsNative = $null
+    if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -Scope Global -ErrorAction SilentlyContinue) {
+        $oldPsNative = $Global:PSNativeCommandUseErrorActionPreference
+        $Global:PSNativeCommandUseErrorActionPreference = $false
+    }
     try {
         $out = & $Exe @Arguments 2>&1
     } catch {
         return ''
+    } finally {
+        $ErrorActionPreference = $oldEap
+        if ($null -ne $oldPsNative) {
+            $Global:PSNativeCommandUseErrorActionPreference = $oldPsNative
+        }
     }
     if ($null -eq $out) { return '' }
     # Flatten arrays and coerce ErrorRecords / other objects to string.
@@ -95,12 +112,11 @@ function Add-Missing {
     param(
         [Parameter(Mandatory)][string]$Name,
         [Parameter(Mandatory)][string]$Why,
-        [string]$Winget = "",
         [string]$Manual = "",
         [string]$Notes  = ""
     )
     $script:Missing += [PSCustomObject]@{
-        Name = $Name; Why = $Why; Winget = $Winget; Manual = $Manual; Notes = $Notes
+        Name = $Name; Why = $Why; Manual = $Manual; Notes = $Notes
     }
 }
 
@@ -114,12 +130,8 @@ function Show-MissingSummary {
         Write-Host ""
         Write-Host ("-- {0} --" -f $m.Name) -ForegroundColor Yellow
         Write-Host "  Problem: $($m.Why)"
-        if ($m.Winget) {
-            Write-Host "  Install with winget (recommended):"
-            Write-Host "    $($m.Winget)" -ForegroundColor Green
-        }
         if ($m.Manual) {
-            Write-Host "  Manual download:"
+            Write-Host "  Download/install:"
             Write-Host "    $($m.Manual)" -ForegroundColor Cyan
         }
         if ($m.Notes) {
@@ -133,16 +145,6 @@ function Show-MissingSummary {
 }
 
 # ==============================================================
-# Pre-check: is winget available? (not fatal, just for UX)
-# ==============================================================
-$hasWinget = $null -ne (Get-Command winget -ErrorAction SilentlyContinue)
-if (-not $hasWinget) {
-    Write-Warn2 "winget (Windows Package Manager) not found."
-    Write-Warn2 "  Install 'App Installer' from Microsoft Store, or use the manual"
-    Write-Warn2 "  download URLs below. See https://aka.ms/getwinget"
-}
-
-# ==============================================================
 # Environment prerequisite checks
 # ==============================================================
 Write-Step "Checking prerequisites"
@@ -152,8 +154,8 @@ $gitInfo = Test-Usable -Name 'git' -ProbeArgs @('--version')
 if (-not $gitInfo -or [string]::IsNullOrWhiteSpace($gitInfo.Version)) {
     Add-Missing -Name "Git for Windows" `
         -Why "git.exe not on PATH (needed for submodule init and version stamping)" `
-        -Winget "winget install -e --id Git.Git" `
-        -Manual "https://git-scm.com/download/win"
+        -Manual "https://git-scm.com/download/win" `
+        -Notes "Run the installer with defaults. Reopen the shell after install so PATH refreshes."
 } else {
     Write-OK ("git: " + $gitInfo.Version)
 }
@@ -168,9 +170,8 @@ if ((-not $pyInfo) -or [string]::IsNullOrWhiteSpace($pyInfo.Version) -or $pyInfo
     }
     Add-Missing -Name "Python 3.10 - 3.12" `
         -Why $why `
-        -Winget "winget install -e --id Python.Python.3.12" `
-        -Manual "https://www.python.org/downloads/windows/" `
-        -Notes "Check 'Add python.exe to PATH' during install. Python 3.13/3.14 are not yet supported by PyTorch on Windows."
+        -Manual "https://www.python.org/downloads/release/python-3128/" `
+        -Notes "Download the 'Windows installer (64-bit)' for Python 3.12.x. During install, enable 'Add python.exe to PATH'. Python 3.13/3.14 are not yet supported by PyTorch on Windows."
 } else {
     Write-OK "Python: $($pyInfo.Version)"
     $verStr = Invoke-Capture -Exe 'python' -Arguments @('-c', "import sys; print('{0}.{1}'.format(*sys.version_info[:2]))")
@@ -179,8 +180,8 @@ if ((-not $pyInfo) -or [string]::IsNullOrWhiteSpace($pyInfo.Version) -or $pyInfo
             $v = [Version]$verStr
             if ($v.Major -ne 3 -or $v.Minor -lt 9 -or $v.Minor -gt 12) {
                 Write-Warn2 "Python $verStr detected; torch Windows wheels currently target 3.9-3.12."
-                Write-Warn2 "  Consider installing Python 3.12 alongside your current version:"
-                Write-Warn2 "    winget install -e --id Python.Python.3.12"
+                Write-Warn2 "  Install Python 3.12 alongside your current version:"
+                Write-Warn2 "    https://www.python.org/downloads/release/python-3128/"
             }
         } catch {
             Write-Warn2 "Could not parse Python version string: $verStr"
@@ -204,9 +205,8 @@ if (-not $nvInfo -or [string]::IsNullOrWhiteSpace($nvInfo.Version)) {
     }
     Add-Missing -Name "NVIDIA CUDA Toolkit 12.x" `
         -Why $why `
-        -Winget "winget install -e --id Nvidia.CUDA" `
-        -Manual "https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64" `
-        -Notes "After install, close and reopen the shell so CUDA_PATH (set by the installer) takes effect. Choose a version matching your NVIDIA driver; run 'nvidia-smi' to see the max supported CUDA version."
+        -Manual "CUDA 12.8 (recommended, matches torch cu128): https://developer.nvidia.com/cuda-12-8-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=Server2022&target_type=exe_local" `
+        -Notes "Pick CUDA 12.x (NOT 13.x). 12.8 has the broadest torch Windows wheel coverage (cu128). Alternatives: 12.6 (cu126), 12.4 (cu124). Archive: https://developer.nvidia.com/cuda-toolkit-archive . After running the .exe installer, CLOSE and REOPEN the shell so CUDA_PATH takes effect."
 } else {
     $releaseLine = ($nvInfo.Version -split "`n" | Where-Object { $_ -match 'release' } | Select-Object -First 1)
     if (-not $releaseLine) { $releaseLine = ($nvInfo.Version -split "`n")[0] }
@@ -214,21 +214,21 @@ if (-not $nvInfo -or [string]::IsNullOrWhiteSpace($nvInfo.Version)) {
 }
 
 # ---- MSVC host compiler (cl.exe) ----
-# ``cl`` does not accept --version; without args it prints its banner on
-# stderr and waits on stdin. We probe with /? which exits immediately with
-# the same banner and exit code 0.
-$clInfo = Test-Usable -Name 'cl' -ProbeArgs @('/?')
-if (-not $clInfo -or [string]::IsNullOrWhiteSpace($clInfo.Version)) {
-    $wingetCmd = 'winget install -e --id Microsoft.VisualStudio.2022.BuildTools --override "--passive --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --add Microsoft.VisualStudio.Component.VC.CMake.Project"'
+# cl.exe has no --version flag; running it bare prints a banner to stderr
+# and then blocks on stdin. Since cl is not subject to App Execution
+# Aliases, ``Get-Command`` pointing to a real .exe file is sufficient
+# evidence that MSVC is installed and activated (via vcvars64.bat). This
+# avoids a false negative where stderr output gets reinterpreted as a
+# script-fatal error under PowerShell 7's strict native-command mode.
+$clCmd = Get-Command cl -ErrorAction SilentlyContinue
+$clPath = if ($clCmd) { $clCmd.Source } else { $null }
+if ((-not $clPath) -or (-not (Test-Path $clPath))) {
     Add-Missing -Name "Visual Studio 2022 Build Tools (MSVC x64)" `
         -Why "cl.exe not on PATH; MSVC is required as the host compiler for nvcc" `
-        -Winget $wingetCmd `
-        -Manual "https://visualstudio.microsoft.com/downloads/?q=build+tools" `
-        -Notes "If you installed via the VS Installer UI, enable the 'Desktop development with C++' workload. After install, relaunch scripts\windows\build.bat — it will auto-activate vcvars64.bat."
+        -Manual "https://aka.ms/vs/17/release/vs_BuildTools.exe" `
+        -Notes "Download the installer above, then run it with the C++ workload:`n           vs_BuildTools.exe --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended`n         Alternatively, in the GUI installer enable 'Desktop development with C++'.`n         After install, relaunch scripts\windows\build.bat -- vcvars64.bat is auto-activated."
 } else {
-    $firstLine = ($clInfo.Version -split "`n" | Where-Object { $_ -match 'Microsoft' } | Select-Object -First 1)
-    if (-not $firstLine) { $firstLine = ($clInfo.Version -split "`n")[0] }
-    Write-OK "cl.exe: $($firstLine.Trim())"
+    Write-OK "cl.exe: $clPath"
 }
 
 # ---- NVIDIA driver sanity (informational only) ----
@@ -336,9 +336,13 @@ if ($LASTEXITCODE -eq 77) {
     }
     $idxUrl = switch ($cudaMajor) {
         11 { 'https://download.pytorch.org/whl/cu118' }
-        12 { if ($cudaMinor -ge 6) { 'https://download.pytorch.org/whl/cu126' } else { 'https://download.pytorch.org/whl/cu124' } }
+        12 {
+            if     ($cudaMinor -ge 8) { 'https://download.pytorch.org/whl/cu128' }
+            elseif ($cudaMinor -ge 6) { 'https://download.pytorch.org/whl/cu126' }
+            else                      { 'https://download.pytorch.org/whl/cu124' }
+        }
         13 { 'https://download.pytorch.org/whl/cu130' }
-        default { 'https://download.pytorch.org/whl/cu124' }
+        default { 'https://download.pytorch.org/whl/cu128' }
     }
 
     Write-Err2 "PyTorch is not installed."
