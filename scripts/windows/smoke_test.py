@@ -12,9 +12,15 @@ validate on a freshly-ported toolchain.
 """
 from __future__ import annotations
 
+import os
 import sys
 import time
 import traceback
+
+# Surface ninja / nvcc / cl.exe output directly. Without this the JIT
+# layer captures ninja's stdout and only replays it via RuntimeError,
+# which on Windows can truncate the real compiler error.
+os.environ.setdefault("FLASHINFER_JIT_VERBOSE", "1")
 
 
 def step(title: str) -> None:
