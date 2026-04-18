@@ -10,7 +10,12 @@ try:
     import cudnn
 
     CUDNN_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError):
+    # On Windows, the `cudnn` Python frontend raises FileNotFoundError
+    # (OSError subclass) when `cudnn64_9.dll` is not on the DLL search
+    # path, instead of ImportError. Treat both as "cudnn unavailable"
+    # so `import flashinfer` does not hard-fail; callers of cudnn APIs
+    # still get a clear runtime error via CUDNN_AVAILABLE checks below.
     cudnn = None
     CUDNN_AVAILABLE = False
 
