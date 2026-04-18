@@ -52,6 +52,14 @@ def parse_env_flags(env_var_name) -> List[str]:
     return []
 
 
+def _ninja_escape_path(p) -> str:
+    # Ninja treats ':', ' ', and '$' as syntactic in build/default lines.
+    # Windows absolute paths like ``C:\...`` will otherwise be parsed as a
+    # target named ``C`` followed by rule ``\...``, blowing up on the first
+    # ``build`` statement emitted for a JIT op.
+    return str(p).replace("$", "$$").replace(":", "$:").replace(" ", "$ ")
+
+
 def _get_glibcxx_abi_build_flags() -> List[str]:
     # _GLIBCXX_USE_CXX11_ABI is a libstdc++ macro; MSVC's STL is unaffected, so
     # we omit the define on Windows to avoid spurious warnings.
@@ -428,13 +436,13 @@ def generate_ninja_build_for_op(
         object_suffix = CUDA_OBJ_EXT if is_cuda else OBJ_EXT
         cmd = "cuda_compile" if is_cuda else "compile"
         obj_name = f"{source.parent.name}_{source.stem}{object_suffix}"
-        obj = str((output_dir / obj_name).resolve())
+        obj = _ninja_escape_path((output_dir / obj_name).resolve())
         objects.append(obj)
-        lines.append(f"build {obj}: {cmd} {source.resolve()}")
+        lines.append(f"build {obj}: {cmd} {_ninja_escape_path(source.resolve())}")
 
     lines.append("")
     link_rule = "nvcc_link" if needs_device_linking else "link"
-    output_lib = str((output_dir / f"{name}{SHARED_LIB_EXT}").resolve())
+    output_lib = _ninja_escape_path((output_dir / f"{name}{SHARED_LIB_EXT}").resolve())
     lines.append(f"build {output_lib}: {link_rule} " + " ".join(objects))
     lines.append(f"default {output_lib}")
     lines.append("")
