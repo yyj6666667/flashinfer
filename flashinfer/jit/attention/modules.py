@@ -544,7 +544,7 @@ def gen_single_prefill_module(
         # constexpr use_custom_mask: MSVC refuses to propagate local
         # constexpr values through template args inside switch cases
         # (C2975); the direct expression works on both GCC and MSVC.
-        variant_name = f"DefaultAttention<(MASK_MODE == MaskMode::kCustom), {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
+        variant_name = f"DefaultAttention<use_custom_mask, {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
         variant_decl = "#include<flashinfer/attention/variants.cuh>"
     else:
         if not fp8_enabled:
@@ -1039,7 +1039,7 @@ def gen_batch_prefill_module(
         # constexpr use_custom_mask: MSVC refuses to propagate local
         # constexpr values through template args inside switch cases
         # (C2975); the direct expression works on both GCC and MSVC.
-        variant_name = f"DefaultAttention<(MASK_MODE == MaskMode::kCustom), {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
+        variant_name = f"DefaultAttention<use_custom_mask, {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
         variant_decl = "#include<flashinfer/attention/variants.cuh>"
     else:
         if not fp8_enabled:
