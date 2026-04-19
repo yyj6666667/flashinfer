@@ -1316,7 +1316,7 @@ cudaError_t BatchQKApplyRotaryPosIdsCosSinCache(
     DISPATCH_INTERLEAVE(interleave, INTERLEAVE, {
       DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
         // operate on 16 Bytes at a time
-        constexpr uint32_t vec_size = std::max(16 / sizeof(DType), HEAD_DIM / 32);
+        constexpr uint32_t vec_size = std::max<size_t>(16 / sizeof(DType), HEAD_DIM / 32);
         // how many threads needed per head_dim
         constexpr uint32_t bdx = HEAD_DIM / vec_size;
         // how many threads needed per block
@@ -1407,7 +1407,7 @@ cudaError_t BatchQKApplyRotaryPosIds(
 
   DISPATCH_INTERLEAVE(interleave, INTERLEAVE, {
     DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-      constexpr uint32_t vec_size = std::max(16 / sizeof(DType), HEAD_DIM / 32);
+      constexpr uint32_t vec_size = std::max<size_t>(16 / sizeof(DType), HEAD_DIM / 32);
       constexpr uint32_t bdx = HEAD_DIM / vec_size;
       uint32_t num_threads = std::max(128U, bdx);
       uint32_t bdy = num_threads / bdx;
@@ -1476,7 +1476,7 @@ cudaError_t BatchQKApplyRotary(DType* q, DType* k, DType* q_rope, DType* k_rope,
 
   DISPATCH_INTERLEAVE(interleave, INTERLEAVE, {
     DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-      constexpr uint32_t vec_size = std::max(16 / sizeof(DType), HEAD_DIM / 32);
+      constexpr uint32_t vec_size = std::max<size_t>(16 / sizeof(DType), HEAD_DIM / 32);
       constexpr uint32_t bdx = HEAD_DIM / vec_size;
       uint32_t num_threads = std::max(128U, bdx);
       uint32_t bdy = num_threads / bdx;
@@ -1542,7 +1542,7 @@ cudaError_t BatchQKApplyLlama31Rotary(
 
   DISPATCH_INTERLEAVE(interleave, INTERLEAVE, {
     DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-      constexpr uint32_t vec_size = std::max(16 / sizeof(DType), HEAD_DIM / 32);
+      constexpr uint32_t vec_size = std::max<size_t>(16 / sizeof(DType), HEAD_DIM / 32);
       constexpr uint32_t bdx = HEAD_DIM / vec_size;
       uint32_t num_threads = std::max(128U, bdx);
       uint32_t bdy = num_threads / bdx;
@@ -1593,7 +1593,7 @@ cudaError_t BatchQKApplyLlama31RotaryPosIds(
 
   DISPATCH_INTERLEAVE(interleave, INTERLEAVE, {
     DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-      constexpr uint32_t vec_size = std::max(16 / sizeof(DType), HEAD_DIM / 32);
+      constexpr uint32_t vec_size = std::max<size_t>(16 / sizeof(DType), HEAD_DIM / 32);
       constexpr uint32_t bdx = HEAD_DIM / vec_size;
       uint32_t num_threads = std::max(128U, bdx);
       uint32_t bdy = num_threads / bdx;

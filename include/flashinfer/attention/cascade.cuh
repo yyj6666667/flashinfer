@@ -574,7 +574,7 @@ cudaError_t MergeState(DTypeIn* v_a, float* s_a, DTypeIn* v_b, float* s_b, DType
                        float* s_merged, uint32_t seq_len, uint32_t num_heads, uint32_t head_dim,
                        cudaStream_t stream = nullptr) {
   DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-    constexpr uint32_t vec_size = std::max(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
+    constexpr uint32_t vec_size = std::max<size_t>(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
     uint32_t bdx = HEAD_DIM / vec_size;
     uint32_t bdy = num_heads;
     dim3 nblks(seq_len);
@@ -606,7 +606,7 @@ cudaError_t MergeStateInPlace(DType* v, float* s, DType* v_other, float* s_other
                               uint32_t num_heads, uint32_t head_dim, uint8_t* mask = nullptr,
                               cudaStream_t stream = nullptr) {
   DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-    constexpr uint32_t vec_size = std::max(16U / sizeof(DType), HEAD_DIM / 32U);
+    constexpr uint32_t vec_size = std::max<size_t>(16U / sizeof(DType), HEAD_DIM / 32U);
     uint32_t bdx = HEAD_DIM / vec_size;
     uint32_t bdy = num_heads;
     dim3 nblks(seq_len);
@@ -639,7 +639,7 @@ cudaError_t MergeStates(DTypeIn* v, float* s, DTypeO* v_merged, float* s_merged,
                         uint32_t num_index_sets, uint32_t seq_len, uint32_t num_heads,
                         uint32_t head_dim, cudaStream_t stream = nullptr) {
   DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-    constexpr uint32_t vec_size = std::max(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
+    constexpr uint32_t vec_size = std::max<size_t>(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
     constexpr uint32_t bdx = HEAD_DIM / vec_size;
     if (num_index_sets >= seq_len) {
       constexpr uint32_t num_threads = 128;
@@ -671,7 +671,7 @@ template <typename DTypeIn, typename DTypeO>
 cudaError_t AttentionSum(DTypeIn* v, DTypeO* v_sum, uint32_t num_index_sets, uint32_t seq_len,
                          uint32_t num_heads, uint32_t head_dim, cudaStream_t stream = nullptr) {
   DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-    constexpr uint32_t vec_size = std::max(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
+    constexpr uint32_t vec_size = std::max<size_t>(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
     constexpr uint32_t bdx = HEAD_DIM / vec_size;
     uint32_t bdy = num_heads;
     dim3 nblks(seq_len);
@@ -695,7 +695,7 @@ cudaError_t VariableLengthMergeStates(DTypeIn* v, float* s, IdType* indptr, DTyp
   FLASHINFER_CUDA_CALL(cudaDeviceGetAttribute(&num_sms, cudaDevAttrMultiProcessorCount, dev_id));
 
   DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-    constexpr uint32_t vec_size = std::max(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
+    constexpr uint32_t vec_size = std::max<size_t>(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
     constexpr uint32_t bdx = HEAD_DIM / vec_size;
     constexpr uint32_t num_threads = 128;
     constexpr uint32_t bdy = num_threads / bdx;
@@ -747,7 +747,7 @@ cudaError_t VariableLengthAttentionSum(DTypeIn* v, IdType* indptr, DTypeO* v_sum
   FLASHINFER_CUDA_CALL(cudaDeviceGetAttribute(&num_sms, cudaDevAttrMultiProcessorCount, dev_id));
 
   DISPATCH_HEAD_DIM(head_dim, HEAD_DIM, {
-    constexpr uint32_t vec_size = std::max(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
+    constexpr uint32_t vec_size = std::max<size_t>(16U / sizeof(DTypeIn), HEAD_DIM / 32U);
     constexpr uint32_t bdx = HEAD_DIM / vec_size;
     constexpr uint32_t num_threads = 128;
     constexpr uint32_t bdy = num_threads / bdx;
