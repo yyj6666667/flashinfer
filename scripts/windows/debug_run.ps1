@@ -14,6 +14,7 @@
 [CmdletBinding()]
 param(
     [switch]$Clean,
+    [switch]$NoGit,
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Command
 )
@@ -60,15 +61,26 @@ Log "---- exit=$exit ----"
 [System.IO.File]::WriteAllLines(
     $LogFile, $lines, (New-Object System.Text.UTF8Encoding $false))
 
+if ($NoGit) {
+    Write-Host ""
+    Write-Host "Wrote .debug/last_run.log (exit=$exit); -NoGit requested, skipping commit/push." -ForegroundColor Cyan
+    exit $exit
+}
+
 Push-Location $RepoRoot
 try {
     git add .debug/last_run.log | Out-Null
     git commit -m "debug: run $(Get-Date -Format 'yyyy-MM-dd HH:mm') exit=$exit" --allow-empty | Out-Null
     git push origin HEAD
+    $pushExit = $LASTEXITCODE
 } finally {
     Pop-Location
 }
 
 Write-Host ""
-Write-Host "Pushed .debug/last_run.log (exit=$exit). Tell the Linux session to pull." -ForegroundColor Cyan
+if ($pushExit -ne 0) {
+    Write-Host "git push FAILED (exit=$pushExit). Log is committed locally only; run it again from an interactive shell or pass -NoGit." -ForegroundColor Yellow
+} else {
+    Write-Host "Pushed .debug/last_run.log (exit=$exit). Tell the Linux session to pull." -ForegroundColor Cyan
+}
 exit $exit
