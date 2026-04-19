@@ -22,6 +22,14 @@ function _log($msg, $color = 'DarkGray') {
     if (-not $Quiet) { Write-Host "[activate] $msg" -ForegroundColor $color }
 }
 
+# -------- Force UTF-8 code page for child processes --------
+# On Chinese-locale Windows (CP936 / GBK), nvcc's intermediate cudafe1.cpp
+# emits UTF-8 paths in #line directives; cl.exe then reads them as GBK
+# and C1083's on garbage filenames. chcp 65001 flips the console to UTF-8
+# so the whole ninja/nvcc/cl subprocess tree agrees on UTF-8.
+cmd /c "chcp 65001 >nul 2>&1"
+$env:PYTHONIOENCODING = "utf-8"
+
 # -------- MSVC (cl.exe) --------
 if (Get-Command cl.exe -ErrorAction SilentlyContinue) {
     _log "cl.exe already on PATH, skipping vcvars activation"

@@ -272,6 +272,14 @@ def build_cuda_cflags(
             "-Xcompiler=/EHsc",
             "-Xcompiler=/MD",
             "-Xcompiler=/bigobj",
+            # Force cl.exe to interpret source text, #include paths, and
+            # process args as UTF-8 (sets both /source-charset:utf-8 and
+            # /execution-charset:utf-8). Without this, on a Chinese-locale
+            # Windows (code page 936/GBK), cl mangles UTF-8 bytes nvcc
+            # emits in intermediate cudafe1.cpp #line directives, producing
+            # garbage filenames like "\ufffd\u07b7..." that fail with
+            #   C1083: cannot open source file: <garbage>: No such file
+            "-Xcompiler=/utf-8",
         ]
         # Host-side only: force-include a compat shim via /FI so cl.exe
         # #undef's and redefines __restrict__ -> __restrict before seeing
