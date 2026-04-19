@@ -76,6 +76,11 @@ try {
             $i++
             Write-Host ("[perf {0}/{1}] batch={2} hidden={3}" -f $i, $total, $b, $h) `
                 -ForegroundColor Cyan
+            # --use_cuda_events: bench_gpu_time falls back to CUDA events.
+            # CUPTI is the default but cupti-python only ships wheels for
+            # CUDA >= 13, so on our CUDA 12.6 Windows box the CUPTI path
+            # is unavailable. Accuracy difference is typically <2% which
+            # is well within shot-to-shot variance for norm kernels.
             python $bench `
                 --routine $Routine `
                 --batch_size $b `
@@ -83,6 +88,7 @@ try {
                 --input_dtype $Dtype `
                 --backends cuda `
                 --num_iters $NumIters `
+                --use_cuda_events `
                 --output_path $csv 2>&1 |
                 Tee-Object -Append -FilePath $log
         }
