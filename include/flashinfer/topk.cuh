@@ -2266,12 +2266,12 @@ enum class FilteredTopKMode { Plain, PageTable, Ragged };
  */
 template <typename DType, typename IdType, int VEC_SIZE, bool DETERMINISTIC, FilteredTopKMode MODE>
 __global__ void __launch_bounds__(FILTERED_TOPK_BLOCK_THREADS)
-    FilteredTopKUnifiedKernel(const DType*  input, IdType*  output,
-                              DType*  aux_output,           // values for Plain mode
-                              const IdType*  aux_input,     // page_table or offsets
+    FilteredTopKUnifiedKernel(const DType* __restrict__ input, IdType* __restrict__ output,
+                              DType* __restrict__ aux_output,           // values for Plain mode
+                              const IdType* __restrict__ aux_input,     // page_table or offsets
                               int64_t aux_stride,                       // src_stride for PageTable
-                              const IdType*  row_to_batch,  // for PageTable
-                              const IdType*  lengths, uint32_t num_rows, uint32_t top_k,
+                              const IdType* __restrict__ row_to_batch,  // for PageTable
+                              const IdType* __restrict__ lengths, uint32_t num_rows, uint32_t top_k,
                               uint32_t max_len) {
   constexpr uint32_t BLOCK_SIZE = FILTERED_TOPK_BLOCK_THREADS;
   constexpr int RADIX = 256;

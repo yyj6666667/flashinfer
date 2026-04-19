@@ -55,21 +55,21 @@ struct SelectiveStateUpdateParams {
   int64_t x_stride_batch{}, dt_stride_batch{}, B_stride_batch{}, C_stride_batch{},
       out_stride_batch{}, z_stride_batch{}, state_stride_batch{}, state_scale_stride_batch{};
 
-  void*  state{nullptr};
-  void*  x{nullptr};
-  void*  dt{nullptr};
-  void*  dt_bias{nullptr};
-  void*  A{nullptr};
-  void*  B{nullptr};
-  void*  C{nullptr};
-  void*  D{nullptr};
-  void*  z{nullptr};
-  void*  output{nullptr};
-  void*  state_batch_indices{nullptr};
+  void* __restrict__ state{nullptr};
+  void* __restrict__ x{nullptr};
+  void* __restrict__ dt{nullptr};
+  void* __restrict__ dt_bias{nullptr};
+  void* __restrict__ A{nullptr};
+  void* __restrict__ B{nullptr};
+  void* __restrict__ C{nullptr};
+  void* __restrict__ D{nullptr};
+  void* __restrict__ z{nullptr};
+  void* __restrict__ output{nullptr};
+  void* __restrict__ state_batch_indices{nullptr};
   // Block-scale decode factors for quantized state: float32 (state_cache_size, nheads, dim, 1)
-  void*  state_scale{nullptr};
+  void* __restrict__ state_scale{nullptr};
 
-  void*  dst_state_batch_indices{nullptr};
+  void* __restrict__ dst_state_batch_indices{nullptr};
 
   // stride_T=0 means 1D (broadcast), stride_T>0 means 2D indexing
   int64_t state_batch_indices_stride_batch{1};
@@ -96,14 +96,14 @@ struct SelectiveStateMTPParams : public SelectiveStateUpdateParams {
   int64_t x_stride_mtp{}, dt_stride_mtp{}, B_stride_mtp{}, C_stride_mtp{}, out_stride_mtp{},
       z_stride_mtp{};
   int64_t intermediate_state_stride_batch{}, intermediate_state_scales_stride_batch{};
-  void*  intermediate_states{
+  void* __restrict__ intermediate_states{
       nullptr};  // state_t: (icache_size, cache_steps, nheads, dim, dstate)
-  void*  intermediate_state_indices{nullptr};  // (batch,)
-  void*  intermediate_state_scales{
+  void* __restrict__ intermediate_state_indices{nullptr};  // (batch,)
+  void* __restrict__ intermediate_state_scales{
       nullptr};  // float: (batch, cache_steps, nheads, dim)
 
-  void*  cu_seqlens{nullptr};           // (n_sequences + 1,)
-  void*  num_accepted_tokens{nullptr};  // (n_sequences,)
+  void* __restrict__ cu_seqlens{nullptr};           // (n_sequences + 1,)
+  void* __restrict__ num_accepted_tokens{nullptr};  // (n_sequences,)
 };
 }  // namespace mtp
 

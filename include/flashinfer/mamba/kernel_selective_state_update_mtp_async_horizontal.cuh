@@ -88,12 +88,12 @@ __device__ __forceinline__ void load_async_horizontal(SramT& sram, int lane, int
   int const flat_tid = warp * warpSize + lane;
   int const num_threads = NUM_WARPS * warpSize;
 
-  auto const*  dt_ptr = reinterpret_cast<weight_t const*>(params.dt);
-  auto const*  dt_bias_ptr = reinterpret_cast<weight_t const*>(params.dt_bias);
+  auto const* __restrict__ dt_ptr = reinterpret_cast<weight_t const*>(params.dt);
+  auto const* __restrict__ dt_bias_ptr = reinterpret_cast<weight_t const*>(params.dt_bias);
 
   if constexpr (!IS_PAD) {
     // Load B[step][dstate] → sram.B[step][dstate_pad] (contiguous DSTATE, skip padding)
-    auto const*  B_ptr = reinterpret_cast<input_t const*>(params.B);
+    auto const* __restrict__ B_ptr = reinterpret_cast<input_t const*>(params.B);
     for (int idx = flat_tid; idx < NTOKENS * DSTATE; idx += num_threads) {
       int const step = idx / DSTATE;
       int const col = idx % DSTATE;
@@ -103,7 +103,7 @@ __device__ __forceinline__ void load_async_horizontal(SramT& sram, int lane, int
     }
 
     // Load C[step][dstate] → sram.C[step][dstate_pad]
-    auto const*  C_ptr = reinterpret_cast<input_t const*>(params.C);
+    auto const* __restrict__ C_ptr = reinterpret_cast<input_t const*>(params.C);
     for (int idx = flat_tid; idx < NTOKENS * DSTATE; idx += num_threads) {
       int const step = idx / DSTATE;
       int const col = idx % DSTATE;
@@ -113,7 +113,7 @@ __device__ __forceinline__ void load_async_horizontal(SramT& sram, int lane, int
     }
 
     // Load x[step][dim_per_cta] → sram.x[step][dim_per_cta]
-    auto const*  x_ptr = reinterpret_cast<input_t const*>(params.x);
+    auto const* __restrict__ x_ptr = reinterpret_cast<input_t const*>(params.x);
     for (int idx = flat_tid; idx < NTOKENS * DIM_PER_CTA; idx += num_threads) {
       int const step = idx / DIM_PER_CTA;
       int const col = idx % DIM_PER_CTA;
@@ -169,15 +169,15 @@ __device__ __forceinline__ void update_state_async_horizontal(SramT& sram, int l
   int const member = lane % lanesPerRow;
   int const group = lane / lanesPerRow;
 
-  auto const*  A_ptr = reinterpret_cast<matrixA_t const*>(params.A);
-  auto const*  D_ptr = reinterpret_cast<weight_t const*>(params.D);
+  auto const* __restrict__ A_ptr = reinterpret_cast<matrixA_t const*>(params.A);
+  auto const* __restrict__ D_ptr = reinterpret_cast<weight_t const*>(params.D);
 
   [[maybe_unused]] int64_t const rand_seed = params.rand_seed ? *params.rand_seed : 0;
 
-  auto*  state_ptr = reinterpret_cast<state_t*>(params.state);
-  auto*  istate_ptr = reinterpret_cast<state_t*>(params.intermediate_states);
+  auto* __restrict__ state_ptr = reinterpret_cast<state_t*>(params.state);
+  auto* __restrict__ istate_ptr = reinterpret_cast<state_t*>(params.intermediate_states);
 
-  auto const*  intermediate_state_indices =
+  auto const* __restrict__ intermediate_state_indices =
       reinterpret_cast<stateIndex_t const*>(params.intermediate_state_indices);
   auto const icache_idx =
       intermediate_state_indices ? (int64_t)intermediate_state_indices[batch] : state_batch;
@@ -188,8 +188,8 @@ __device__ __forceinline__ void update_state_async_horizontal(SramT& sram, int l
   };
 
   // Output pointers (for epilogue)
-  auto*  output = reinterpret_cast<input_t*>(params.output);
-  auto const*  z_ptr = reinterpret_cast<input_t const*>(params.z);
+  auto* __restrict__ output = reinterpret_cast<input_t*>(params.output);
+  auto const* __restrict__ z_ptr = reinterpret_cast<input_t const*>(params.z);
   // Guard: outputLoadSize is only meaningful when DIM_PER_CTA >= warpSize
   constexpr auto outputLoadSize =
       DIM_PER_CTA >= warpSize ? getVectorLoadSizeForFullUtilization<input_t, DIM_PER_CTA>() : 1;
@@ -224,14 +224,14 @@ __device__ __forceinline__ void update_state_async_horizontal(SramT& sram, int l
     int64_t const istate_base_dd = icache_idx * params.intermediate_state_stride_batch +
                                    (int64_t)head * DIM * DSTATE + (int64_t)dd * DSTATE;
     int64_t const istate_step_stride = (int64_t)params.nheads * DIM * DSTATE;
-    state_t*  istate_dd_ptr = istate_ptr + istate_base_dd;
+    state_t* __restrict__ istate_dd_ptr = istate_ptr + istate_base_dd;
 
     // Strength-reduce step-dependent shared memory indexing
-    auto const*  B_step = &sram.B[0][0];
-    auto const*  C_step = &sram.C[0][0];
-    auto const*  x_step = &sram.x[0][0];
-    float const*  dt_step = &sram.dt[0];
-    float*  out_step = &sram.out[0][0];
+    auto const* __restrict__ B_step = &sram.B[0][0];
+    auto const* __restrict__ C_step = &sram.C[0][0];
+    auto const* __restrict__ x_step = &sram.x[0][0];
+    float const* __restrict__ dt_step = &sram.dt[0];
+    float* __restrict__ out_step = &sram.out[0][0];
 
     for (int step = 0; step < NTOKENS; step++) {
       float const dt_value = *dt_step;
@@ -405,7 +405,7 @@ __global__ void __launch_bounds__(NUM_WARPS * 32)
   int const lane = threadIdx.x;
   int const warp = threadIdx.y;
 
-  auto const*  state_batch_indices =
+  auto const* __restrict__ state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.state_batch_indices);
   auto const state_batch =
       state_batch_indices ? (int64_t)state_batch_indices[batch] : (int64_t)batch;

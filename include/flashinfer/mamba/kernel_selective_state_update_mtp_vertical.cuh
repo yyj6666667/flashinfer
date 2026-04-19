@@ -197,18 +197,18 @@ __device__ __forceinline__ void role_update_state(SramT& sram, int lane, int com
   constexpr auto stateValuesPerThread = DSTATE / warpSize;
   using packed_state_t = PackedAligned<state_t, stateValuesPerThread>;
 
-  auto const*  dt_ptr = reinterpret_cast<weight_t const*>(params.dt);
-  auto const*  A_ptr = reinterpret_cast<matrixA_t const*>(params.A);
-  auto const*  D_ptr = reinterpret_cast<weight_t const*>(params.D);
-  auto const*  dt_bias_ptr = reinterpret_cast<weight_t const*>(params.dt_bias);
+  auto const* __restrict__ dt_ptr = reinterpret_cast<weight_t const*>(params.dt);
+  auto const* __restrict__ A_ptr = reinterpret_cast<matrixA_t const*>(params.A);
+  auto const* __restrict__ D_ptr = reinterpret_cast<weight_t const*>(params.D);
+  auto const* __restrict__ dt_bias_ptr = reinterpret_cast<weight_t const*>(params.dt_bias);
 
   // Load device-side Philox seed once into a register
   [[maybe_unused]] int64_t const rand_seed = params.rand_seed ? *params.rand_seed : 0;
 
-  auto*  state_ptr = reinterpret_cast<state_t*>(params.state);
-  auto*  istate_ptr = reinterpret_cast<state_t*>(params.intermediate_states);
+  auto* __restrict__ state_ptr = reinterpret_cast<state_t*>(params.state);
+  auto* __restrict__ istate_ptr = reinterpret_cast<state_t*>(params.intermediate_states);
 
-  auto const*  intermediate_state_indices =
+  auto const* __restrict__ intermediate_state_indices =
       reinterpret_cast<stateIndex_t const*>(params.intermediate_state_indices);
   auto const icache_idx =
       intermediate_state_indices ? (int64_t)intermediate_state_indices[batch] : state_batch;
@@ -326,8 +326,8 @@ __device__ __forceinline__ void role_epilogue(SharedSramT& sram, int lane,
                                               SelectiveStateMTPParams const& params, int batch,
                                               int const heads[NUM_COMPUTE_GROUPS],
                                               int num_active_groups) {
-  auto*  output = reinterpret_cast<input_t*>(params.output);
-  auto const*  z_ptr = reinterpret_cast<input_t const*>(params.z);
+  auto* __restrict__ output = reinterpret_cast<input_t*>(params.output);
+  auto const* __restrict__ z_ptr = reinterpret_cast<input_t const*>(params.z);
 
   constexpr auto outputLoadSize = getVectorLoadSizeForFullUtilization<input_t, DIM>();
   using load_output_t = PackedAligned<input_t, outputLoadSize>;
@@ -406,7 +406,7 @@ __global__ void __launch_bounds__(NUM_WARPS * 32, 2)
     if (heads[g] < total_heads) num_active_groups = g + 1;
   }
 
-  auto const*  state_batch_indices =
+  auto const* __restrict__ state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.state_batch_indices);
   auto const state_batch =
       state_batch_indices ? (int64_t)state_batch_indices[batch] : (int64_t)batch;

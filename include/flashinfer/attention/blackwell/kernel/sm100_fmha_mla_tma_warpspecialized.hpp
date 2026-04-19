@@ -802,7 +802,7 @@ struct Sm100FmhaMlaKernelTmaWarpspecialized {
   struct Gather {
     int& page_table_stage;
     Pow2 pages_per_tile;
-    const int*  smem_page_table;
+    const int* __restrict__ smem_page_table;
 
     CUTLASS_DEVICE int operator()(int idx) const {
       return smem_page_table[page_table_stage * TileShapeS::value + idx % pages_per_tile];
@@ -908,7 +908,7 @@ struct Sm100FmhaMlaKernelTmaWarpspecialized {
 
     int page_table_stage = -1;
     Pow2 pages_per_tile{TileShapeS{} / paged_K};
-    const int*  smem_page_table = shared_tensors.smem_page_table.begin();
+    const int* __restrict__ smem_page_table = shared_tensors.smem_page_table.begin();
     Gather gather{page_table_stage, pages_per_tile, smem_page_table};
 
     auto mCL = make_tensor(

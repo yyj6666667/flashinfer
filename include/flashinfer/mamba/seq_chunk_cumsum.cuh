@@ -35,9 +35,9 @@ struct SumOp {
  * or num_logical_chunks if no such i exists.
  */
 template <typename SeqIdxT>
-__device__ __forceinline__ int lower_bound_seq_id(const SeqIdxT*  seq_idx,
-                                                  const int32_t*  chunk_indices,
-                                                  const int32_t*  chunk_offsets,
+__device__ __forceinline__ int lower_bound_seq_id(const SeqIdxT* __restrict__ seq_idx,
+                                                  const int32_t* __restrict__ chunk_indices,
+                                                  const int32_t* __restrict__ chunk_offsets,
                                                   int chunk_size, int num_logical_chunks,
                                                   int target) {
   int lo = 0, hi = num_logical_chunks;
@@ -61,10 +61,10 @@ __device__ __forceinline__ int lower_bound_seq_id(const SeqIdxT*  seq_idx,
 // ---------------------------------------------------------------------------
 
 template <typename SeqIdxT>
-__global__ void SeqChunkCumsumKernel(const SeqIdxT*  seq_idx,
-                                     const int32_t*  chunk_indices,
-                                     const int32_t*  chunk_offsets,
-                                     int32_t*  output, int chunk_size,
+__global__ void SeqChunkCumsumKernel(const SeqIdxT* __restrict__ seq_idx,
+                                     const int32_t* __restrict__ chunk_indices,
+                                     const int32_t* __restrict__ chunk_offsets,
+                                     int32_t* __restrict__ output, int chunk_size,
                                      int num_logical_chunks, int num_seqs) {
   int s = threadIdx.x;
   if (s <= num_seqs) {
@@ -89,8 +89,8 @@ static constexpr int TILE_SIZE = 256;
 
 template <typename SeqIdxT>
 __global__ void SeqChunkCumsumKernelMultiBlock(
-    const SeqIdxT*  seq_idx, const int32_t*  chunk_indices,
-    const int32_t*  chunk_offsets, int32_t*  output,
+    const SeqIdxT* __restrict__ seq_idx, const int32_t* __restrict__ chunk_indices,
+    const int32_t* __restrict__ chunk_offsets, int32_t* __restrict__ output,
     cub::ScanTileState<int32_t> tile_state, int chunk_size, int num_logical_chunks, int num_seqs) {
   using ScanOp = SumOp;
   using TileState = cub::ScanTileState<int32_t>;

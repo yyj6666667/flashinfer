@@ -196,17 +196,17 @@ __device__ __forceinline__ void role_update_state_horizontal(SramT& sram, int la
   int const member = lane % lanesPerRow;  // position along DSTATE (0..7)
   int const group = lane / lanesPerRow;   // row within current 4 active rows
 
-  auto const*  dt_ptr = reinterpret_cast<weight_t const*>(params.dt);
-  auto const*  A_ptr = reinterpret_cast<matrixA_t const*>(params.A);
-  auto const*  D_ptr = reinterpret_cast<weight_t const*>(params.D);
-  auto const*  dt_bias_ptr = reinterpret_cast<weight_t const*>(params.dt_bias);
+  auto const* __restrict__ dt_ptr = reinterpret_cast<weight_t const*>(params.dt);
+  auto const* __restrict__ A_ptr = reinterpret_cast<matrixA_t const*>(params.A);
+  auto const* __restrict__ D_ptr = reinterpret_cast<weight_t const*>(params.D);
+  auto const* __restrict__ dt_bias_ptr = reinterpret_cast<weight_t const*>(params.dt_bias);
 
   [[maybe_unused]] int64_t const rand_seed = params.rand_seed ? *params.rand_seed : 0;
 
-  auto*  state_ptr = reinterpret_cast<state_t*>(params.state);
-  auto*  istate_ptr = reinterpret_cast<state_t*>(params.intermediate_states);
+  auto* __restrict__ state_ptr = reinterpret_cast<state_t*>(params.state);
+  auto* __restrict__ istate_ptr = reinterpret_cast<state_t*>(params.intermediate_states);
 
-  auto const*  intermediate_state_indices =
+  auto const* __restrict__ intermediate_state_indices =
       reinterpret_cast<stateIndex_t const*>(params.intermediate_state_indices);
   auto const icache_idx =
       intermediate_state_indices ? (int64_t)intermediate_state_indices[batch] : state_batch;
@@ -223,8 +223,8 @@ __device__ __forceinline__ void role_update_state_horizontal(SramT& sram, int la
   };
 
   // Output pointers (for epilogue)
-  auto*  output = reinterpret_cast<input_t*>(params.output);
-  auto const*  z_ptr = reinterpret_cast<input_t const*>(params.z);
+  auto* __restrict__ output = reinterpret_cast<input_t*>(params.output);
+  auto const* __restrict__ z_ptr = reinterpret_cast<input_t const*>(params.z);
   constexpr auto outputLoadSize = getVectorLoadSizeForFullUtilization<input_t, DIM>();
   using load_output_t = PackedAligned<input_t, outputLoadSize>;
   constexpr int elemsPerThreadEpilogue = DIM / warpSize;
@@ -305,15 +305,15 @@ __device__ __forceinline__ void role_update_state_horizontal(SramT& sram, int la
         int64_t const istate_base_dd = icache_idx * params.intermediate_state_stride_batch +
                                        (int64_t)head * DIM * DSTATE + (int64_t)dd * DSTATE;
         int64_t const istate_step_stride = (int64_t)params.nheads * DIM * DSTATE;
-        state_t*  istate_dd_ptr = istate_ptr + istate_base_dd;
+        state_t* __restrict__ istate_dd_ptr = istate_ptr + istate_base_dd;
 
         // Strength-reduce step-dependent shared memory indexing:
         // replace step * stride multiplies with pointer increments.
-        auto const*  B_step = &sram.B[0][0];
-        auto const*  C_step = &sram.C[0][0];
-        auto const*  x_step = &sram.x[h][0][0];
-        float const*  dt_step = &sram.dt[h][0];
-        float*  out_step = &sram.out[0][0];
+        auto const* __restrict__ B_step = &sram.B[0][0];
+        auto const* __restrict__ C_step = &sram.C[0][0];
+        auto const* __restrict__ x_step = &sram.x[h][0][0];
+        float const* __restrict__ dt_step = &sram.dt[h][0];
+        float* __restrict__ out_step = &sram.out[0][0];
 
         for (int step = 0; step < NTOKENS; step++) {
           float const dt_value = *dt_step;
@@ -474,7 +474,7 @@ __global__ void __launch_bounds__(horiz::NUM_WARPS * 32, 6)
   int const lane = threadIdx.x;
   int const warp = threadIdx.y;
 
-  auto const*  state_batch_indices =
+  auto const* __restrict__ state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.state_batch_indices);
   auto const state_batch =
       state_batch_indices ? (int64_t)state_batch_indices[batch] : (int64_t)batch;

@@ -271,6 +271,14 @@ def build_cuda_cflags(
             "-Xcompiler=/MD",
             "-Xcompiler=/bigobj",
         ]
+        # MSVC accepts __restrict but not __restrict__ (GCC/clang-only
+        # spelling). nvcc passes the declarations straight through to
+        # cl.exe unchanged, so non-__global__ host functions that use
+        # __restrict__ in their parameter lists fail to parse. Rewrite
+        # the token at preprocessing time — this is a no-op on device
+        # code (nvcc device frontend accepts both) and fixes the host
+        # compile path.
+        cuda_cflags.append("-D__restrict__=__restrict")
     else:
         cuda_cflags.append("--compiler-options=-fPIC")
     cuda_version = get_cuda_version()

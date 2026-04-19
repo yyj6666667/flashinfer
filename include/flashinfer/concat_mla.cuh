@@ -52,8 +52,8 @@ constexpr int MLA_NUM_HEAD_CHUNKS = MLA_NUM_LOCAL_HEADS / MLA_HEAD_CHUNK_SIZE;
  * \tparam DType Data type (nv_bfloat16 or nv_half)
  */
 template <typename DType>
-__global__ void ConcatMLAKKernel(DType*  k, const DType*  k_nope,
-                                 const DType*  k_rope, const int num_tokens,
+__global__ void ConcatMLAKKernel(DType* __restrict__ k, const DType* __restrict__ k_nope,
+                                 const DType* __restrict__ k_rope, const int num_tokens,
                                  const int64_t k_stride_0, const int k_stride_1,
                                  const int64_t k_nope_stride_0, const int k_nope_stride_1,
                                  const int64_t k_rope_stride_0) {
@@ -81,16 +81,16 @@ __global__ void ConcatMLAKKernel(DType*  k, const DType*  k_nope,
   const int head_row0 = head_chunk_id * HEAD_CHUNK_SIZE;
 
   // Source pointer for k_nope (indexed by token and head)
-  const int2*  nope_src =
+  const int2* __restrict__ nope_src =
       reinterpret_cast<const int2*>(k_nope + token_id * k_nope_stride_0 +
                                     head_row0 * k_nope_stride_1) +
       lane_id;
 
   // Destination pointers for output k (nope part and rope part)
-  int2*  nope_dst =
+  int2* __restrict__ nope_dst =
       reinterpret_cast<int2*>(k + token_id * k_stride_0 + head_row0 * k_stride_1) + lane_id;
 
-  int*  rope_dst = reinterpret_cast<int*>(k + token_id * k_stride_0 +
+  int* __restrict__ rope_dst = reinterpret_cast<int*>(k + token_id * k_stride_0 +
                                                       head_row0 * k_stride_1 + QK_NOPE_HEAD_DIM) +
                                lane_id;
 

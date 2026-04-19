@@ -23,7 +23,7 @@ limitations under the License.
 
 namespace flashinfer {
 
-__global__ void ComputeLSEFromMDKernel(float2*  md, float*  lse, int n) {
+__global__ void ComputeLSEFromMDKernel(float2* __restrict__ md, float* __restrict__ lse, int n) {
   int elem_idx = blockIdx.x * blockDim.x + threadIdx.x;
   if (elem_idx >= n) return;
 #if (__CUDACC_VER_MAJOR__ >= 12 && defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 900))

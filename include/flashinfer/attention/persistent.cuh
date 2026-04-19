@@ -486,8 +486,8 @@ struct BlockBatchReductionPersistent {
   using KTraits = KTraits_;
 
   static __device__ __forceinline__ void Run(
-      typename KTraits::DTypeIn*  V, typename KTraits::DTypeO*  v_merged,
-      float*  S, float*  s_merged,
+      typename KTraits::DTypeIn* __restrict__ V, typename KTraits::DTypeO* __restrict__ v_merged,
+      float* __restrict__ S, float* __restrict__ s_merged,
       const typename KTraits::IdType num_packed_qo_len, const uint_fastdiv gqa_group_size,
       const uint32_t num_kv_heads, const typename KTraits::IdType* indptr,
       const typename KTraits::IdType* o_indices, uint8_t* smem PROFILER_CLOSURE_FUNC_PARAMS) {

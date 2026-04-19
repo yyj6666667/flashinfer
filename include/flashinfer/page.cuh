@@ -221,7 +221,7 @@ struct paged_kv_t {
  */
 template <uint32_t head_dim, uint32_t vec_size, typename DType, typename IdType>
 __global__ void AppendPagedKVCacheDecodeKernel(paged_kv_t<DType, IdType> paged_kv,
-                                               DType*  key, DType*  value) {
+                                               DType* __restrict__ key, DType* __restrict__ value) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
   uint32_t num_heads = paged_kv.num_heads;
   uint32_t batch_idx = blockIdx.x;
@@ -257,10 +257,10 @@ __global__ void AppendPagedKVCacheDecodeKernel(paged_kv_t<DType, IdType> paged_k
  */
 template <uint32_t head_dim, uint32_t vec_size, typename DType, typename IdType>
 __global__ void AppendPagedKVCacheKernel(paged_kv_t<DType, IdType> paged_kv,
-                                         DType*  append_key,
-                                         DType*  append_value,
-                                         IdType*  batch_indices,
-                                         IdType*  positions, uint32_t nnz,
+                                         DType* __restrict__ append_key,
+                                         DType* __restrict__ append_value,
+                                         IdType* __restrict__ batch_indices,
+                                         IdType* __restrict__ positions, uint32_t nnz,
                                          size_t append_k_stride_n, size_t append_k_stride_h,
                                          size_t append_v_stride_n, size_t append_v_stride_h) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
@@ -526,10 +526,10 @@ struct paged_kv_mla_t {
 template <uint32_t head_dim_ckv, uint32_t head_dim_kpe, uint32_t vec_size, typename DType,
           typename IdType>
 __global__ void AppendPagedKVMlaCacheKernel(paged_kv_mla_t<DType, IdType> paged_kv_mla,
-                                            DType*  append_ckv,
-                                            DType*  append_kpe,
-                                            IdType*  batch_indices,
-                                            IdType*  positions, uint32_t nnz,
+                                            DType* __restrict__ append_ckv,
+                                            DType* __restrict__ append_kpe,
+                                            IdType* __restrict__ batch_indices,
+                                            IdType* __restrict__ positions, uint32_t nnz,
                                             size_t append_ckv_stride_n,
                                             size_t append_kpe_stride_n) {
   uint32_t tx = threadIdx.x;

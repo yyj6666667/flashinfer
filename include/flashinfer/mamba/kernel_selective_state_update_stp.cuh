@@ -79,23 +79,23 @@ template <typename input_t, typename weight_t, typename matrixA_t, typename stat
           int numWarps, int PHILOX_ROUNDS>
 __global__ void selective_state_update_kernel_simple(SelectiveStateUpdateParams params) {
   constexpr bool scaleState = !std::is_same_v<state_scale_t, void>;
-  auto*  output = reinterpret_cast<input_t*>(params.output);
-  auto*  state = reinterpret_cast<state_t*>(params.state);
+  auto* __restrict__ output = reinterpret_cast<input_t*>(params.output);
+  auto* __restrict__ state = reinterpret_cast<state_t*>(params.state);
 
-  auto const*  x = reinterpret_cast<input_t const*>(params.x);
-  auto const*  dt = reinterpret_cast<weight_t const*>(params.dt);
-  auto const*  A = reinterpret_cast<matrixA_t const*>(params.A);
-  auto const*  B = reinterpret_cast<input_t const*>(params.B);
-  auto const*  C = reinterpret_cast<input_t const*>(params.C);
-  auto const*  D = reinterpret_cast<weight_t const*>(params.D);
-  auto const*  dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
-  auto const*  z = reinterpret_cast<input_t const*>(params.z);
-  auto const*  state_batch_indices =
+  auto const* __restrict__ x = reinterpret_cast<input_t const*>(params.x);
+  auto const* __restrict__ dt = reinterpret_cast<weight_t const*>(params.dt);
+  auto const* __restrict__ A = reinterpret_cast<matrixA_t const*>(params.A);
+  auto const* __restrict__ B = reinterpret_cast<input_t const*>(params.B);
+  auto const* __restrict__ C = reinterpret_cast<input_t const*>(params.C);
+  auto const* __restrict__ D = reinterpret_cast<weight_t const*>(params.D);
+  auto const* __restrict__ dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
+  auto const* __restrict__ z = reinterpret_cast<input_t const*>(params.z);
+  auto const* __restrict__ state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.state_batch_indices);
   bool const dt_softplus = params.dt_softplus;
 
   // State scale pointer (only used when scaleState == true)
-  [[maybe_unused]] auto*  state_scale =
+  [[maybe_unused]] auto* __restrict__ state_scale =
       reinterpret_cast<state_scale_t*>(params.state_scale);
 
   // Load device-side Philox seed once into a register
@@ -118,19 +118,19 @@ __global__ void selective_state_update_kernel_simple(SelectiveStateUpdateParams 
           ? static_cast<int64_t>(
                 state_batch_indices[batch * params.state_batch_indices_stride_batch])
           : static_cast<int64_t>(batch);
-  auto const*  dst_sbi =
+  auto const* __restrict__ dst_sbi =
       reinterpret_cast<stateIndex_t const*>(params.dst_state_batch_indices);
   auto const dst_state_batch =
       dst_sbi ? static_cast<int64_t>(dst_sbi[batch * params.dst_state_batch_indices_stride_batch])
               : state_batch;
   auto const state_ptr_offset = state_batch * params.state_stride_batch + head * DIM * DSTATE;
   state += state_ptr_offset;
-  auto*  dst_state = reinterpret_cast<state_t*>(params.state) +
+  auto* __restrict__ dst_state = reinterpret_cast<state_t*>(params.state) +
                                  dst_state_batch * params.state_stride_batch + head * DIM * DSTATE;
   if constexpr (scaleState) {
     state_scale += state_batch * params.state_scale_stride_batch + head * DIM;
   }
-  [[maybe_unused]] auto*  dst_state_scale =
+  [[maybe_unused]] auto* __restrict__ dst_state_scale =
       scaleState ? reinterpret_cast<state_scale_t*>(params.state_scale) +
                        dst_state_batch * params.state_scale_stride_batch + head * DIM
                  : nullptr;
@@ -638,19 +638,19 @@ __global__ void selective_state_update_kernel_producer_consumer_vertical(
     SelectiveStateUpdateParams params, __grid_constant__ CUtensorMap const tensorState) {
   constexpr bool scaleState = !std::is_same_v<state_scale_t, void>;
 #ifdef FLASHINFER_MAMBA_ENABLE_SM90
-  auto*  output = reinterpret_cast<input_t*>(params.output);
+  auto* __restrict__ output = reinterpret_cast<input_t*>(params.output);
 
-  auto const*  x = reinterpret_cast<input_t const*>(params.x);
-  auto const*  dt = reinterpret_cast<weight_t const*>(params.dt);
-  auto const*  A = reinterpret_cast<matrixA_t const*>(params.A);
-  auto const*  B = reinterpret_cast<input_t const*>(params.B);
-  auto const*  C = reinterpret_cast<input_t const*>(params.C);
-  auto const*  D = reinterpret_cast<weight_t const*>(params.D);
-  auto const*  dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
-  auto const*  z = reinterpret_cast<input_t const*>(params.z);
-  auto const*  state_batch_indices =
+  auto const* __restrict__ x = reinterpret_cast<input_t const*>(params.x);
+  auto const* __restrict__ dt = reinterpret_cast<weight_t const*>(params.dt);
+  auto const* __restrict__ A = reinterpret_cast<matrixA_t const*>(params.A);
+  auto const* __restrict__ B = reinterpret_cast<input_t const*>(params.B);
+  auto const* __restrict__ C = reinterpret_cast<input_t const*>(params.C);
+  auto const* __restrict__ D = reinterpret_cast<weight_t const*>(params.D);
+  auto const* __restrict__ dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
+  auto const* __restrict__ z = reinterpret_cast<input_t const*>(params.z);
+  auto const* __restrict__ state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.state_batch_indices);
-  [[maybe_unused]] auto*  state_scale =
+  [[maybe_unused]] auto* __restrict__ state_scale =
       reinterpret_cast<state_scale_t*>(params.state_scale);
 
   // Load device-side Philox seed once into a register
@@ -672,7 +672,7 @@ __global__ void selective_state_update_kernel_producer_consumer_vertical(
           ? static_cast<int64_t>(
                 __ldg(&state_batch_indices[batch * params.state_batch_indices_stride_batch]))
           : static_cast<int64_t>(batch);
-  auto const*  dst_sbi =
+  auto const* __restrict__ dst_sbi =
       reinterpret_cast<stateIndex_t const*>(params.dst_state_batch_indices);
   auto const dst_state_batch =
       dst_sbi ? static_cast<int64_t>(
@@ -1030,16 +1030,16 @@ template <typename input_t, typename weight_t, typename matrixA_t, typename stat
           int consumerWarps, int colsPerStage, int numStages = 1>
 __global__ void selective_state_update_kernel_producer_consumer_horizontal(
     SelectiveStateUpdateParams params, __grid_constant__ CUtensorMap const tensorState) {
-  auto*  output = reinterpret_cast<input_t*>(params.output);
-  auto const*  x = reinterpret_cast<input_t const*>(params.x);
-  auto const*  dt = reinterpret_cast<weight_t const*>(params.dt);
-  auto const*  A = reinterpret_cast<matrixA_t const*>(params.A);
-  auto const*  B = reinterpret_cast<input_t const*>(params.B);
-  auto const*  C = reinterpret_cast<input_t const*>(params.C);
-  auto const*  D = reinterpret_cast<weight_t const*>(params.D);
-  auto const*  dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
-  auto const*  z = reinterpret_cast<input_t const*>(params.z);
-  auto const*  state_batch_indices =
+  auto* __restrict__ output = reinterpret_cast<input_t*>(params.output);
+  auto const* __restrict__ x = reinterpret_cast<input_t const*>(params.x);
+  auto const* __restrict__ dt = reinterpret_cast<weight_t const*>(params.dt);
+  auto const* __restrict__ A = reinterpret_cast<matrixA_t const*>(params.A);
+  auto const* __restrict__ B = reinterpret_cast<input_t const*>(params.B);
+  auto const* __restrict__ C = reinterpret_cast<input_t const*>(params.C);
+  auto const* __restrict__ D = reinterpret_cast<weight_t const*>(params.D);
+  auto const* __restrict__ dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
+  auto const* __restrict__ z = reinterpret_cast<input_t const*>(params.z);
+  auto const* __restrict__ state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.state_batch_indices);
 
   // Load device-side Philox seed once into a register
@@ -1060,7 +1060,7 @@ __global__ void selective_state_update_kernel_producer_consumer_horizontal(
           ? static_cast<int64_t>(
                 state_batch_indices[batch * params.state_batch_indices_stride_batch])
           : static_cast<int64_t>(batch);
-  auto const*  dst_sbi =
+  auto const* __restrict__ dst_sbi =
       reinterpret_cast<stateIndex_t const*>(params.dst_state_batch_indices);
   auto const dst_state_batch =
       dst_sbi ? static_cast<int64_t>(dst_sbi[batch * params.dst_state_batch_indices_stride_batch])
