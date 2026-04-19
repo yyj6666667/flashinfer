@@ -1,12 +1,12 @@
 ================================================================
-timestamp: 2026-04-19 12:58:49 +08:00
+timestamp: 2026-04-19 13:03:42 +08:00
 host:      DESKTOP-N7CIHDI
 cwd:       C:\Users\Administrator\flashinfer
 cmd:       python C:\Users\Administrator\flashinfer\scripts\windows\smoke_test.py
 ----------------------------------------------------------------
 
 ==> Importing flashinfer
-[OK] flashinfer import (3.50s)
+[OK] flashinfer import (3.34s)
      module: C:\Users\Administrator\flashinfer\flashinfer\__init__.py
 
 ==> Importing torch and querying CUDA
@@ -15,29 +15,470 @@ cmd:       python C:\Users\Administrator\flashinfer\scripts\windows\smoke_test.p
 
 ==> JIT-compiling and running flashinfer.rmsnorm
 ninja: Entering directory `C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm'
-[1/3] D:\nvidia-2/bin/nvcc.exe /DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2/include /ID:\nvidia-2/include/cccl /ID:\python\Lib\site-packages\tvm_ffi\include /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\norm.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj 
-FAILED: [code=1] C:/Users/Administrator/.cache/flashinfer/0.6.7/89/cached_ops/norm/csrc_norm.cuda.obj 
-D:\nvidia-2/bin/nvcc.exe /DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2/include /ID:\nvidia-2/include/cccl /ID:\python\Lib\site-packages\tvm_ffi\include /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\norm.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj 
-nvcc fatal   : A single input file is required for a non-link phase when an outputfile is specified
-[2/3] D:\nvidia-2/bin/nvcc.exe /DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2/include /ID:\nvidia-2/include/cccl /ID:\python\Lib\site-packages\tvm_ffi\include /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\flashinfer_norm_binding.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_flashinfer_norm_binding.cuda.obj 
-FAILED: [code=1] C:/Users/Administrator/.cache/flashinfer/0.6.7/89/cached_ops/norm/csrc_flashinfer_norm_binding.cuda.obj 
-D:\nvidia-2/bin/nvcc.exe /DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2/include /ID:\nvidia-2/include/cccl /ID:\python\Lib\site-packages\tvm_ffi\include /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\flashinfer_norm_binding.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_flashinfer_norm_binding.cuda.obj 
-nvcc fatal   : A single input file is required for a non-link phase when an outputfile is specified
-ninja: build stopped: subcommand failed.
+[1/3] D:\nvidia-2/bin/nvcc.exe -DPy_LIMITED_API=0x03090000 -ID:\python\Include -ID:\nvidia-2/include -ID:\nvidia-2/include/cccl -ID:\python\Lib\site-packages\tvm_ffi\include -ID:\python\Lib\site-packages\tvm_ffi\include -IC:\Users\Administrator\flashinfer\include -IC:\Users\Administrator\flashinfer\csrc -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include -IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\flashinfer_norm_binding.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_flashinfer_norm_binding.cuda.obj 
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/c_api.h(777): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/container/seq_base.h(1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/dtype.h(115): warning #940-D: missing return statement at end of non-void function "tvm::ffi::details::DLDataTypeCodeAsCStr"
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/c_api.h(777): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/container/seq_base.h(1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/dtype.h(115): warning #940-D: missing return statement at end of non-void function "tvm::ffi::details::DLDataTypeCodeAsCStr"
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+ptxas warning : Conflicting options --device-debug and --generate-line-info specified, ignoring --generate-line-info option
+ptxas info    : 0 bytes gmem
+nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
+flashinfer_norm_binding.cu
+tmpxft_00003024_00000000-10_flashinfer_norm_binding.cudafe1.cpp
+[2/3] D:\nvidia-2/bin/nvcc.exe -DPy_LIMITED_API=0x03090000 -ID:\python\Include -ID:\nvidia-2/include -ID:\nvidia-2/include/cccl -ID:\python\Lib\site-packages\tvm_ffi\include -ID:\python\Lib\site-packages\tvm_ffi\include -IC:\Users\Administrator\flashinfer\include -IC:\Users\Administrator\flashinfer\csrc -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include -IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\norm.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj 
+FAILED: [code=4] C:/Users/Administrator/.cache/flashinfer/0.6.7/89/cached_ops/norm/csrc_norm.cuda.obj 
+D:\nvidia-2/bin/nvcc.exe -DPy_LIMITED_API=0x03090000 -ID:\python\Include -ID:\nvidia-2/include -ID:\nvidia-2/include/cccl -ID:\python\Lib\site-packages\tvm_ffi\include -ID:\python\Lib\site-packages\tvm_ffi\include -IC:\Users\Administrator\flashinfer\include -IC:\Users\Administrator\flashinfer\csrc -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include -IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\norm.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj 
+D:\nvidia-2\include\cuda.h(22252): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\nvidia-2\include\cuda.h(22958): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\Administrator\flashinfer\include\flashinfer/trtllm/common/cudaUtils.h(1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/c_api.h(777): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\python\Lib\site-packages\tvm_ffi\include\tvm/ffi/container/seq_base.h(1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+C:\Users\Administrator\flashinfer\include\flashinfer\math.cuh(74): error: identifier "ushort" is undefined
+    ushort y_u16;
+    ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\math.cuh(75): error: an asm operand must have scalar type
+    asm volatile("ex2.approx.f16 %0, %1;" : "=h"(y_u16) : "h"(__half_as_ushort(x)));
+                                            ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\math.cuh(149): error: identifier "ushort" is undefined
+    ushort y_u16;
+    ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\math.cuh(150): error: an asm operand must have scalar type
+    asm volatile("tanh.approx.f16 %0, %1;" : "=h"(y_u16) : "h"(__half_as_ushort(x)));
+                                             ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(114): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(dst_t* dst, const src_t* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(114): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(dst_t* dst, const src_t* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(114): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(dst_t* dst, const src_t* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(120): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(125): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e4m3* dst, const float* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(125): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e4m3* dst, const float* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(125): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e4m3* dst, const float* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(129): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(136): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(141): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e5m2* dst, const float* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(141): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e5m2* dst, const float* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(141): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e5m2* dst, const float* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(145): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(152): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(157): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(float* dst, const half* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(157): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(float* dst, const half* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(157): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(float* dst, const half* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(161): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(167): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(172): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const float* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(172): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const float* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(172): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const float* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(176): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(182): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(185): error: explicit type is missing ("int" assumed)
+  constexpr inline __attribute__((always_inline)) __declspec(__device__) int get_exponent_bits() {
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(185): error: identifier "always_inline" is undefined
+  constexpr inline __attribute__((always_inline)) __declspec(__device__) int get_exponent_bits() {
+                                  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(185): error: expected a ";"
+  constexpr inline __attribute__((always_inline)) __declspec(__device__) int get_exponent_bits() {
+                                                  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(272): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(284): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(nv_bfloat16* dst, const __nv_fp8_e5m2* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(284): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(nv_bfloat16* dst, const __nv_fp8_e5m2* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(284): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(nv_bfloat16* dst, const __nv_fp8_e5m2* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(292): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(299): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(304): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e4m3* dst, const half* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(304): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e4m3* dst, const half* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(304): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e4m3* dst, const half* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(309): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(324): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(329): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e5m2* dst, const half* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(329): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e5m2* dst, const half* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(329): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(__nv_fp8_e5m2* dst, const half* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(334): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(349): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(354): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const __nv_fp8_e4m3* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(354): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const __nv_fp8_e4m3* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(354): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const __nv_fp8_e4m3* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(359): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(382): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(387): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const __nv_fp8_e5m2* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(387): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const __nv_fp8_e5m2* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(387): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(half* dst, const __nv_fp8_e5m2* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(392): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(415): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(420): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(float* dst, const nv_bfloat16* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(420): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(float* dst, const nv_bfloat16* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(420): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(float* dst, const nv_bfloat16* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(424): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(430): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(435): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(nv_bfloat16* dst, const float* src) {
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(435): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(nv_bfloat16* dst, const float* src) {
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(435): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void cast(nv_bfloat16* dst, const float* src) {
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(439): warning #607-D: this pragma must immediately precede a statement
+  #pragma unroll
+          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(445): warning #12-D: parsing restarts here after previous syntax error
+  };
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(449): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) float_t& operator[](size_t i);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(449): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) float_t& operator[](size_t i);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(449): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) float_t& operator[](size_t i);
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(450): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) const float_t& operator[](size_t i) const;
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(450): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) const float_t& operator[](size_t i) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(450): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) const float_t& operator[](size_t i) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(450): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) const float_t& operator[](size_t i) const;
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(451): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void fill(float_t val);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(451): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void fill(float_t val);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(451): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) void fill(float_t val);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(451): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void fill(float_t val);
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(452): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void load(const float_t* ptr);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(452): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void load(const float_t* ptr);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(452): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) void load(const float_t* ptr);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(452): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void load(const float_t* ptr);
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(453): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void store(float_t* ptr) const;
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(453): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void store(float_t* ptr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(453): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) void store(float_t* ptr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(453): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void store(float_t* ptr) const;
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(454): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_acquire(float* addr);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(454): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_acquire(float* addr);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(454): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_acquire(float* addr);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(454): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_acquire(float* addr);
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(455): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_release(float* addr) const;
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(455): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_release(float* addr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(455): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_release(float* addr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(455): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_release(float* addr) const;
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(456): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_volatile(float* addr);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(456): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_volatile(float* addr);
 Traceback (most recent call last):
-  File "C:\Users\Administrator\flashinfer\flashinfer\jit\cpp_ext.py", line 487, in run_ninja
+  File "C:\Users\Administrator\flashinfer\flashinfer\jit\cpp_ext.py", line 501, in run_ninja
     subprocess.run(
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(456): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_volatile(float* addr);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(456): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void load_global_volatile(float* addr);
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(457): error: expected a type specifier
   File "D:\python\Lib\subprocess.py", line 571, in run
     raise CalledProcessError(retcode, process.args,
-subprocess.CalledProcessError: Command '['ninja', '-v', '-C', 'C:\\Users\\Administrator\\.cache\\flashinfer\\0.6.7\\89\\cached_ops\\norm', '-f', 'C:\\Users\\Administrator\\.cache\\flashinfer\\0.6.7\\89\\cached_ops\\norm\\build.ninja']' returned non-zero exit status 1.
+subprocess.CalledProcessError: Command '['ninja', '-v', '-C', 'C:\\Users\\Administrator\\.cache\\flashinfer\\0.6.7\\89\\cached_ops\\norm', '-f', 'C:\\Users\\Administrator\\.cache\\flashinfer\\0.6.7\\89\\cached_ops\\norm\\build.ninja']' returned non-zero exit status 4.
 System.Management.Automation.RemoteException
 The above exception was the direct cause of the following exception:
 System.Management.Automation.RemoteException
 Traceback (most recent call last):
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_volatile(float* addr) const;
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(457): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_volatile(float* addr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(457): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_volatile(float* addr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(457): error: expected a ";"
   File "C:\Users\Administrator\flashinfer\scripts\windows\smoke_test.py", line 67, in main
     y = flashinfer.rmsnorm(x, w)
         ^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\Administrator\flashinfer\flashinfer\norm\__init__.py", line 130, in rmsnorm
+    inline __attribute__((always_inline)) __declspec(__device__) void store_global_volatile(float* addr) const;
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(459): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_from(const vec_t<T, vec_size>& src);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(459): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_from(const vec_t<T, vec_size>& src);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(459): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_from(const vec_t<T, vec_size>& src);
     _rmsnorm_impl(out, input, weight, eps, enable_pdl)
   File "C:\Users\Administrator\flashinfer\flashinfer\norm\__init__.py", line 145, in _rmsnorm_impl
     get_norm_module().rmsnorm(out, input, weight, eps, enable_pdl)
@@ -45,12 +486,96 @@ Traceback (most recent call last):
   File "C:\Users\Administrator\flashinfer\flashinfer\norm\__init__.py", line 67, in get_norm_module
     return gen_norm_module().build_and_load()
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(461): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_load(const T* ptr);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(461): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_load(const T* ptr);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(461): error: invalid redeclaration of member function template "int flashinfer::vec_t<float_t, vec_size>::__attribute__<T>(<error-type>)" (declared at line 459)
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_load(const T* ptr);
   File "C:\Users\Administrator\flashinfer\flashinfer\jit\core.py", line 327, in build_and_load
     self.build(verbose, need_lock=False)
   File "C:\Users\Administrator\flashinfer\flashinfer\jit\core.py", line 313, in build
     run_ninja(self.build_dir, self.ninja_path, verbose)
-  File "C:\Users\Administrator\flashinfer\flashinfer\jit\cpp_ext.py", line 499, in run_ninja
+  File "C:\Users\Administrator\flashinfer\flashinfer\jit\cpp_ext.py", line 513, in run_ninja
     raise RuntimeError(msg) from e
 RuntimeError: Ninja build failed.
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(461): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_load(const T* ptr);
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(463): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_store(T* ptr) const;
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(463): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_store(T* ptr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(463): error: invalid redeclaration of member function template "int flashinfer::vec_t<float_t, vec_size>::__attribute__<T>(<error-type>)" (declared at line 459)
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_store(T* ptr) const;
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(463): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) void cast_store(T* ptr) const;
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(464): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) static void memcpy(float_t* dst, const float_t* src);
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(464): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) static void memcpy(float_t* dst, const float_t* src);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(464): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) static void memcpy(float_t* dst, const float_t* src);
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(464): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) static void memcpy(float_t* dst, const float_t* src);
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(465): error: expected a type specifier
+    inline __attribute__((always_inline)) __declspec(__device__) float_t* ptr();
+                         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(465): error: explicit type is missing ("int" assumed)
+    inline __attribute__((always_inline)) __declspec(__device__) float_t* ptr();
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(465): error: invalid redeclaration of member function "flashinfer::vec_t<float_t, vec_size>::__attribute__(<error-type>)" (declared at line 449)
+    inline __attribute__((always_inline)) __declspec(__device__) float_t* ptr();
+           ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(465): error: expected a ";"
+    inline __attribute__((always_inline)) __declspec(__device__) float_t* ptr();
+                                          ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(469): error: explicit type is missing ("int" assumed)
+  inline __attribute__((always_inline)) __declspec(__device__) void cast_from_impl(vec_t<tgt_float_t, vec_size>& dst,
+  ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(469): error: declaration is incompatible with variable template "flashinfer::__attribute__" (declared at line 185)
+  inline __attribute__((always_inline)) __declspec(__device__) void cast_from_impl(vec_t<tgt_float_t, vec_size>& dst,
+         ^
+
+C:\Users\Administrator\flashinfer\include\flashinfer\vec_dtypes.cuh(530): error: explicit type is missing ("int" assumed)
+  inline __attribute__((always_inline)) __declspec(__device__) void vec_t<__nv_fp8_e4m3, 1>::fill(__nv_fp8_e4m3 val) { data = val; }
+         ^
+
+Error limit reached.
+100 errors detected in the compilation of "C:/Users/Administrator/flashinfer/csrc/norm.cu".
+Compilation terminated.
+nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
+norm.cu
+ninja: build stopped: subcommand failed.
 [FAIL] rmsnorm invocation
 ---- exit=2 ----
