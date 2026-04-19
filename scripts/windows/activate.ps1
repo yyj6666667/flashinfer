@@ -65,10 +65,13 @@ if (-not (Get-Command nvcc.exe -ErrorAction SilentlyContinue)) {
 }
 
 # -------- Optional cache wipe --------
+# Use cmd's rd /s /q: dramatically faster than PowerShell's Remove-Item
+# on large JIT trees (thousands of small files) and handles long paths
+# more reliably than the .NET filesystem APIs Remove-Item wraps.
 if ($Clean) {
     $cache = Join-Path $env:USERPROFILE '.cache\flashinfer'
     if (Test-Path $cache) {
-        Remove-Item -Recurse -Force $cache
+        cmd /c "rd /s /q `"$cache`"" | Out-Null
         _log "cleared JIT cache: $cache" 'Yellow'
     } else {
         _log "no JIT cache to clear ($cache does not exist)"
