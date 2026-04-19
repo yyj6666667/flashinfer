@@ -11,55 +11,55 @@ Build cuda_12.6.r12.6/compiler.34431801_0
 === Try: A_minimal ===
   argv: -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_000036f4_00000000-10_t.cudafe1.cpp
+    tmpxft_0000143c_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: B_std ===
   argv: -std=c++17 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00002944_00000000-10_t.cudafe1.cpp
+    tmpxft_0000279c_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: C_arch ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00001634_00000000-10_t.cudafe1.cpp
+    tmpxft_00000de8_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: D_threads ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00002914_00000000-10_t.cudafe1.cpp
+    tmpxft_00002794_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: E_fastmath ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00000a98_00000000-10_t.cudafe1.cpp
+    tmpxft_00000a60_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: F_relaxed ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00000dc8_00000000-10_t.cudafe1.cpp
+    tmpxft_000034c4_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: G_xcompiler_host ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00003784_00000000-10_t.cudafe1.cpp
+    tmpxft_000018b8_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: H_defines ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00003278_00000000-10_t.cudafe1.cpp
+    tmpxft_00000a38_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: I_opt ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_000037a4_00000000-10_t.cudafe1.cpp
+    tmpxft_00001fdc_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: J_debug_block ===
@@ -73,7 +73,7 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
     nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
     t.cu
-    tmpxft_000034a0_00000000-10_t.cudafe1.cpp
+    tmpxft_00003050_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: K_showIncludes ===
@@ -533,7 +533,7 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
     nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
     t.cu
-    tmpxft_000021ec_00000000-10_t.cudafe1.cpp
+    tmpxft_00001720_00000000-10_t.cudafe1.cpp
     注意: 包含文件:  D:\nvidia-2\include\crt/host_runtime.h
     注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
     注意: 包含文件:    D:\nvidia-2\include\device_types.h
@@ -548,7 +548,7 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     注意: 包含文件:     D:\nvidia-2\include\driver_types.h
     注意: 包含文件:    D:\nvidia-2\include\vector_types.h
     注意: 包含文件:   D:\nvidia-2\include\crt\storage_class.h
-    注意: 包含文件:  C:\Users\Administrator\AppData\Local\Temp\tmpxft_000021ec_00000000-10_t.cudafe1.stub.c
+    注意: 包含文件:  C:\Users\Administrator\AppData\Local\Temp\tmpxft_00001720_00000000-10_t.cudafe1.stub.c
     注意: 包含文件:   D:\nvidia-2\include\crt/host_runtime.h
     注意: 包含文件:    D:\nvidia-2\include\crt\common_functions.h
     注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.h
@@ -557,7 +557,7 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     注意: 包含文件:       D:\nvidia-2\include\crt\host_defines.h
     注意: 包含文件:       D:\nvidia-2\include\math_constants.h
     注意: 包含文件:       D:\nvidia-2\include\crt/func_macro.h
-    注意: 包含文件:   C:\Users\Administrator\AppData\Local\Temp\tmpxft_000021ec_00000000-7_t.fatbin.c
+    注意: 包含文件:   C:\Users\Administrator\AppData\Local\Temp\tmpxft_00001720_00000000-7_t.fatbin.c
     注意: 包含文件:    D:\nvidia-2\include\fatbinary_section.h
   => exit=0
 
@@ -1023,7 +1023,7 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
     nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
     t.cu
-    tmpxft_00003574_00000000-10_t.cudafe1.cpp
+    tmpxft_000037b0_00000000-10_t.cudafe1.cpp
     注意: 包含文件:  D:\nvidia-2\include\crt/host_runtime.h
     注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
     注意: 包含文件:    D:\nvidia-2\include\device_types.h
@@ -1038,7 +1038,7 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     注意: 包含文件:     D:\nvidia-2\include\driver_types.h
     注意: 包含文件:    D:\nvidia-2\include\vector_types.h
     注意: 包含文件:   D:\nvidia-2\include\crt\storage_class.h
-    注意: 包含文件:  C:\Users\Administrator\AppData\Local\Temp\tmpxft_00003574_00000000-10_t.cudafe1.stub.c
+    注意: 包含文件:  C:\Users\Administrator\AppData\Local\Temp\tmpxft_000037b0_00000000-10_t.cudafe1.stub.c
     注意: 包含文件:   D:\nvidia-2\include\crt/host_runtime.h
     注意: 包含文件:    D:\nvidia-2\include\crt\common_functions.h
     注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.h
@@ -1047,17 +1047,41 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     注意: 包含文件:       D:\nvidia-2\include\crt\host_defines.h
     注意: 包含文件:       D:\nvidia-2\include\math_constants.h
     注意: 包含文件:       D:\nvidia-2\include\crt/func_macro.h
-    注意: 包含文件:   C:\Users\Administrator\AppData\Local\Temp\tmpxft_00003574_00000000-7_t.fatbin.c
+    注意: 包含文件:   C:\Users\Administrator\AppData\Local\Temp\tmpxft_000037b0_00000000-7_t.fatbin.c
     注意: 包含文件:    D:\nvidia-2\include\fatbinary_section.h
   => exit=0
 
 *** L_dots_in_outpath PASSED. Extending bisect with /I includes,
     /DPy_LIMITED_API, and finally the real norm.cu source.
 
-=== Try: M_includes_and_slashD ===
-  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes /DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2\include /ID:\nvidia-2\include\cccl /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
+=== Try: M_a_slashD_only ===
+  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes /DPy_LIMITED_API=0x03090000 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
     nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
     nvcc fatal   : A single input file is required for a non-link phase when an outputfile is specified
   => exit=1
 
-*** M failed: one of the /I paths or /DPy_LIMITED_API is the trigger.
+=== Try: M_b_slashI_only ===
+  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes /ID:\python\Include /ID:\nvidia-2\include /ID:\nvidia-2\include\cccl /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
+    nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
+    nvcc fatal   : A single input file is required for a non-link phase when an outputfile is specified
+  => exit=1
+
+=== Try: M_fix_unixD_plus_slashI ===
+  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes -DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2\include /ID:\nvidia-2\include\cccl /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
+    nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
+    nvcc fatal   : A single input file is required for a non-link phase when an outputfile is specified
+  => exit=1
+
+=== Summary of M sub-bisect ===
+  M_a_slashD_only:         FAIL
+  M_b_slashI_only:         FAIL
+  M_fix_unixD_plus_slashI: FAIL
+
+*** DIAGNOSIS: one of the /I include paths triggers the bug.
+    Next: bisect /I paths individually.
+
+=== Try: M_includes_and_slashD (original, for cross-check) ===
+  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes /DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2\include /ID:\nvidia-2\include\cccl /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
+    nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
+    nvcc fatal   : A single input file is required for a non-link phase when an outputfile is specified
+  => exit=1
