@@ -163,9 +163,66 @@ if (-not $firstFail) {
         $mIncludes += "/I$repo\3rdparty\cutlass\tools\util\include"
         $mIncludes += "/I$repo\3rdparty\spdlog\include"
 
+        # Split M into two isolated halves to pinpoint which class is the trigger.
+        $baseCum = $cum  # snapshot K flags before adding anything new
+
+        # ---- M_a: add ONLY /DPy_LIMITED_API=0x03090000 ----
+        $mA = $baseCum + @("/DPy_LIMITED_API=0x03090000")
+        $argv = @($mA + @('-c', $SrcFile, '-o', $dotObj))
+        Log "=== Try: M_a_slashD_only ==="
+        Log ("  argv: " + ($argv -join ' '))
+        $out = & $nvcc @argv 2>&1
+        $ec  = $LASTEXITCODE
+        if ($out) { (($out | Out-String).TrimEnd()).Split("`n") | ForEach-Object { Log ("    " + $_) } }
+        Log "  => exit=$ec"
+        $mA_failed = ($ec -ne 0)
+
+        # ---- M_b: add ONLY the /I include paths (no /D) ----
+        $mB = $baseCum + ($mIncludes | Where-Object { $_ -notlike '/D*' })
+        $argv = @($mB + @('-c', $SrcFile, '-o', $dotObj))
+        Log ""
+        Log "=== Try: M_b_slashI_only ==="
+        Log ("  argv: " + ($argv -join ' '))
+        $out = & $nvcc @argv 2>&1
+        $ec  = $LASTEXITCODE
+        if ($out) { (($out | Out-String).TrimEnd()).Split("`n") | ForEach-Object { Log ("    " + $_) } }
+        Log "  => exit=$ec"
+        $mB_failed = ($ec -ne 0)
+
+        # ---- M_fix: swap /D -> -D (consistent unix-style) and retry ----
+        $mFix = $baseCum + @("-DPy_LIMITED_API=0x03090000") + ($mIncludes | Where-Object { $_ -notlike '/D*' })
+        $argv = @($mFix + @('-c', $SrcFile, '-o', $dotObj))
+        Log ""
+        Log "=== Try: M_fix_unixD_plus_slashI ==="
+        Log ("  argv: " + ($argv -join ' '))
+        $out = & $nvcc @argv 2>&1
+        $ec  = $LASTEXITCODE
+        if ($out) { (($out | Out-String).TrimEnd()).Split("`n") | ForEach-Object { Log ("    " + $_) } }
+        Log "  => exit=$ec"
+        $mFix_failed = ($ec -ne 0)
+
+        Log ""
+        Log "=== Summary of M sub-bisect ==="
+        Log ("  M_a_slashD_only:         " + $(if($mA_failed){'FAIL'}else{'pass'}))
+        Log ("  M_b_slashI_only:         " + $(if($mB_failed){'FAIL'}else{'pass'}))
+        Log ("  M_fix_unixD_plus_slashI: " + $(if($mFix_failed){'FAIL'}else{'pass'}))
+        Log ""
+        if ($mA_failed -and -not $mFix_failed) {
+            Log "*** DIAGNOSIS: /DPy_LIMITED_API=... (MSVC /D form) triggers the bug."
+            Log "    Fix: flashinfer/jit/cpp_ext.py _define_flag should emit -D on"
+            Log "    Windows too (nvcc accepts unix-style -D), not /D."
+        } elseif ($mB_failed) {
+            Log "*** DIAGNOSIS: one of the /I include paths triggers the bug."
+            Log "    Next: bisect /I paths individually."
+        } else {
+            Log "*** Unexpected: M_a and M_b both passed but combined M failed."
+        }
+
+        # Original M_includes_and_slashD retained as a cross-check.
         $cum += $mIncludes
         $argv = @($cum + @('-c', $SrcFile, '-o', $dotObj))
-        Log "=== Try: M_includes_and_slashD ==="
+        Log ""
+        Log "=== Try: M_includes_and_slashD (original, for cross-check) ==="
         Log ("  argv: " + ($argv -join ' '))
         $out = & $nvcc @argv 2>&1
         $ec  = $LASTEXITCODE
@@ -174,8 +231,6 @@ if (-not $firstFail) {
 
         if ($ec -ne 0) {
             $firstFail = 'M_includes_and_slashD'
-            Log ""
-            Log "*** M failed: one of the /I paths or /DPy_LIMITED_API is the trigger."
         } else {
             # -------- N: same flags but compile the REAL norm.cu --------
             $realNorm = Join-Path $RepoRoot 'csrc\norm.cu'
