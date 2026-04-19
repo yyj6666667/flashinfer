@@ -540,7 +540,11 @@ def gen_single_prefill_module(
             "rope_rcp_theta",
         ]
         additional_scalar_dtypes = ["double", "double", "double", "double"]
-        variant_name = f"DefaultAttention<use_custom_mask, {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
+        # Use (MASK_MODE == MaskMode::kCustom) directly rather than a local
+        # constexpr use_custom_mask: MSVC refuses to propagate local
+        # constexpr values through template args inside switch cases
+        # (C2975); the direct expression works on both GCC and MSVC.
+        variant_name = f"DefaultAttention<(MASK_MODE == MaskMode::kCustom), {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
         variant_decl = "#include<flashinfer/attention/variants.cuh>"
     else:
         if not fp8_enabled:
@@ -1031,7 +1035,11 @@ def gen_batch_prefill_module(
             "token_pos_in_items_len",
         ]
         additional_scalar_dtypes = ["double", "double", "double", "double", "int64_t"]
-        variant_name = f"DefaultAttention<use_custom_mask, {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
+        # Use (MASK_MODE == MaskMode::kCustom) directly rather than a local
+        # constexpr use_custom_mask: MSVC refuses to propagate local
+        # constexpr values through template args inside switch cases
+        # (C2975); the direct expression works on both GCC and MSVC.
+        variant_name = f"DefaultAttention<(MASK_MODE == MaskMode::kCustom), {str(use_sliding_window).lower()}, {str(use_logits_soft_cap).lower()}, {str(pos_encoding_mode == 2).lower()}>"
         variant_decl = "#include<flashinfer/attention/variants.cuh>"
     else:
         if not fp8_enabled:
