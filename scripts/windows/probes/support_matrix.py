@@ -35,21 +35,24 @@ def main() -> int:
     print(f"GPU:  {dev}  (sm_{cc})")
     print(f"torch={torch.__version__}  cuda={torch.version.cuda}")
 
-    # GEMM family
-    from flashinfer import mm_bf16, mm_fp8, bmm_fp8, group_gemm_fp8_nt_groupwise
-
-    probe(mm_bf16, "mm_bf16", cc, ["cudnn", "cutlass", "tgv"])
-    probe(mm_fp8, "mm_fp8", cc, ["cudnn", "cutlass", "cublas"])
-    probe(bmm_fp8, "bmm_fp8", cc, ["cudnn", "cutlass", "cublas"])
-    try:
-        probe(
-            group_gemm_fp8_nt_groupwise,
-            "group_gemm_fp8_nt_groupwise",
-            cc,
-            ["cudnn", "cutlass"],
-        )
-    except Exception as e:
-        print(f"\n=== group_gemm_fp8_nt_groupwise ===  ERROR {e!r}")
+    # GEMM family — import each independently so one missing API doesn't
+    # abort the whole probe.
+    targets = [
+        ("flashinfer", "mm_bf16", ["cudnn", "cutlass", "tgv"]),
+        ("flashinfer", "mm_fp8", ["cudnn", "cutlass", "cublas"]),
+        ("flashinfer", "bmm_fp8", ["cudnn", "cutlass", "cublas"]),
+        ("flashinfer", "mm_fp4", ["cudnn", "cutlass", "trtllm"]),
+        ("flashinfer.gemm", "group_gemm_fp8_nt_groupwise", ["cudnn", "cutlass"]),
+    ]
+    import importlib
+    for pkg, attr, backends in targets:
+        try:
+            mod = importlib.import_module(pkg)
+            api = getattr(mod, attr)
+        except (ImportError, AttributeError) as e:
+            print(f"\n=== {attr} ===  NOT AVAILABLE: {e!r}")
+            continue
+        probe(api, attr, cc, backends)
 
     print("\n(Use this to pick GEMM tests that actually run on this GPU.)")
     return 0
