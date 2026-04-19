@@ -11,55 +11,55 @@ Build cuda_12.6.r12.6/compiler.34431801_0
 === Try: A_minimal ===
   argv: -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_000032ec_00000000-10_t.cudafe1.cpp
+    tmpxft_000036f4_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: B_std ===
   argv: -std=c++17 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00002140_00000000-10_t.cudafe1.cpp
+    tmpxft_00002944_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: C_arch ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_0000131c_00000000-10_t.cudafe1.cpp
+    tmpxft_00001634_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: D_threads ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00002c90_00000000-10_t.cudafe1.cpp
+    tmpxft_00002914_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: E_fastmath ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00002890_00000000-10_t.cudafe1.cpp
+    tmpxft_00000a98_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: F_relaxed ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00003258_00000000-10_t.cudafe1.cpp
+    tmpxft_00000dc8_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: G_xcompiler_host ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00001928_00000000-10_t.cudafe1.cpp
+    tmpxft_00003784_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: H_defines ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00002ae4_00000000-10_t.cudafe1.cpp
+    tmpxft_00003278_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: I_opt ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     t.cu
-    tmpxft_00001778_00000000-10_t.cudafe1.cpp
+    tmpxft_000037a4_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: J_debug_block ===
@@ -73,503 +73,13 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
     nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
     t.cu
-    tmpxft_00002ea4_00000000-10_t.cudafe1.cpp
+    tmpxft_000034a0_00000000-10_t.cudafe1.cpp
   => exit=0
 
 === Try: K_showIncludes ===
   argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cuda.obj
     nvcc.exe : 注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
-    所在位置 C:\Users\Administrator\flashinfer\scripts\windows\diag_nvcc.ps1:94 字符: 12
-    +     $out = & $nvcc @argv 2>&1
-    +            ~~~~~~~~~~~~~~~~~~
-        + CategoryInfo          : NotSpecified: (注意: 包含文件:  D:\n...\cuda_runtime.h:String) [], RemoteException
-        + FullyQualifiedErrorId : NativeCommandError
-     
-    注意: 包含文件:   D:\nvidia-2\include\crt/host_config.h
-    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\sal.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\concurrencysal.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vadefs.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt.h
-    注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:    D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\ctype.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wctype.h
-    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\limits.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stddef.h
-    注意: 包含文件:    D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:    D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:   D:\nvidia-2\include\library_types.h
-    注意: 包含文件:   D:\nvidia-2\include\channel_descriptor.h
-    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_device_runtime_api.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stdlib.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_malloc.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_search.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstdlib.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:   D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:   D:\nvidia-2\include\driver_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:    D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:   D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:   D:\nvidia-2\include\vector_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\vector_functions.hpp
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:   D:\nvidia-2\include\crt/common_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\string.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memory.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memcpy_s.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\errno.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_string.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstring.h
-    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\time.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wtime.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\math_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_math.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cmath
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals_core.h
-    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xkeycheck.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\crtdbg.h
-    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new_debug.h
-    注意: 包含文件:         D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\use_ansi.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdlib
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xtr1common
-    注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:       D:\nvidia-2\include\device_types.h
-    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:   D:\nvidia-2\include\crt/device_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:    D:\nvidia-2\include\device_types.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\device_functions.hpp
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\device_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\device_double_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\device_double_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:       D:\nvidia-2\include\device_types.h
-    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_20_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_32_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_35_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_32_atomic_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_60_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_20_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_30_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_32_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_35_intrinsics.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_61_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\sm_70_rt.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\sm_80_rt.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\sm_90_rt.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\texture_indirect_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\surface_indirect_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\cudacc_ext.h
-    注意: 包含文件:   D:\nvidia-2\include\device_launch_parameters.h
-    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:   D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\utility
-    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\initializer_list
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstddef
-    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\type_traits
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdint
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\stdint.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstring
-    注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
-    注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
-    注意: 包含文件:   D:\nvidia-2\include\crt/host_config.h
-    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\sal.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\concurrencysal.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vadefs.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt.h
-    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdarg
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals_core.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xkeycheck.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\stdarg.h
-    注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:    D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\ctype.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wctype.h
-    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\limits.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stddef.h
-    注意: 包含文件:    D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:    D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:   D:\nvidia-2\include\library_types.h
-    注意: 包含文件:   D:\nvidia-2\include\channel_descriptor.h
-    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_device_runtime_api.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stdlib.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_malloc.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_search.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstdlib.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:   D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:   D:\nvidia-2\include\driver_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:    D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:   D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:   D:\nvidia-2\include\vector_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\vector_functions.hpp
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:   D:\nvidia-2\include\crt/common_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\string.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memory.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memcpy_s.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\errno.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_string.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstring.h
-    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\time.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wtime.h
-    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\new
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\exception
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals.h
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\crtdbg.h
-    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new_debug.h
-    注意: 包含文件:         D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\use_ansi.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdlib
-    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
-    注意: 包含文件:        C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_math.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\type_traits
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstddef
-    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xtr1common
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdint
-    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\stdint.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstring
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\malloc.h
-    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_exception.h
-    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\eh.h
-    注意: 包含文件:        C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_terminate.h
-    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stdio.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstdio.h
-    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_stdio_config.h
-    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\assert.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\math_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
-    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cmath
-    注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:       D:\nvidia-2\include\device_types.h
-    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:   D:\nvidia-2\include\crt/device_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:    D:\nvidia-2\include\device_types.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\device_functions.hpp
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\device_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\device_atomic_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\device_double_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\device_double_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:       D:\nvidia-2\include\device_types.h
-    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_20_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_20_atomic_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_32_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_32_atomic_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_35_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_32_atomic_functions.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_60_atomic_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_60_atomic_functions.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_20_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_20_intrinsics.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_30_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_30_intrinsics.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_32_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_32_intrinsics.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_35_intrinsics.h
-    注意: 包含文件:    D:\nvidia-2\include\sm_61_intrinsics.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:     D:\nvidia-2\include\sm_61_intrinsics.hpp
-    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\sm_70_rt.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\sm_70_rt.hpp
-    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:       D:\nvidia-2\include\device_types.h
-    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\sm_80_rt.h
-    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:     D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\sm_80_rt.hpp
-    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:       D:\nvidia-2\include\device_types.h
-    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\device_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\sm_90_rt.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\sm_90_rt.hpp
-    注意: 包含文件:    D:\nvidia-2\include\texture_indirect_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\surface_indirect_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\cudacc_ext.h
-    注意: 包含文件:   D:\nvidia-2\include\device_launch_parameters.h
-    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:   D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\utility
-    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\initializer_list
-    注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
-    ptxas warning : Conflicting options --device-debug and --generate-line-info specified, ignoring --generate-line-info option
-    ptxas info    : 0 bytes gmem
-    ptxas info    : Compiling entry function '_Z1kv' for 'sm_89'
-    ptxas info    : Function properties for _Z1kv
-        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
-    ptxas info    : Used 4 registers, used 0 barriers, 352 bytes cmem[0]
-    nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
-    nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
-    t.cu
-    tmpxft_00001438_00000000-10_t.cudafe1.cpp
-    注意: 包含文件:  D:\nvidia-2\include\crt/host_runtime.h
-    注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
-    注意: 包含文件:    D:\nvidia-2\include\device_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
-    注意: 包含文件:    D:\nvidia-2\include\surface_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:    D:\nvidia-2\include\texture_types.h
-    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
-    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
-    注意: 包含文件:   D:\nvidia-2\include\crt\storage_class.h
-    注意: 包含文件:  C:\Users\Administrator\AppData\Local\Temp\tmpxft_00001438_00000000-10_t.cudafe1.stub.c
-    注意: 包含文件:   D:\nvidia-2\include\crt/host_runtime.h
-    注意: 包含文件:    D:\nvidia-2\include\crt\common_functions.h
-    注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.h
-    注意: 包含文件:      D:\nvidia-2\include\crt/func_macro.h
-    注意: 包含文件:      D:\nvidia-2\include\crt\math_functions.hpp
-    注意: 包含文件:       D:\nvidia-2\include\crt\host_defines.h
-    注意: 包含文件:       D:\nvidia-2\include\math_constants.h
-    注意: 包含文件:       D:\nvidia-2\include\crt/func_macro.h
-    注意: 包含文件:   C:\Users\Administrator\AppData\Local\Temp\tmpxft_00001438_00000000-7_t.fatbin.c
-    注意: 包含文件:    D:\nvidia-2\include\fatbinary_section.h
-  => exit=0
-
-*** ALL GROUPS PASSED (bug did not reproduce on minimal source) ***
-    Flag set is innocent; the failure must be in something else.
-    Next: replay the full flag set but with an output path whose
-    directory components contain dots (mirrors 0.6.7 in real cache).
-
-=== Try: L_dots_in_outpath ===
-  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
-    nvcc.exe : 注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
-    所在位置 C:\Users\Administrator\flashinfer\scripts\windows\diag_nvcc.ps1:124 字符: 12
+    所在位置 C:\Users\Administrator\flashinfer\scripts\windows\diag_nvcc.ps1:97 字符: 12
     +     $out = & $nvcc @argv 2>&1
     +            ~~~~~~~~~~~~~~~~~~
         + CategoryInfo          : NotSpecified: (注意: 包含文件:  D:\n...\cuda_runtime.h:String) [], RemoteException
@@ -1051,5 +561,503 @@ Build cuda_12.6.r12.6/compiler.34431801_0
     注意: 包含文件:    D:\nvidia-2\include\fatbinary_section.h
   => exit=0
 
-*** L_dots_in_outpath PASSED. Root cause is elsewhere (maybe
-    specific to the real norm.cu source). Next hypothesis needed.
+*** ALL GROUPS PASSED (bug did not reproduce on minimal source) ***
+    Flag set is innocent; the failure must be in something else.
+    Next: replay the full flag set but with an output path whose
+    directory components contain dots (mirrors 0.6.7 in real cache).
+
+=== Try: L_dots_in_outpath ===
+  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
+    nvcc.exe : 注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
+    所在位置 C:\Users\Administrator\flashinfer\scripts\windows\diag_nvcc.ps1:127 字符: 12
+    +     $out = & $nvcc @argv 2>&1
+    +            ~~~~~~~~~~~~~~~~~~
+        + CategoryInfo          : NotSpecified: (注意: 包含文件:  D:\n...\cuda_runtime.h:String) [], RemoteException
+        + FullyQualifiedErrorId : NativeCommandError
+     
+    注意: 包含文件:   D:\nvidia-2\include\crt/host_config.h
+    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\sal.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\concurrencysal.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vadefs.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt.h
+    注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:    D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\ctype.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wctype.h
+    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\limits.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stddef.h
+    注意: 包含文件:    D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:    D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:   D:\nvidia-2\include\library_types.h
+    注意: 包含文件:   D:\nvidia-2\include\channel_descriptor.h
+    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_device_runtime_api.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stdlib.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_malloc.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_search.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstdlib.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:   D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:   D:\nvidia-2\include\driver_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:    D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:   D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:   D:\nvidia-2\include\vector_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\vector_functions.hpp
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:   D:\nvidia-2\include\crt/common_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\string.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memory.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memcpy_s.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\errno.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_string.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstring.h
+    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\time.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wtime.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\math_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_math.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cmath
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals_core.h
+    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xkeycheck.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\crtdbg.h
+    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new_debug.h
+    注意: 包含文件:         D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\use_ansi.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdlib
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xtr1common
+    注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:       D:\nvidia-2\include\device_types.h
+    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:   D:\nvidia-2\include\crt/device_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:    D:\nvidia-2\include\device_types.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\device_functions.hpp
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\device_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\device_double_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\device_double_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:       D:\nvidia-2\include\device_types.h
+    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_20_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_32_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_35_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_32_atomic_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_60_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_20_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_30_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_32_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_35_intrinsics.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_61_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\sm_70_rt.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\sm_80_rt.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\sm_90_rt.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\texture_indirect_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\surface_indirect_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\cudacc_ext.h
+    注意: 包含文件:   D:\nvidia-2\include\device_launch_parameters.h
+    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:   D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\utility
+    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\initializer_list
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstddef
+    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\type_traits
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdint
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\stdint.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstring
+    注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
+    注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
+    注意: 包含文件:   D:\nvidia-2\include\crt/host_config.h
+    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\sal.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\concurrencysal.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vadefs.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt.h
+    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdarg
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals_core.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xkeycheck.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\stdarg.h
+    注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:    D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\ctype.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wctype.h
+    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\limits.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stddef.h
+    注意: 包含文件:    D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:    D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:   D:\nvidia-2\include\library_types.h
+    注意: 包含文件:   D:\nvidia-2\include\channel_descriptor.h
+    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_device_runtime_api.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stdlib.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_malloc.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_search.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstdlib.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:   D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:   D:\nvidia-2\include\driver_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:    D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:   D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:   D:\nvidia-2\include\vector_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\vector_functions.hpp
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:   D:\nvidia-2\include\crt/common_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\string.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memory.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_memcpy_s.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\errno.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_string.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstring.h
+    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\time.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wtime.h
+    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\new
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\exception
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\yvals.h
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\crtdbg.h
+    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new_debug.h
+    注意: 包含文件:         D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_new.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\crtdefs.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\use_ansi.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdlib
+    注意: 包含文件:       C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
+    注意: 包含文件:        C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_math.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\type_traits
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstddef
+    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\xtr1common
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstdint
+    注意: 包含文件:        D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\stdint.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cstring
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\malloc.h
+    注意: 包含文件:      D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\vcruntime_exception.h
+    注意: 包含文件:       D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\eh.h
+    注意: 包含文件:        C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_terminate.h
+    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\stdio.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_wstdio.h
+    注意: 包含文件:      C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\corecrt_stdio_config.h
+    注意: 包含文件:    C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\assert.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\math_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:     C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt\math.h
+    注意: 包含文件:     D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\cmath
+    注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:       D:\nvidia-2\include\device_types.h
+    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:   D:\nvidia-2\include\crt/device_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:    D:\nvidia-2\include\device_types.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\device_functions.hpp
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\device_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\device_atomic_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\device_double_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\device_double_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:       D:\nvidia-2\include\device_types.h
+    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_20_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_20_atomic_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_32_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_32_atomic_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_35_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_32_atomic_functions.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_60_atomic_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_60_atomic_functions.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_20_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_20_intrinsics.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_30_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_30_intrinsics.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_32_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_32_intrinsics.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_35_intrinsics.h
+    注意: 包含文件:    D:\nvidia-2\include\sm_61_intrinsics.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:     D:\nvidia-2\include\sm_61_intrinsics.hpp
+    注意: 包含文件:      D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\sm_70_rt.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\sm_70_rt.hpp
+    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:       D:\nvidia-2\include\device_types.h
+    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\sm_80_rt.h
+    注意: 包含文件:     D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:      D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:      D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:      D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:     D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\sm_80_rt.hpp
+    注意: 包含文件:      D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:       D:\nvidia-2\include\device_types.h
+    注意: 包含文件:       D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:       D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:       D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:       D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\device_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\sm_90_rt.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\sm_90_rt.hpp
+    注意: 包含文件:    D:\nvidia-2\include\texture_indirect_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\surface_indirect_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\cuda_runtime_api.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\cudacc_ext.h
+    注意: 包含文件:   D:\nvidia-2\include\device_launch_parameters.h
+    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:   D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\utility
+    注意: 包含文件:    D:\VisualStudio\VC\Tools\MSVC\14.44.35207\include\initializer_list
+    注意: 包含文件:  D:\nvidia-2\include\cuda_runtime.h
+    ptxas warning : Conflicting options --device-debug and --generate-line-info specified, ignoring --generate-line-info option
+    ptxas info    : 0 bytes gmem
+    ptxas info    : Compiling entry function '_Z1kv' for 'sm_89'
+    ptxas info    : Function properties for _Z1kv
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 4 registers, used 0 barriers, 352 bytes cmem[0]
+    nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
+    nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
+    t.cu
+    tmpxft_00003574_00000000-10_t.cudafe1.cpp
+    注意: 包含文件:  D:\nvidia-2\include\crt/host_runtime.h
+    注意: 包含文件:   D:\nvidia-2\include\builtin_types.h
+    注意: 包含文件:    D:\nvidia-2\include\device_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:     D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:     D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:      D:\nvidia-2\include\crt/host_defines.h
+    注意: 包含文件:    D:\nvidia-2\include\surface_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:    D:\nvidia-2\include\texture_types.h
+    注意: 包含文件:     D:\nvidia-2\include\driver_types.h
+    注意: 包含文件:    D:\nvidia-2\include\vector_types.h
+    注意: 包含文件:   D:\nvidia-2\include\crt\storage_class.h
+    注意: 包含文件:  C:\Users\Administrator\AppData\Local\Temp\tmpxft_00003574_00000000-10_t.cudafe1.stub.c
+    注意: 包含文件:   D:\nvidia-2\include\crt/host_runtime.h
+    注意: 包含文件:    D:\nvidia-2\include\crt\common_functions.h
+    注意: 包含文件:     D:\nvidia-2\include\crt\math_functions.h
+    注意: 包含文件:      D:\nvidia-2\include\crt/func_macro.h
+    注意: 包含文件:      D:\nvidia-2\include\crt\math_functions.hpp
+    注意: 包含文件:       D:\nvidia-2\include\crt\host_defines.h
+    注意: 包含文件:       D:\nvidia-2\include\math_constants.h
+    注意: 包含文件:       D:\nvidia-2\include\crt/func_macro.h
+    注意: 包含文件:   C:\Users\Administrator\AppData\Local\Temp\tmpxft_00003574_00000000-7_t.fatbin.c
+    注意: 包含文件:    D:\nvidia-2\include\fatbinary_section.h
+  => exit=0
+
+*** L_dots_in_outpath PASSED. Extending bisect with /I includes,
+    /DPy_LIMITED_API, and finally the real norm.cu source.
+
+=== Try: M_includes_and_slashD ===
+  argv: -std=c++17 -gencode=arch=compute_89,code=sm_89 --threads=1 -use_fast_math --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -DENABLE_BF16 -DENABLE_FP8 -O3 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -Xcompiler=/showIncludes /DPy_LIMITED_API=0x03090000 /ID:\python\Include /ID:\nvidia-2\include /ID:\nvidia-2\include\cccl /ID:\python\Lib\site-packages\tvm_ffi\include /IC:\Users\Administrator\flashinfer\include /IC:\Users\Administrator\flashinfer\csrc /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include /IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include /IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include -c C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\t.cu -o C:\Users\ADMINI~1\AppData\Local\Temp\fi_nvcc_diag\0.6.7\89\cached_ops\norm\t.cuda.obj
+    nvcc warning : incompatible redefinition for option 'optimize', the last value of this option was used
+    nvcc fatal   : A single input file is required for a non-link phase when an outputfile is specified
+  => exit=1
+
+*** M failed: one of the /I paths or /DPy_LIMITED_API is the trigger.
