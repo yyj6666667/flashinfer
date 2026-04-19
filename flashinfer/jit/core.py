@@ -545,7 +545,12 @@ def build_jit_specs(
     for spec in specs:
         if skip_prebuilt and spec.aot_path.exists():
             continue
-        lines.append(f"subninja {spec.ninja_path}")
+        # Escape ':' / ' ' / '$' in the path. On Windows the path is an
+        # absolute drive path like C:\Users\..., and ninja's parser would
+        # otherwise treat the first ':' as a target/rule separator, failing
+        # with "loading 'C': The system cannot find the file specified."
+        escaped = str(spec.ninja_path).replace("$", "$$").replace(":", "$:").replace(" ", "$ ")
+        lines.append(f"subninja {escaped}")
         if not spec.is_ninja_generated:
             with FileLock(spec.lock_path, thread_local=False):
                 spec.write_ninja()
