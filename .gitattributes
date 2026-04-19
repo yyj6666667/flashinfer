@@ -1,0 +1,4 @@
+# Debug logs are always diffable as text, even if a stray UTF-16 / CRLF
+# writer sneaks in — otherwise git's blob heuristic flips them to
+# "Binary files differ" for the transition commit.
+.debug/*.log text -binary diff
