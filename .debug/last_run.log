@@ -1,5 +1,5 @@
 ================================================================
-timestamp: 2026-04-19 13:45:24 +08:00
+timestamp: 2026-04-19 14:09:31 +08:00
 host:      DESKTOP-N7CIHDI
 cwd:       C:\Users\Administrator\flashinfer
 cmd:       pytest tests\utils\test_norm.py -x
@@ -61,5 +61,5 @@ CUDA Error: too many resources requested for launch (701) C:\Users\Administrator
 =========================== short test summary info ===========================
 FAILED tests/utils/test_norm.py::test_norm[True-False-True-dtype0-8192-1] - R...
 !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
-================== 1 failed, 24 passed, 64 skipped in 2.52s ===================
+================== 1 failed, 24 passed, 64 skipped in 2.23s ===================
 ---- exit=1 ----
