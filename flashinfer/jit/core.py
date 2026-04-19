@@ -430,10 +430,14 @@ def gen_jit_spec(
     needs_device_linking: bool = False,
 ) -> JitSpec:
     check_cuda_arch()
-    # Use FLASHINFER_JIT_DEBUG if set, otherwise use FLASHINFER_JIT_VERBOSE (for backward compatibility)
-    debug_env = os.environ.get("FLASHINFER_JIT_DEBUG")
-    verbose_env = os.environ.get("FLASHINFER_JIT_VERBOSE", "0")
-    debug = (debug_env if debug_env is not None else verbose_env) == "1"
+    # FLASHINFER_JIT_DEBUG controls compile flags (-O0 -g -G -lineinfo ...).
+    # FLASHINFER_JIT_VERBOSE controls only ninja's own stdout streaming and
+    # is read elsewhere (build_and_load). Previously VERBOSE was aliased to
+    # DEBUG here "for backward compatibility", which meant anyone asking to
+    # see ninja output unknowingly got a debug build too — on Windows this
+    # blew past register budgets for larger workloads (err 701 "too many
+    # resources requested for launch"). Decouple them.
+    debug = os.environ.get("FLASHINFER_JIT_DEBUG", "0") == "1"
 
     # Only add default C++ standard if not specified in extra flags. We accept
     # both POSIX-style (``-std=``) and MSVC-style (``/std:``) opt-ins so that
