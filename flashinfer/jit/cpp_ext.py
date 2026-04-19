@@ -160,7 +160,9 @@ def get_cuda_version() -> Version:
     try:
         cuda_home = get_cuda_path()
         nvcc = _nvcc_bin_path(cuda_home)
-        txt = subprocess.check_output([nvcc, "--version"], text=True)
+        txt = subprocess.check_output(
+            [nvcc, "--version"], text=True, encoding="utf-8", errors="replace"
+        )
         matches = re.findall(r"release (\d+\.\d+),", txt)
         if not matches:
             raise RuntimeError(
@@ -537,6 +539,14 @@ def run_ninja(workdir: Path, ninja_file: Path, verbose: bool) -> None:
             cwd=str(workdir.resolve()),
             check=True,
             text=True,
+            # On Chinese-locale Windows, Python's default text decoding is
+            # GBK, which aborts with UnicodeDecodeError when ninja/nvcc
+            # stdout contains UTF-8 bytes (e.g. code points from non-GBK
+            # source or CL diagnostics). Pin to UTF-8 with tolerant
+            # replacement. Linux default is already UTF-8, so this is
+            # effectively a no-op there.
+            encoding="utf-8",
+            errors="replace",
         )
     except subprocess.CalledProcessError as e:
         msg = "Ninja build failed."
