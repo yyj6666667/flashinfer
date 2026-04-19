@@ -15,7 +15,12 @@
 #define FLASHINFER_COMPAT_H_
 
 #if defined(_MSC_VER)
-#define FI_RESTRICT __restrict
+// MSVC accepts __restrict on plain variables but rejects it in
+// template function parameter positions (observed via C3646 on
+// flashinfer template host functions). Drop the hint entirely on
+// Windows — correctness is unaffected; aliasing optimizations lose a
+// hint that nvcc/cl rarely exploits aggressively anyway.
+#define FI_RESTRICT
 #else
 #define FI_RESTRICT __restrict__
 #endif
