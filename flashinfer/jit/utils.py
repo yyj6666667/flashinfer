@@ -20,13 +20,16 @@ import torch
 
 
 def write_if_different(path: pathlib.Path, content: str) -> None:
+    # Pin UTF-8 explicitly: on Chinese-locale Windows, Python's default
+    # text encoding is GBK, which round-trips badly with Jinja-generated
+    # .cu content and with whatever cl.exe reads back via #line.
     if path.exists():
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             if f.read() == content:
                 return
     else:
         path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(content)
 
 
