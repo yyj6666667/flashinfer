@@ -134,11 +134,79 @@ if (-not $firstFail) {
         $firstFail = 'L_dots_in_outpath'
         Log ""
         Log "*** CONFIRMED: nvcc chokes on output path whose directory segment"
-        Log "    contains dots (e.g. '0.6.7'). This is the real root cause."
+        Log "    contains dots (e.g. '0.6.7'). Root cause found."
     } else {
         Log ""
-        Log "*** L_dots_in_outpath PASSED. Root cause is elsewhere (maybe"
-        Log "    specific to the real norm.cu source). Next hypothesis needed."
+        Log "*** L_dots_in_outpath PASSED. Extending bisect with /I includes,"
+        Log "    /DPy_LIMITED_API, and finally the real norm.cu source."
+        Log ""
+
+        # -------- M: add /I include paths mirroring the real cmd --------
+        # The paths don't need to resolve — we are testing nvcc's argv parser,
+        # not the preprocessor. Still, point at paths likely to exist.
+        $pyInc     = python -c "import sysconfig, sys; sys.stdout.write(sysconfig.get_path('include'))" 2>$null
+        $tvmInc    = python -c "import tvm_ffi.libinfo as l, sys; sys.stdout.write(l.find_include_path())" 2>$null
+        $cudaHome  = $env:CUDA_PATH
+        $repo      = $RepoRoot
+        $mIncludes = @(
+            "/DPy_LIMITED_API=0x03090000"
+        )
+        if ($pyInc)    { $mIncludes += "/I$pyInc" }
+        if ($cudaHome) {
+            $mIncludes += "/I$cudaHome\include"
+            $mIncludes += "/I$cudaHome\include\cccl"
+        }
+        if ($tvmInc)   { $mIncludes += "/I$tvmInc" }
+        $mIncludes += "/I$repo\include"
+        $mIncludes += "/I$repo\csrc"
+        $mIncludes += "/I$repo\3rdparty\cutlass\include"
+        $mIncludes += "/I$repo\3rdparty\cutlass\tools\util\include"
+        $mIncludes += "/I$repo\3rdparty\spdlog\include"
+
+        $cum += $mIncludes
+        $argv = @($cum + @('-c', $SrcFile, '-o', $dotObj))
+        Log "=== Try: M_includes_and_slashD ==="
+        Log ("  argv: " + ($argv -join ' '))
+        $out = & $nvcc @argv 2>&1
+        $ec  = $LASTEXITCODE
+        if ($out) { (($out | Out-String).TrimEnd()).Split("`n") | ForEach-Object { Log ("    " + $_) } }
+        Log "  => exit=$ec"
+
+        if ($ec -ne 0) {
+            $firstFail = 'M_includes_and_slashD'
+            Log ""
+            Log "*** M failed: one of the /I paths or /DPy_LIMITED_API is the trigger."
+        } else {
+            # -------- N: same flags but compile the REAL norm.cu --------
+            $realNorm = Join-Path $RepoRoot 'csrc\norm.cu'
+            if (-not (Test-Path $realNorm)) {
+                Log ""
+                Log "*** N skipped: $realNorm not found."
+            } else {
+                $nObj = Join-Path $dotDir 'norm.cuda.obj'
+                $argv = @($cum + @('-c', $realNorm, '-o', $nObj))
+                Log ""
+                Log "=== Try: N_real_norm_cu ==="
+                Log ("  argv: " + ($argv -join ' '))
+                $out = & $nvcc @argv 2>&1
+                $ec  = $LASTEXITCODE
+                if ($out) { (($out | Out-String).TrimEnd()).Split("`n") | Select-Object -First 40 | ForEach-Object { Log ("    " + $_) } }
+                Log "  => exit=$ec"
+                if ($ec -ne 0) {
+                    $firstFail = 'N_real_norm_cu'
+                    Log ""
+                    Log "*** N failed: flags + includes are fine on t.cu but fail on"
+                    Log "    real norm.cu. The trigger is inside the source / its"
+                    Log "    transitive includes (flashinfer headers, cutlass, spdlog)."
+                } else {
+                    Log ""
+                    Log "*** ALL tests passed. Bug no longer reproducible? Compare"
+                    Log "    this exact argv to the failing ninja command to spot"
+                    Log "    whatever diverges (cwd, quoting, extra ninja-injected"
+                    Log "    arg, etc.)."
+                }
+            }
+        }
     }
 }
 
