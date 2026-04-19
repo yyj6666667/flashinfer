@@ -17,6 +17,11 @@
 #    pragma message("FLASHINFER: __restrict__ was already a macro, undefing")
 #    undef __restrict__
 #  endif
-#  define __restrict__ __restrict
-#  pragma message("FLASHINFER: __restrict__ now defined as __restrict")
+// Diagnostic: define as empty. If the host-side parse errors on
+// __restrict__ disappear, then substitution IS happening and the
+// problem is that __restrict (MSVC keyword) is disallowed in template
+// parameter positions. If errors persist, substitution isn't reaching
+// the error site.
+#  define __restrict__
+#  pragma message("FLASHINFER: __restrict__ now defined as EMPTY")
 #endif
