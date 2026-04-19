@@ -7,11 +7,15 @@
 #     scripts\windows\debug_run.ps1 pytest tests\... # runs arbitrary command
 [CmdletBinding()]
 param(
+    [switch]$Clean,
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Command
 )
 
 $ErrorActionPreference = 'Continue'
+
+# Auto-activate MSVC + CUDA so the Python subprocess sees cl.exe / nvcc.
+& (Join-Path $PSScriptRoot 'activate.ps1') -Clean:$Clean
 
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $LogDir   = Join-Path $RepoRoot '.debug'

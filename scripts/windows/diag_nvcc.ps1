@@ -14,6 +14,9 @@ param()
 
 $ErrorActionPreference = 'Continue'
 
+# Auto-activate MSVC + CUDA so nvcc and cl.exe are reachable.
+& (Join-Path $PSScriptRoot 'activate.ps1')
+
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $LogDir   = Join-Path $RepoRoot '.debug'
 $LogFile  = Join-Path $LogDir 'last_run.log'
