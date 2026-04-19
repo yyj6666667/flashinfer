@@ -479,7 +479,19 @@ def generate_ninja_build_for_op(
         is_cuda = source.suffix == ".cu"
         object_suffix = CUDA_OBJ_EXT if is_cuda else OBJ_EXT
         cmd = "cuda_compile" if is_cuda else "compile"
-        obj_name = f"{source.parent.name}_{source.stem}{object_suffix}"
+        # On Windows, the spec dir name is already the JIT URI (often 150+
+        # chars for attention). Prefixing the obj name with source.parent.name
+        # then repeats the URI inside the filename and produces >340 char
+        # paths that exceed cl.exe's internal buffers even with
+        # LongPathsEnabled=1 — compilations fail with
+        # "fatal error C1083: cannot open compiler-generated file '': Invalid
+        # argument" at the host pass. Use the bare stem on Windows; source
+        # stems are already unique within a JIT spec. Linux keeps the full
+        # prefixed name for easier grepping of build artifacts.
+        if IS_WINDOWS:
+            obj_name = f"{source.stem}{object_suffix}"
+        else:
+            obj_name = f"{source.parent.name}_{source.stem}{object_suffix}"
         obj = _ninja_escape_path((output_dir / obj_name).resolve())
         objects.append(obj)
         lines.append(f"build {obj}: {cmd} {_ninja_escape_path(source.resolve())}")
