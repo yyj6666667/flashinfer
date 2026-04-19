@@ -1,186 +1,22 @@
 ================================================================
-timestamp: 2026-04-19 15:46:54 +08:00
+timestamp: 2026-04-19 18:07:29 +08:00
 host:      DESKTOP-N7CIHDI
 cwd:       C:\Users\Administrator\flashinfer
-cmd:       pytest tests\gemm\test_mm_bf16.py -x
+cmd:       pytest tests\attention\test_batch_decode_kernels.py -x --tb=line
 ----------------------------------------------------------------
 ============================= test session starts =============================
 platform win32 -- Python 3.12.8, pytest-9.0.3, pluggy-1.6.0
 rootdir: C:\Users\Administrator\flashinfer
 configfile: pytest.ini
-collected 1620 items
+collected 2592 items
 
-tests\gemm\test_mm_bf16.py sssssssssssssssssssssssssssssssssssssssssssss [  2%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [  7%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 11%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 16%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 20%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 25%]
-F
+tests\attention\test_batch_decode_kernels.py E
 
-================================== FAILURES ===================================
-___________ test_mm_bf16[cudnn-False-False-res_dtype0-1024-1024-1] ____________
-
-m = 1, n = 1024, k = 1024, res_dtype = torch.bfloat16, enable_bias = False
-pdl = False, backend = 'cudnn'
-
-    @pytest.mark.parametrize("m", [1, 8, 16, 32, 64])
-    @pytest.mark.parametrize("n", [1024, 2048, 4096])
-    @pytest.mark.parametrize("k", [1024, 2048, 3072])
-    @pytest.mark.parametrize("res_dtype", [torch.bfloat16, torch.float16, torch.float32])
-    @pytest.mark.parametrize("enable_bias", [True, False])
-    @pytest.mark.parametrize("pdl", [True, False])
-    @pytest.mark.parametrize("backend", ["cudnn", "cutlass", "tgv"])
-    def test_mm_bf16(
-        m: int,
-        n: int,
-        k: int,
-        res_dtype: torch.dtype,
-        enable_bias: bool,
-        pdl: bool,
-        backend: str,
-    ):
-        compute_capability = get_compute_capability(torch.device(device="cuda"))
-        compute_capability_number = compute_capability[0] * 10 + compute_capability[1]
-        if not mm_bf16.is_compute_capability_supported(compute_capability_number):
-            pytest.skip(
-                f"mm_bf16 not supported on current compute capability."
-                f"Detected sm{compute_capability_number}."
-            )
-        if not mm_bf16.is_backend_supported(backend, compute_capability_number):
-            pytest.skip(f"{backend} backend not supported on current compute capability.")
-    
-        if backend == "cudnn" and not CUDNN_AVAILABLE:
-            pytest.skip("cuDNN is not available on this system.")
-    
-        if backend == "cudnn" and (enable_bias or pdl):
-            pytest.skip(
-                "mm_bf16 with cuDNN backend does not support bias or pdl arguments."
-            )
-        if backend == "cutlass" and (enable_bias or pdl):
-            pytest.skip(
-                "mm_bf16 with CUTLASS backend does not support bias or pdl arguments."
-            )
-        if res_dtype != torch.bfloat16 and backend == "tgv":
-            pytest.skip(
-                "mm_bf16 with TGV backend does not support specifying non-bfloat16 result dtypes."
-            )
-        # cuDNN on SM103 does not support bf16 input -> fp16 output
-        if (
-            backend == "cudnn"
-            and compute_capability_number == 103
-            and res_dtype == torch.float16
-        ):
-            pytest.skip("cuDNN bf16 GEMM with fp16 output not supported on SM103.")
-    
-        torch.manual_seed(42)
-        input = torch.randn([m, k], device="cuda", dtype=torch.bfloat16)
-        mat2 = torch.randn([n, k], device="cuda", dtype=torch.bfloat16)
-    
-        if enable_bias:
-            bias = torch.randn(n, device="cuda", dtype=torch.bfloat16)
-            reference = F.linear(input, mat2, bias)
-        else:
-            bias = None
-            reference = torch.mm(input, mat2.T)
-    
-        out = torch.empty([m, n], device="cuda", dtype=res_dtype)
-        with autotune():
->           mm_bf16(input, mat2.T, bias, pdl, out, res_dtype, backend)
-
-tests\gemm\test_mm_bf16.py:72: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-flashinfer\utils.py:1240: in wrapper
-    return func(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^
-flashinfer\gemm\gemm_base.py:427: in mm_bf16
-    bf16_gemm_sm100(a, b, bias, pdl, out, workspace_buffer, backends)
-flashinfer\gemm\gemm_base.py:909: in bf16_gemm_sm100
-    runner, tactic = tuner.choose_one(
-flashinfer\autotuner.py:771: in choose_one
-    valid_tactics = r.get_valid_tactics(tensors, p)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-flashinfer\gemm\gemm_base.py:3065: in get_valid_tactics
-    graph = build_cudnn_gemm_bf16_graph(
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-
-a_shape = (1, 1, 1024), a_stride = (1024, 1024, 1), b_shape = (1, 1024, 1024)
-b_stride = (1048576, 1, 1024), o_type = <data_type.BFLOAT16: 10>
-device = device(type='cuda', index=0), bias_is_not_none = False
-bias_shape = (1, 1, 1), bias_stride = (1, 1, 1)
-policy = <build_plan_policy.ALL: 1>
-
-    @functools.cache
-    def build_cudnn_gemm_bf16_graph(
-        a_shape,
-        a_stride,
-        b_shape,
-        b_stride,
-        o_type,
-        device,
-        bias_is_not_none,
-        bias_shape,
-        bias_stride,
-        policy=None,
-    ):
-        _check_cudnn_availability()
-        if policy is None:
-            policy = cudnn.build_plan_policy.HEURISTICS_CHOICE
-    
-        stream = torch.cuda.current_stream(device)
-        with cudnn.graph(_get_cudnn_handle(device, stream)) as (graph, _):
-            a_cudnn_tensor = graph.tensor(
-                name="a", dim=a_shape, stride=a_stride, data_type=cudnn.data_type.BFLOAT16
-            )
-            b_cudnn_tensor = graph.tensor(
-                name="b", dim=b_shape, stride=b_stride, data_type=cudnn.data_type.BFLOAT16
-            )
-            c_cudnn_tensor = graph.matmul(
-                name="matmul",
-                A=a_cudnn_tensor,
-                B=b_cudnn_tensor,
-                compute_data_type=cudnn.data_type.FLOAT,
-            )
-            c_cudnn_tensor.set_data_type(cudnn.data_type.FLOAT)
-    
-            if bias_is_not_none:
-                bias_cudnn_tensor = graph.tensor(
-                    name="bias",
-                    dim=bias_shape,
-                    stride=bias_stride,
-                    data_type=cudnn.data_type.BFLOAT16,
-                )
-                c_final_cudnn_tensor = graph.add(
-                    name="bias_add",
-                    a=c_cudnn_tensor,
-                    b=bias_cudnn_tensor,
-                )
-                bias_cudnn_tensor.set_uid(UIDs.BIAS_UID.value)
-            else:
-                c_final_cudnn_tensor = c_cudnn_tensor
-    
-            c_final_cudnn_tensor.set_name("c_final").set_output(True).set_data_type(o_type)
-    
-            a_cudnn_tensor.set_uid(UIDs.A_UID.value)
-            b_cudnn_tensor.set_uid(UIDs.B_UID.value)
-            c_final_cudnn_tensor.set_uid(UIDs.O_UID.value)
-    
-            graph.validate()
-            graph.build_operation_graph()
-            graph.create_execution_plans([cudnn.heur_mode.A, cudnn.heur_mode.FALLBACK])
->           graph.check_support()
-E           RuntimeError: Unable to load any libcudart.so.* library.
-
-flashinfer\gemm\gemm_base.py:2753: RuntimeError
----------------------------- Captured stdout call -----------------------------
-cudnn_handle created for device_id = 0
-
----------------------------- Captured stderr call -----------------------------
-2026-04-19 15:47:00,302 - INFO - autotuner.py:457 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
-
-[AutoTuner]: Tuning bf16_gemm:   0%|          | 0/1 [00:00<?, ?profile/s]2026-04-19 15:47:00,488 - INFO - autotuner.py:466 - flashinfer.jit: [Autotuner]: Autotuning process ends
+=================================== ERRORS ====================================
+_ ERROR at setup of test_batch_decode_with_paged_kv_cache[True-kv_dtype0-q_dtype0-True-0.0-NONE-NHD-128-4-4-1-54-12] _
+E   UnicodeDecodeError: 'gbk' codec can't decode byte 0xf9 in position 183296: illegal multibyte sequence
 =========================== short test summary info ===========================
-FAILED tests/gemm/test_mm_bf16.py::test_mm_bf16[cudnn-False-False-res_dtype0-1024-1024-1]
+ERROR tests/attention/test_batch_decode_kernels.py::test_batch_decode_with_paged_kv_cache[True-kv_dtype0-q_dtype0-True-0.0-NONE-NHD-128-4-4-1-54-12]
 !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
-======================= 1 failed, 405 skipped in 2.21s ========================
+======================== 1 error in 244.63s (0:04:04) =========================
 ---- exit=1 ----
