@@ -3,7 +3,7 @@
 
 namespace flashinfer {
 
-constexpr auto use_custom_mask = {{ mask_mode }} == MaskMode::kCustom;
+constexpr auto MASK_MODE = {{ mask_mode }};
 
 {% for cta_tile_q in [16, 64, 128] %}
 template cudaError_t BatchPrefillWithPagedKVCacheDispatched<
