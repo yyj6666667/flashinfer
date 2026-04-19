@@ -1,5 +1,5 @@
 ================================================================
-timestamp: 2026-04-19 14:09:31 +08:00
+timestamp: 2026-04-19 14:15:42 +08:00
 host:      DESKTOP-N7CIHDI
 cwd:       C:\Users\Administrator\flashinfer
 cmd:       pytest tests\utils\test_norm.py -x
@@ -11,55 +11,43 @@ configfile: pytest.ini
 collected 2710 items
 
 tests\utils\test_norm.py sssssssssssssssssssssssssssssssssssssssssssssss [  1%]
-sssssssssssssssss........................F
+sssssssssssssssss....................................................... [  4%]
+.........sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [  7%]
+s................................................................sssssss [  9%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 12%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 15%]
+sssssssssssssssssssssssssssssssssssssssss............................... [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+.................sssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 25%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 28%]
+sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss....... [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+.........................................sssssssssssssssssssssssssssssss [ 38%]
+sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss....... [ 41%]
+........................................................................ [ 44%]
+.................sssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 46%]
+sssssssssssssssssssssssssssssssssssssssss............................... [ 49%]
+.................................................................sssssss [ 52%]
+sssssssssssssssssssssssss................................sssssssssssssss [ 54%]
+sssssssssssssssss................................sssssssssssssssssssssss [ 57%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 60%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 62%]
+sssssssssssssssssssssssss............................................... [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+.sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 73%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 76%]
+sssssssssssssssssssssssssssssssssssssssssssssssss....................... [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+.........................sssssssssssssssssssssssssssssssssssssssssssssss [ 86%]
+sssssssssssssssss....................................................... [ 89%]
+.........sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 92%]
+s................................................................sssssss [ 94%]
+sssssssssssssssssssssssss................................sssssssssssssss [ 97%]
+sssssssssssssssss......................................................  [100%]
 
-================================== FAILURES ===================================
-__________________ test_norm[True-False-True-dtype0-8192-1] ___________________
-
-batch_size = 1, hidden_size = 8192, dtype = torch.float16, specify_out = True
-enable_pdl = False, contiguous = True
-
-    @pytest.mark.parametrize("batch_size", [1, 19, 99, 989])
-    @pytest.mark.parametrize("hidden_size", [111, 500, 1024, 3072, 3584, 4096, 8192, 16384])
-    @pytest.mark.parametrize("dtype", [torch.float16])
-    @pytest.mark.parametrize("specify_out", [True, False])
-    @pytest.mark.parametrize("enable_pdl", [True, False])
-    @pytest.mark.parametrize("contiguous", [True, False])
-    def test_norm(batch_size, hidden_size, dtype, specify_out, enable_pdl, contiguous):
-        if contiguous:
-            x = torch.randn(batch_size, hidden_size).to(0).to(dtype)
-        else:
-            x = torch.randn(batch_size, hidden_size * 2, device="cuda").to(dtype)
-            x = x[:, :hidden_size]
-    
-        if enable_pdl and not device_support_pdl(x.device):
-            pytest.skip("PDL is only available for Hopper and later GPUs")
-    
-        w = torch.randn(hidden_size).to(0).to(dtype)
-    
-        y_ref = llama_rms_norm(x, w)
-        if specify_out:
-            y = torch.empty_like(x)
->           flashinfer.norm.rmsnorm(x, w, out=y, enable_pdl=enable_pdl)
-
-tests\utils\test_norm.py:123: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-flashinfer\norm\__init__.py:130: in rmsnorm
-    _rmsnorm_impl(out, input, weight, eps, enable_pdl)
-flashinfer\norm\__init__.py:145: in _rmsnorm_impl
-    get_norm_module().rmsnorm(out, input, weight, eps, enable_pdl)
-python/tvm_ffi/cython/function.pxi:929: in tvm_ffi.core.Function.__call__
-    ???
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-
->   });
-E   RuntimeError: Check failed: (status == cudaSuccess) is false: RMSNorm failed with error code too many resources requested for launch
-
-csrc\norm.cu:50: RuntimeError
----------------------------- Captured stderr call -----------------------------
-CUDA Error: too many resources requested for launch (701) C:\Users\Administrator\flashinfer\include\flashinfer/norm.cuh: line 144 at function cudaLaunchKernelEx(&config, kernel, input, weight, output, d, stride_input, stride_output, weight_bias, eps)
-=========================== short test summary info ===========================
-FAILED tests/utils/test_norm.py::test_norm[True-False-True-dtype0-8192-1] - R...
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
-================== 1 failed, 24 passed, 64 skipped in 2.23s ===================
----- exit=1 ----
+================ 1366 passed, 1344 skipped in 73.34s (0:01:13) ================
+---- exit=0 ----
