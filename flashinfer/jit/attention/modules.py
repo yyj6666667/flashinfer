@@ -14,11 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import hashlib
 import os
+import sys
 from typing import List
 
 import jinja2
 import torch
+
+
+def _win_short_uri(uri: str, threshold: int = 100) -> str:
+    """Hash overly long URIs on Windows to keep nvcc's internal path
+    buffers from overflowing (observed as cl.exe C1083 on garbage
+    filenames for generated attention .cu paths that exceeded ~260+
+    chars even with LongPathsEnabled). No-op on Linux.
+    """
+    if sys.platform != "win32" or len(uri) <= threshold:
+        return uri
+    return f"{uri[:40]}_{hashlib.sha1(uri.encode()).hexdigest()[:12]}"
 
 from .. import env as jit_env
 from ..core import (
@@ -51,7 +64,7 @@ def get_single_decode_uri(
     use_sliding_window: bool,
     use_logits_soft_cap: bool,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"single_decode_with_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
@@ -74,7 +87,7 @@ def get_batch_decode_uri(
     use_sliding_window: bool,
     use_logits_soft_cap: bool,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"batch_decode_with_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
@@ -326,7 +339,7 @@ def get_single_prefill_uri(
     use_logits_soft_cap: bool,
     use_fp16_qk_reduction: bool,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"single_prefill_with_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
@@ -382,7 +395,7 @@ def get_batch_prefill_uri(
     use_logits_soft_cap: bool,
     use_fp16_qk_reduction: bool,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"batch_prefill_with_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
