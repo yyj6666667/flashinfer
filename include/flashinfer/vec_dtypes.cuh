@@ -33,7 +33,12 @@ namespace flashinfer {
 #define FLASHINFER_HARDWARE_FP8_CONVERSION_ENABLED
 #endif
 
-#define FLASHINFER_INLINE inline __attribute__((always_inline)) __device__
+// __forceinline__ is CUDA's portable always-inline marker; it expands to
+// the correct compiler-specific attribute on both GCC/clang (Linux) and
+// MSVC (Windows) hosts. Previous form used GCC-only __attribute__ which
+// MSVC silently mis-parsed as __declspec(__device__) and broke every
+// FLASHINFER_INLINE site.
+#define FLASHINFER_INLINE __forceinline__ __device__
 
 __device__ __forceinline__ void st_global_release(int4 const& val, int4* addr) {
   asm volatile("st.release.global.sys.v4.b32 [%4], {%0, %1, %2, %3};" ::"r"(val.x), "r"(val.y),
