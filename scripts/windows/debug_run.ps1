@@ -4,7 +4,13 @@
 #
 # Usage:
 #     scripts\windows\debug_run.ps1                  # runs smoke_test.py
+#     scripts\windows\debug_run.ps1 -Clean           # wipe JIT cache first
 #     scripts\windows\debug_run.ps1 pytest tests\... # runs arbitrary command
+#
+# The log is written as UTF-8 without BOM so `git diff` shows readable
+# text, not "Bin X -> Y bytes". (Tee-Object would default to UTF-16 LE
+# on PowerShell 5.x, which has embedded null bytes and makes git treat
+# the file as binary.)
 [CmdletBinding()]
 param(
     [switch]$Clean,
@@ -26,29 +32,37 @@ if (-not $Command -or $Command.Count -eq 0) {
     $Command = @('python', (Join-Path $PSScriptRoot 'smoke_test.py'))
 }
 
-$header = @(
-    "================================================================",
-    "timestamp: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')",
-    "host:      $env:COMPUTERNAME",
-    "cwd:       $RepoRoot",
-    "cmd:       $($Command -join ' ')",
-    "----------------------------------------------------------------"
-) -join "`n"
-$header | Out-File -FilePath $LogFile -Encoding utf8
+# Collect every output line in memory so we can flush once as UTF-8 no-BOM.
+$lines = New-Object System.Collections.Generic.List[string]
+function Log($s) { $lines.Add($s); Write-Host $s }
+
+Log "================================================================"
+Log "timestamp: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz')"
+Log "host:      $env:COMPUTERNAME"
+Log "cwd:       $RepoRoot"
+Log "cmd:       $($Command -join ' ')"
+Log "----------------------------------------------------------------"
 
 Push-Location $RepoRoot
 try {
-    & $Command[0] $Command[1..($Command.Count - 1)] *>&1 | Tee-Object -Append -FilePath $LogFile
+    & $Command[0] $Command[1..($Command.Count - 1)] *>&1 | ForEach-Object {
+        # $_ may be a string or an ErrorRecord; coerce to string and echo.
+        $line = "$_"
+        Log $line
+    }
     $exit = $LASTEXITCODE
 } finally {
     Pop-Location
 }
 
-"---- exit=$exit ----" | Out-File -Append -FilePath $LogFile -Encoding utf8
+Log "---- exit=$exit ----"
+
+[System.IO.File]::WriteAllLines(
+    $LogFile, $lines, (New-Object System.Text.UTF8Encoding $false))
 
 Push-Location $RepoRoot
 try {
-    git add .debug/last_run.log
+    git add .debug/last_run.log | Out-Null
     git commit -m "debug: run $(Get-Date -Format 'yyyy-MM-dd HH:mm') exit=$exit" --allow-empty | Out-Null
     git push origin HEAD
 } finally {
