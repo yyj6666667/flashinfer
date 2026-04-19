@@ -270,6 +270,13 @@ def build_cuda_cflags(
             "-Xcompiler=/EHsc",
             "-Xcompiler=/MD",
             "-Xcompiler=/bigobj",
+            # Host-side only: MSVC accepts __restrict (no trailing underscore)
+            # but not __restrict__. Alias the token in the cl.exe preprocessor
+            # so flashinfer headers that use __restrict__ on host functions
+            # parse cleanly. nvcc's device frontend already accepts both
+            # spellings so device code is unaffected, and Linux is untouched
+            # because this flag is only emitted on Windows.
+            "-Xcompiler=/D__restrict__=__restrict",
         ]
         # MSVC accepts __restrict but not __restrict__ (GCC/clang-only
         # spelling). nvcc passes the declarations straight through to
