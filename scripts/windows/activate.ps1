@@ -23,11 +23,15 @@ function _log($msg, $color = 'DarkGray') {
 }
 
 # -------- Force UTF-8 code page for child processes --------
-# On Chinese-locale Windows (CP936 / GBK), nvcc's intermediate cudafe1.cpp
-# emits UTF-8 paths in #line directives; cl.exe then reads them as GBK
-# and C1083's on garbage filenames. chcp 65001 flips the console to UTF-8
-# so the whole ninja/nvcc/cl subprocess tree agrees on UTF-8.
+# On Chinese-locale Windows (CP936 / GBK):
+#   - cmd's code page controls what child processes inherit (chcp 65001)
+#   - PowerShell's .NET Console streams decode external-process bytes
+#     using [Console]::OutputEncoding; default is OEM (GBK), which
+#     mojibakes UTF-8 output from cl.exe / python into the log file.
 cmd /c "chcp 65001 >nul 2>&1"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::InputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
 $env:PYTHONIOENCODING = "utf-8"
 
 # -------- MSVC (cl.exe) --------
