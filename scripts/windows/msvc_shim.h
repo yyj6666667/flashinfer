@@ -12,8 +12,11 @@
 #pragma once
 
 #if defined(_MSC_VER)
+#  pragma message("FLASHINFER: msvc_shim.h applied")
 #  ifdef __restrict__
+#    pragma message("FLASHINFER: __restrict__ was already a macro, undefing")
 #    undef __restrict__
 #  endif
 #  define __restrict__ __restrict
+#  pragma message("FLASHINFER: __restrict__ now defined as __restrict")
 #endif
