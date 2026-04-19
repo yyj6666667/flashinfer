@@ -1,12 +1,12 @@
 ================================================================
-timestamp: 2026-04-19 13:07:55 +08:00
+timestamp: 2026-04-19 13:14:25 +08:00
 host:      DESKTOP-N7CIHDI
 cwd:       C:\Users\Administrator\flashinfer
 cmd:       python C:\Users\Administrator\flashinfer\scripts\windows\smoke_test.py
 ----------------------------------------------------------------
 
 ==> Importing flashinfer
-[OK] flashinfer import (3.27s)
+[OK] flashinfer import (3.77s)
      module: C:\Users\Administrator\flashinfer\flashinfer\__init__.py
 
 ==> Importing torch and querying CUDA
@@ -36,7 +36,7 @@ ptxas warning : Conflicting options --device-debug and --generate-line-info spec
 ptxas info    : 0 bytes gmem
 nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
 flashinfer_norm_binding.cu
-tmpxft_000036a8_00000000-10_flashinfer_norm_binding.cudafe1.cpp
+tmpxft_00000b7c_00000000-10_flashinfer_norm_binding.cudafe1.cpp
 [2/3] D:\nvidia-2/bin/nvcc.exe -DPy_LIMITED_API=0x03090000 -ID:\python\Include -ID:\nvidia-2/include -ID:\nvidia-2/include/cccl -ID:\python\Lib\site-packages\tvm_ffi\include -ID:\python\Lib\site-packages\tvm_ffi\include -IC:\Users\Administrator\flashinfer\include -IC:\Users\Administrator\flashinfer\csrc -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\include -IC:\Users\Administrator\flashinfer\3rdparty\cutlass\tools\util\include -IC:\Users\Administrator\flashinfer\3rdparty\spdlog\include --expt-relaxed-constexpr -Xcompiler=/EHsc -Xcompiler=/MD -Xcompiler=/bigobj -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -g -O0 -G -lineinfo -Xptxas=-v -DCUTLASS_DEBUG_TRACE_LEVEL=2 -DENABLE_BF16 -DENABLE_FP8 -c C:\Users\Administrator\flashinfer\csrc\norm.cu -o C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj 
 D:\nvidia-2\include\cuda.h(22252): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 D:\nvidia-2\include\cuda.h(22958): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
@@ -684,47 +684,14 @@ ptxas info    : Function properties for _ZN37_INTERNAL_a4be6f73_7_norm_cu_4c52c5
     48 bytes stack frame, 40 bytes spill stores, 40 bytes spill loads
 nvcc warning : '--device-debug (-G)' overrides '--generate-line-info (-lineinfo)'
 norm.cu
-tmpxft_0000369c_00000000-10_norm.cudafe1.cpp
-[3/3] link.exe /nologo /DLL C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_flashinfer_norm_binding.cuda.obj /DLL /nologo /LIBPATH:D:\nvidia-2\lib\x64 cudart.lib cuda.lib /OUT:C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\norm.dll
-FAILED: [code=1120] C:/Users/Administrator/.cache/flashinfer/0.6.7/89/cached_ops/norm/norm.dll 
-link.exe /nologo /DLL C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_flashinfer_norm_binding.cuda.obj /DLL /nologo /LIBPATH:D:\nvidia-2\lib\x64 cudart.lib cuda.lib /OUT:C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\norm.dll
+tmpxft_000012e0_00000000-10_norm.cudafe1.cpp
+[3/3] link.exe /nologo /DLL C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_norm.cuda.obj C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\csrc_flashinfer_norm_binding.cuda.obj /DLL /nologo /LIBPATH:D:\nvidia-2\lib\x64 cudart.lib cuda.lib /LIBPATH:D:\python\Lib\site-packages\tvm_ffi\lib tvm_ffi.lib /OUT:C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\norm.dll
   正在创建库 C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\norm.lib 和对象 C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\norm.exp
-csrc_norm.cuda.obj : error LNK2019: 无法解析的外部符号 __imp_TVMFFIErrorMoveFromRaised，函数 "class tvm::ffi::Error __cdecl tvm::ffi::details::MoveFromSafeCallRaised(void)" (?MoveFromSafeCallRaised@details@ffi@tvm@@YA?AVError@23@XZ) 中引用了该符号
-csrc_norm.cuda.obj : error LNK2019: 无法解析的外部符号 __imp_TVMFFIDataTypeToString，函数 "class tvm::ffi::String __cdecl tvm::ffi::DLDataTypeToString(struct DLDataType)" (?DLDataTypeToString@ffi@tvm@@YA?AVString@12@UDLDataType@@@Z) 中引用了该符号
-csrc_norm.cuda.obj : error LNK2019: 无法解析的外部符号 __imp_TVMFFIBacktrace，函数 "void __cdecl rmsnorm(class tvm::ffi::TensorView,class tvm::ffi::TensorView,class tvm::ffi::TensorView,double,bool)" (?rmsnorm@@YAXVTensorView@ffi@tvm@@00N_N@Z) 中引用了该符号
-csrc_flashinfer_norm_binding.cuda.obj : error LNK2001: 无法解析的外部符号 __imp_TVMFFIBacktrace
-csrc_norm.cuda.obj : error LNK2019: 无法解析的外部符号 __imp_TVMFFIEnvGetStream，函数 "struct CUstream_st * __cdecl get_stream(struct DLDevice)" (?get_stream@@YAPEAUCUstream_st@@UDLDevice@@@Z) 中引用了该符号
-csrc_flashinfer_norm_binding.cuda.obj : error LNK2019: 无法解析的外部符号 __imp_TVMFFIErrorSetRaised，函数 "void __cdecl tvm::ffi::details::SetSafeCallRaised(class tvm::ffi::Error const &)" (?SetSafeCallRaised@details@ffi@tvm@@YAXAEBVError@23@@Z) 中引用了该符号
-csrc_flashinfer_norm_binding.cuda.obj : error LNK2019: 无法解析的外部符号 __imp_TVMFFIGetTypeInfo，函数 "bool __cdecl tvm::ffi::details::IsObjectInstance<class tvm::ffi::TensorObj>(int)" (??$IsObjectInstance@VTensorObj@ffi@tvm@@@details@ffi@tvm@@YA_NH@Z) 中引用了该符号
-C:\Users\Administrator\.cache\flashinfer\0.6.7\89\cached_ops\norm\norm.dll : fatal error LNK1120: 6 个无法解析的外部命令
-ninja: build stopped: subcommand failed.
-Traceback (most recent call last):
-  File "C:\Users\Administrator\flashinfer\flashinfer\jit\cpp_ext.py", line 501, in run_ninja
-    subprocess.run(
-  File "D:\python\Lib\subprocess.py", line 571, in run
-    raise CalledProcessError(retcode, process.args,
-subprocess.CalledProcessError: Command '['ninja', '-v', '-C', 'C:\\Users\\Administrator\\.cache\\flashinfer\\0.6.7\\89\\cached_ops\\norm', '-f', 'C:\\Users\\Administrator\\.cache\\flashinfer\\0.6.7\\89\\cached_ops\\norm\\build.ninja']' returned non-zero exit status 1120.
-System.Management.Automation.RemoteException
-The above exception was the direct cause of the following exception:
-System.Management.Automation.RemoteException
-Traceback (most recent call last):
-  File "C:\Users\Administrator\flashinfer\scripts\windows\smoke_test.py", line 67, in main
-    y = flashinfer.rmsnorm(x, w)
-        ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Administrator\flashinfer\flashinfer\norm\__init__.py", line 130, in rmsnorm
-    _rmsnorm_impl(out, input, weight, eps, enable_pdl)
-  File "C:\Users\Administrator\flashinfer\flashinfer\norm\__init__.py", line 145, in _rmsnorm_impl
-    get_norm_module().rmsnorm(out, input, weight, eps, enable_pdl)
-    ^^^^^^^^^^^^^^^^^
-  File "C:\Users\Administrator\flashinfer\flashinfer\norm\__init__.py", line 67, in get_norm_module
-    return gen_norm_module().build_and_load()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Administrator\flashinfer\flashinfer\jit\core.py", line 327, in build_and_load
-    self.build(verbose, need_lock=False)
-  File "C:\Users\Administrator\flashinfer\flashinfer\jit\core.py", line 313, in build
-    run_ninja(self.build_dir, self.ninja_path, verbose)
-  File "C:\Users\Administrator\flashinfer\flashinfer\jit\cpp_ext.py", line 513, in run_ninja
-    raise RuntimeError(msg) from e
-RuntimeError: Ninja build failed.
-[FAIL] rmsnorm invocation
----- exit=2 ----
+[OK] rmsnorm produced (4, 128) tensor in 24.72s
+     (first call includes JIT compile; subsequent calls are fast)
+
+==> Second invocation (cache hit)
+[OK] second call: 0.00 ms
+
+All smoke tests passed.
+---- exit=0 ----
