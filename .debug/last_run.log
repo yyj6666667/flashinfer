@@ -1,53 +1,16 @@
 ================================================================
-timestamp: 2026-04-19 14:15:42 +08:00
+timestamp: 2026-04-19 15:43:50 +08:00
 host:      DESKTOP-N7CIHDI
 cwd:       C:\Users\Administrator\flashinfer
-cmd:       pytest tests\utils\test_norm.py -x
+cmd:       pytest tests\gemm\test_fp8_gemm.py -x -k small
 ----------------------------------------------------------------
+ERROR: file or directory not found: tests\gemm\test_fp8_gemm.py
 ============================= test session starts =============================
 platform win32 -- Python 3.12.8, pytest-9.0.3, pluggy-1.6.0
+System.Management.Automation.RemoteException
 rootdir: C:\Users\Administrator\flashinfer
 configfile: pytest.ini
-collected 2710 items
+collected 0 items
 
-tests\utils\test_norm.py sssssssssssssssssssssssssssssssssssssssssssssss [  1%]
-sssssssssssssssss....................................................... [  4%]
-.........sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [  7%]
-s................................................................sssssss [  9%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 12%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 15%]
-sssssssssssssssssssssssssssssssssssssssss............................... [ 17%]
-........................................................................ [ 20%]
-........................................................................ [ 22%]
-.................sssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 25%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 28%]
-sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss....... [ 30%]
-........................................................................ [ 33%]
-........................................................................ [ 36%]
-.........................................sssssssssssssssssssssssssssssss [ 38%]
-sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss....... [ 41%]
-........................................................................ [ 44%]
-.................sssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 46%]
-sssssssssssssssssssssssssssssssssssssssss............................... [ 49%]
-.................................................................sssssss [ 52%]
-sssssssssssssssssssssssss................................sssssssssssssss [ 54%]
-sssssssssssssssss................................sssssssssssssssssssssss [ 57%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 60%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 62%]
-sssssssssssssssssssssssss............................................... [ 65%]
-........................................................................ [ 68%]
-........................................................................ [ 70%]
-.sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 73%]
-ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 76%]
-sssssssssssssssssssssssssssssssssssssssssssssssss....................... [ 78%]
-........................................................................ [ 81%]
-........................................................................ [ 84%]
-.........................sssssssssssssssssssssssssssssssssssssssssssssss [ 86%]
-sssssssssssssssss....................................................... [ 89%]
-.........sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 92%]
-s................................................................sssssss [ 94%]
-sssssssssssssssssssssssss................................sssssssssssssss [ 97%]
-sssssssssssssssss......................................................  [100%]
-
-================ 1366 passed, 1344 skipped in 73.34s (0:01:13) ================
----- exit=0 ----
+============================ no tests ran in 0.01s ============================
+---- exit=4 ----
