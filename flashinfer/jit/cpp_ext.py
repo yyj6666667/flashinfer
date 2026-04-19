@@ -71,22 +71,36 @@ def _get_glibcxx_abi_build_flags() -> List[str]:
 
 
 def _define_flag(macro: str) -> str:
-    """Return a compiler-specific preprocessor define flag (``-D`` vs ``/D``)."""
-    return f"/D{macro}" if IS_WINDOWS else f"-D{macro}"
+    """Return a compiler-specific preprocessor define flag.
+
+    On Windows we emit unix-style ``-D`` (not MSVC-style ``/D``) because
+    nvcc 12.6 on Windows mis-parses commands that contain ``/D<name>=<value>``
+    and raises a misleading::
+
+        nvcc fatal : A single input file is required for a non-link phase
+                     when an outputfile is specified
+
+    Both cl.exe (via nvcc host forwarding) and nvcc itself accept ``-D``,
+    so switching to unix-style is the safe universal form.
+    """
+    return f"-D{macro}"
 
 
 def _include_flag(path) -> str:
-    """Return a compiler-specific include directive."""
+    """Return a compiler-specific include directive.
+
+    Emits ``-I<path>`` on both platforms for the same reason as
+    ``_define_flag``: nvcc 12.6 on Windows mis-parses ``/I<path>`` in
+    combination with the rest of our argv and aborts. cl.exe accepts ``-I``
+    equivalently to ``/I``, so this is a safe universal form.
+    """
     if IS_WINDOWS:
-        # MSVC has no ``-isystem`` equivalent that suppresses warnings without
-        # /external:I (which requires recent compilers); we fall back to /I and
-        # rely on /external:W0 if the user opts in via FLASHINFER_EXTRA_CFLAGS.
-        return f"/I{path}"
+        return f"-I{path}"
     return f"-isystem {path}"
 
 
 def _user_include_flag(path) -> str:
-    return f"/I{path}" if IS_WINDOWS else f"-I{path}"
+    return f"-I{path}"
 
 
 @functools.cache
