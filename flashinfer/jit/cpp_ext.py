@@ -368,8 +368,19 @@ def generate_ninja_build_for_op(
     if IS_WINDOWS:
         # MSVC writes dependency info to stderr via /showIncludes; ninja's
         # ``deps = msvc`` mode parses that stream. No depfile is produced.
-        # nvcc on Windows likewise forwards /showIncludes through the host
-        # compiler.
+        #
+        # NOTE: cuda_compile intentionally does NOT set deps=msvc or forward
+        # /showIncludes via -Xcompiler. Empirically, on CUDA 12.6 Windows
+        # nvcc, having -Xcompiler=/showIncludes in the argv mis-sets its
+        # parser state so that any following /-prefixed token (/DPy_LIMITED_API,
+        # /I<path>, ...) is mis-classified, and the build fails with the
+        # misleading fatal:
+        #   "A single input file is required for a non-link phase when an
+        #    outputfile is specified"
+        # JIT cache invalidation happens at the JitSpec hash level, so we do
+        # not need ninja-level incremental dep tracking for .cu inputs.
+        # The host .cpp rule still uses /showIncludes because cl.exe accepts
+        # it directly and is not subject to the nvcc parser quirk.
         lines += [
             "msvc_deps_prefix = Note: including file:",
             "",
@@ -378,8 +389,7 @@ def generate_ninja_build_for_op(
             "  deps = msvc",
             "",
             "rule cuda_compile",
-            "  command = $nvcc $cuda_cflags -Xcompiler=/showIncludes -c $in -o $out $cuda_post_cflags",
-            "  deps = msvc",
+            "  command = $nvcc $cuda_cflags -c $in -o $out $cuda_post_cflags",
             "",
         ]
     else:
