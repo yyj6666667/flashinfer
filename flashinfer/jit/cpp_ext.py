@@ -323,6 +323,14 @@ def _build_link_flags(cuda_home: str) -> List[str]:
             # rendered into the ninja file as an absolute path.
             ldflags.append(f"/LIBPATH:{d}")
         ldflags += ["cudart.lib", "cuda.lib"]
+        # tvm_ffi ships its own Windows import library; without linking
+        # against it the final DLL's link step fails with LNK2019 on every
+        # __imp_TVMFFI* symbol referenced from the generated bindings.
+        # On Linux the equivalent dlopen/lazy-resolve path does not need
+        # an explicit link-time reference.
+        implib = tvm_ffi.libinfo.find_windows_implib()
+        ldflags.append(f"/LIBPATH:{os.path.dirname(implib)}")
+        ldflags.append(os.path.basename(implib))
         return ldflags
 
     return [
