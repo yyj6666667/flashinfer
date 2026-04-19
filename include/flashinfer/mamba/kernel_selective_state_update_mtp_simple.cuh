@@ -37,27 +37,27 @@ template <typename input_t, typename weight_t, typename matrixA_t, typename stat
           int ROWS_PER_BLOCK, int PHILOX_ROUNDS, int numWarps>
 __global__ void selective_state_update_kernel_simple_mtp(SelectiveStateMTPParams params) {
   constexpr bool scaleState = !std::is_same_v<state_scale_t, void>;
-  auto* __restrict__ output = reinterpret_cast<input_t*>(params.output);
-  auto* __restrict__ state = reinterpret_cast<state_t*>(params.state);
-  auto* __restrict__ intermediate_states = reinterpret_cast<state_t*>(params.intermediate_states);
+  auto*  output = reinterpret_cast<input_t*>(params.output);
+  auto*  state = reinterpret_cast<state_t*>(params.state);
+  auto*  intermediate_states = reinterpret_cast<state_t*>(params.intermediate_states);
 
-  auto const* __restrict__ x = reinterpret_cast<input_t const*>(params.x);
-  auto const* __restrict__ dt = reinterpret_cast<weight_t const*>(params.dt);
-  auto const* __restrict__ A = reinterpret_cast<matrixA_t const*>(params.A);
-  auto const* __restrict__ B = reinterpret_cast<input_t const*>(params.B);
-  auto const* __restrict__ C = reinterpret_cast<input_t const*>(params.C);
-  auto const* __restrict__ D = reinterpret_cast<weight_t const*>(params.D);
-  auto const* __restrict__ dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
-  auto const* __restrict__ z = reinterpret_cast<input_t const*>(params.z);
-  auto const* __restrict__ state_batch_indices =
+  auto const*  x = reinterpret_cast<input_t const*>(params.x);
+  auto const*  dt = reinterpret_cast<weight_t const*>(params.dt);
+  auto const*  A = reinterpret_cast<matrixA_t const*>(params.A);
+  auto const*  B = reinterpret_cast<input_t const*>(params.B);
+  auto const*  C = reinterpret_cast<input_t const*>(params.C);
+  auto const*  D = reinterpret_cast<weight_t const*>(params.D);
+  auto const*  dt_bias = reinterpret_cast<weight_t const*>(params.dt_bias);
+  auto const*  z = reinterpret_cast<input_t const*>(params.z);
+  auto const*  state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.state_batch_indices);
-  auto const* __restrict__ intermediate_state_indices =
+  auto const*  intermediate_state_indices =
       reinterpret_cast<stateIndex_t const*>(params.intermediate_state_indices);
-  auto const* __restrict__ cu_seqlens =
+  auto const*  cu_seqlens =
       reinterpret_cast<cuSeqlensIndex_t const*>(params.cu_seqlens);
-  auto const* __restrict__ num_accepted_tokens =
+  auto const*  num_accepted_tokens =
       reinterpret_cast<numAcceptedIndex_t const*>(params.num_accepted_tokens);
-  auto const* __restrict__ dst_state_batch_indices =
+  auto const*  dst_state_batch_indices =
       reinterpret_cast<stateIndex_t const*>(params.dst_state_batch_indices);
   bool const dt_softplus = params.dt_softplus;
 
@@ -91,7 +91,7 @@ __global__ void selective_state_update_kernel_simple_mtp(SelectiveStateMTPParams
   }
 
   // State scale pointer (only used when scaleState == true)
-  [[maybe_unused]] auto* __restrict__ state_scale =
+  [[maybe_unused]] auto*  state_scale =
       reinterpret_cast<state_scale_t*>(params.state_scale);
 
   // Load device-side Philox seed once into a register

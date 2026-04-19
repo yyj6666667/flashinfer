@@ -42,9 +42,9 @@ using cp_async::SharedMemFillMode;
  * \note Both s_a and s_b are logsumexp values with base 2.
  */
 template <uint32_t vec_size, typename DTypeIn, typename DTypeO>
-__global__ void MergeStateKernel(DTypeIn* __restrict__ v_a, float* __restrict__ s_a,
-                                 DTypeIn* __restrict__ v_b, float* __restrict__ s_b,
-                                 DTypeO* __restrict__ v_merged, float* __restrict__ s_merged,
+__global__ void MergeStateKernel(DTypeIn*  v_a, float*  s_a,
+                                 DTypeIn*  v_b, float*  s_b,
+                                 DTypeO*  v_merged, float*  s_merged,
                                  uint32_t num_heads, uint32_t head_dim) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
   uint32_t pos = blockIdx.x;
@@ -84,9 +84,9 @@ __global__ void MergeStateKernel(DTypeIn* __restrict__ v_a, float* __restrict__ 
  * \note Both s and s_other are logsumexp values with base 2.
  */
 template <uint32_t vec_size, typename DType>
-__global__ void MergeStateInPlaceKernel(DType* __restrict__ v, float* __restrict__ s,
-                                        DType* __restrict__ v_other, float* __restrict__ s_other,
-                                        uint8_t* __restrict__ mask, uint32_t num_heads,
+__global__ void MergeStateInPlaceKernel(DType*  v, float*  s,
+                                        DType*  v_other, float*  s_other,
+                                        uint8_t*  mask, uint32_t num_heads,
                                         uint32_t head_dim) {
   uint32_t pos = blockIdx.x;
 
@@ -174,7 +174,7 @@ __device__ __forceinline__ void threadblock_sum(vec_t<float, vec_size>& v, DType
 }
 
 template <uint32_t vec_size, typename DTypeIn, typename DTypeO>
-__global__ void AttentionSumKernel(DTypeIn* __restrict__ V, DTypeO* __restrict__ v_sum,
+__global__ void AttentionSumKernel(DTypeIn*  V, DTypeO*  v_sum,
                                    uint32_t num_index_sets, uint32_t num_heads, uint32_t head_dim) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
   uint32_t pos = blockIdx.x;
@@ -211,8 +211,8 @@ __global__ void AttentionSumKernel(DTypeIn* __restrict__ V, DTypeO* __restrict__
 }
 
 template <uint32_t vec_size, typename DTypeIn, typename DTypeO>
-__global__ void MergeStatesKernel(DTypeIn* __restrict__ V, float* __restrict__ S,
-                                  DTypeO* __restrict__ v_merged, float* __restrict__ s_merged,
+__global__ void MergeStatesKernel(DTypeIn*  V, float*  S,
+                                  DTypeO*  v_merged, float*  s_merged,
                                   uint32_t num_index_sets, uint32_t num_heads, uint32_t head_dim) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
   uint32_t pos = blockIdx.x;
@@ -274,9 +274,9 @@ __global__ void MergeStatesKernel(DTypeIn* __restrict__ V, float* __restrict__ S
  */
 template <uint32_t vec_size, uint32_t bdx, uint32_t bdy, uint32_t num_smem_stages, typename DTypeIn,
           typename DTypeO>
-__global__ void MergeStatesLargeNumIndexSetsKernel(DTypeIn* __restrict__ V, float* __restrict__ S,
-                                                   DTypeO* __restrict__ v_merged,
-                                                   float* __restrict__ s_merged,
+__global__ void MergeStatesLargeNumIndexSetsKernel(DTypeIn*  V, float*  S,
+                                                   DTypeO*  v_merged,
+                                                   float*  s_merged,
                                                    uint32_t num_index_sets, uint32_t num_heads) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
   uint32_t pos = blockIdx.x;
@@ -366,8 +366,8 @@ __global__ void MergeStatesLargeNumIndexSetsKernel(DTypeIn* __restrict__ V, floa
 template <uint32_t vec_size, uint32_t bdx, uint32_t bdy, uint32_t num_smem_stages, typename DTypeIn,
           typename DTypeO, typename IdType>
 __global__ void PersistentVariableLengthMergeStatesKernel(
-    DTypeIn* __restrict__ V, float* __restrict__ S, IdType* indptr, DTypeO* __restrict__ v_merged,
-    float* __restrict__ s_merged, uint32_t max_seq_len, uint32_t* __restrict__ seq_len_ptr,
+    DTypeIn*  V, float*  S, IdType* indptr, DTypeO*  v_merged,
+    float*  s_merged, uint32_t max_seq_len, uint32_t*  seq_len_ptr,
     uint32_t num_heads) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
   uint32_t cta_id = blockIdx.x;
@@ -468,10 +468,10 @@ __global__ void PersistentVariableLengthMergeStatesKernel(
 
 template <uint32_t vec_size, uint32_t bdx, uint32_t bdy, uint32_t num_smem_stages, typename DTypeIn,
           typename DTypeO, typename IdType>
-__global__ void PersistentVariableLengthAttentionSumKernel(DTypeIn* __restrict__ V, IdType* indptr,
-                                                           DTypeO* __restrict__ v_sum,
+__global__ void PersistentVariableLengthAttentionSumKernel(DTypeIn*  V, IdType* indptr,
+                                                           DTypeO*  v_sum,
                                                            uint32_t max_seq_len,
-                                                           uint32_t* __restrict__ seq_len_ptr,
+                                                           uint32_t*  seq_len_ptr,
                                                            uint32_t num_heads) {
   uint32_t tx = threadIdx.x, ty = threadIdx.y;
   uint32_t cta_id = blockIdx.x;

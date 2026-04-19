@@ -35,7 +35,7 @@ using namespace tensorrt_llm::common;
 
 template <uint32_t VEC_SIZE, typename T>
 __global__ void __launch_bounds__(1024)
-    RMSNormKernel(T* __restrict__ input, T* __restrict__ weight, T* __restrict__ output,
+    RMSNormKernel(T*  input, T*  weight, T*  output,
                   const uint32_t d, const uint32_t stride_input,
                   const uint32_t stride_output, float weight_bias, float eps) {
   const uint32_t bx = blockIdx.x;
@@ -147,8 +147,8 @@ cudaError_t RMSNorm(T* input, T* weight, T* output, uint32_t batch_size, uint32_
 }
 
 template <uint32_t VEC_SIZE, typename T, typename O>
-__global__ void RMSNormQuantKernel(T* __restrict__ input, T* __restrict__ weight,
-                                   O* __restrict__ output, const uint32_t d,
+__global__ void RMSNormQuantKernel(T*  input, T*  weight,
+                                   O*  output, const uint32_t d,
                                    const uint32_t stride_input, const uint32_t stride_output,
                                    float weight_bias, float* scale, float eps) {
   const uint32_t bx = blockIdx.x;
@@ -262,8 +262,8 @@ cudaError_t RMSNormQuant(T* input, T* weight, O* output, uint32_t batch_size, ui
 }
 
 template <uint32_t VEC_SIZE, typename T>
-__global__ void QKRMSNormKernel(T* __restrict__ input, T* __restrict__ weight,
-                                T* __restrict__ output, const uint32_t d, const uint32_t batch_size,
+__global__ void QKRMSNormKernel(T*  input, T*  weight,
+                                T*  output, const uint32_t d, const uint32_t batch_size,
                                 const uint32_t num_heads, const uint32_t stride_input_n,
                                 const uint32_t stride_input_h, const uint32_t stride_output_n,
                                 const uint32_t stride_output_h, float weight_bias, float eps) {
@@ -385,8 +385,8 @@ cudaError_t QKRMSNorm(T* input, T* weight, T* output, uint32_t batch_size, uint3
 }
 
 template <uint32_t VEC_SIZE, typename T>
-__global__ void FusedAddRMSNormKernel(T* __restrict__ input, T* __restrict__ residual,
-                                      T* __restrict__ weight, const uint32_t d,
+__global__ void FusedAddRMSNormKernel(T*  input, T*  residual,
+                                      T*  weight, const uint32_t d,
                                       const uint32_t stride_input, const uint32_t stride_residual,
                                       float weight_bias, float eps) {
   const uint32_t bx = blockIdx.x;
@@ -515,8 +515,8 @@ cudaError_t FusedAddRMSNorm(T* input, T* residual, T* weight, uint32_t batch_siz
 }
 
 template <uint32_t VEC_SIZE, typename T, typename O>
-__global__ void FusedAddRMSNormQuantKernel(T* __restrict__ input, T* __restrict__ residual,
-                                           T* __restrict__ weight, O* __restrict__ output,
+__global__ void FusedAddRMSNormQuantKernel(T*  input, T*  residual,
+                                           T*  weight, O*  output,
                                            const uint32_t d, const uint32_t stride_input,
                                            const uint32_t stride_residual,
                                            const uint32_t stride_output, float weight_bias,

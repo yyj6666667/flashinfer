@@ -292,8 +292,8 @@ __device__ __forceinline__ void scale_store_partial_chunk(const DType* in_ptr, Q
 template <bool interleave, uint32_t head_dim, uint32_t vec_size, uint32_t bdx, typename DType,
           typename IdType>
 __global__ void BatchQKApplyRotaryPosIdsCosSinCacheHeadParallelismKernel(
-    DType* q, DType* k, DType* q_rope, DType* k_rope, float* __restrict__ cos_sin_cache,
-    IdType* __restrict__ pos_ids, uint32_t nnz, uint32_t num_qo_heads, uint32_t num_kv_heads,
+    DType* q, DType* k, DType* q_rope, DType* k_rope, float*  cos_sin_cache,
+    IdType*  pos_ids, uint32_t nnz, uint32_t num_qo_heads, uint32_t num_kv_heads,
     uint32_t rotary_dim, size_t q_stride_n, size_t q_stride_h, size_t k_stride_n, size_t k_stride_h,
     size_t q_rope_stride_n, size_t q_rope_stride_h, size_t k_rope_stride_n,
     size_t k_rope_stride_h) {
@@ -359,8 +359,8 @@ __global__ void BatchQKApplyRotaryPosIdsCosSinCacheHeadParallelismKernel(
 template <bool interleave, uint32_t head_dim, uint32_t vec_size, uint32_t bdx, typename DType,
           typename IdType>
 __global__ void BatchQKApplyRotaryPosIdsCosSinCacheKernel(
-    DType* q, DType* k, DType* q_rope, DType* k_rope, float* __restrict__ cos_sin_cache,
-    IdType* __restrict__ pos_ids, uint32_t nnz, uint32_t num_qo_heads, uint32_t num_kv_heads,
+    DType* q, DType* k, DType* q_rope, DType* k_rope, float*  cos_sin_cache,
+    IdType*  pos_ids, uint32_t nnz, uint32_t num_qo_heads, uint32_t num_kv_heads,
     uint32_t rotary_dim, size_t q_stride_n, size_t q_stride_h, size_t k_stride_n, size_t k_stride_h,
     size_t q_rope_stride_n, size_t q_rope_stride_h, size_t k_rope_stride_n,
     size_t k_rope_stride_h) {
@@ -429,7 +429,7 @@ template <bool interleave, uint32_t vec_size, uint32_t bdx, typename DType, type
 __global__ void RopeQuantizeKernel(
     DType* q_rope_in, DType* k_rope_in, DType* q_nope_in, DType* k_nope_in, QuantType* q_rope_out,
     QuantType* k_rope_out, QuantType* q_nope_out, QuantType* k_nope_out,
-    float* __restrict__ cos_sin_cache, IdType* __restrict__ pos_ids, uint32_t nnz,
+    float*  cos_sin_cache, IdType*  pos_ids, uint32_t nnz,
     uint32_t num_qo_heads, uint32_t num_kv_heads, uint32_t rope_dim, uint32_t no_rope_dim,
     size_t q_rope_in_stride_n, size_t q_rope_in_stride_h, size_t q_nope_in_stride_n,
     size_t q_nope_in_stride_h, size_t q_rope_out_stride_n, size_t q_rope_out_stride_h,
@@ -577,7 +577,7 @@ __global__ void RopeQuantizeKernel(
 template <bool interleave, uint32_t head_dim, uint32_t vec_size, uint32_t bdx, typename DType,
           typename IdType>
 __global__ void BatchQKApplyRotaryPosIdsHeadParallelismKernel(
-    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType* __restrict__ pos_ids, uint32_t nnz,
+    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType*  pos_ids, uint32_t nnz,
     uint32_t num_qo_heads, uint32_t num_kv_heads, uint32_t rotary_dim, size_t q_stride_n,
     size_t q_stride_h, size_t k_stride_n, size_t k_stride_h, size_t q_rope_stride_n,
     size_t q_rope_stride_h, size_t k_rope_stride_n, size_t k_rope_stride_h, float smooth_a,
@@ -648,7 +648,7 @@ __global__ void BatchQKApplyRotaryPosIdsHeadParallelismKernel(
 template <bool interleave, uint32_t head_dim, uint32_t vec_size, uint32_t bdx, typename DType,
           typename IdType>
 __global__ void BatchQKApplyRotaryPosIdsKernel(
-    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType* __restrict__ pos_ids, uint32_t nnz,
+    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType*  pos_ids, uint32_t nnz,
     uint32_t num_qo_heads, uint32_t num_kv_heads, uint32_t rotary_dim, size_t q_stride_n,
     size_t q_stride_h, size_t k_stride_n, size_t k_stride_h, size_t q_rope_stride_n,
     size_t q_rope_stride_h, size_t k_rope_stride_n, size_t k_rope_stride_h, float smooth_a,
@@ -720,8 +720,8 @@ __global__ void BatchQKApplyRotaryPosIdsKernel(
 template <bool interleave, uint32_t head_dim, uint32_t vec_size, uint32_t bdx, typename DType,
           typename IdType>
 __global__ void BatchQKApplyRotaryKernel(
-    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType* __restrict__ indptr,
-    IdType* __restrict__ offsets, uint32_t batch_size, uint32_t num_qo_heads, uint32_t num_kv_heads,
+    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType*  indptr,
+    IdType*  offsets, uint32_t batch_size, uint32_t num_qo_heads, uint32_t num_kv_heads,
     uint32_t rotary_dim, size_t q_stride_n, size_t q_stride_h, size_t k_stride_n, size_t k_stride_h,
     size_t q_rope_stride_n, size_t q_rope_stride_h, size_t k_rope_stride_n, size_t k_rope_stride_h,
     float smooth_a, float smooth_b, float rope_rcp_scale, float rope_rcp_theta) {
@@ -808,8 +808,8 @@ template <bool interleave, uint32_t vec_size, uint32_t bdx, typename DType, type
 __global__ void RopeQuantizeAppendPagedKVCacheKernel(
     DType* q_rope_in, DType* k_rope_in, DType* q_nope_in, DType* k_nope_in, DType* v_in,
     QuantType* q_rope_out, QuantType* q_nope_out, CacheT paged_kv_like,
-    PagedKVIdType* __restrict__ batch_indices, PagedKVIdType* __restrict__ positions,
-    float* __restrict__ cos_sin_cache, RoPEIdType* __restrict__ pos_ids,
+    PagedKVIdType*  batch_indices, PagedKVIdType*  positions,
+    float*  cos_sin_cache, RoPEIdType*  pos_ids,
     const RopeQuantizeAppendPagedKVCacheParams params) {
 #if (__CUDACC_VER_MAJOR__ >= 12 && defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 900))
   asm volatile("griddepcontrol.wait;");
@@ -1389,7 +1389,7 @@ cudaError_t BatchQKApplyRotaryPosIdsCosSinCache(
 
 template <typename DType, typename IdType>
 cudaError_t BatchQKApplyRotaryPosIds(
-    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType* __restrict__ pos_ids, uint32_t nnz,
+    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType*  pos_ids, uint32_t nnz,
     uint32_t num_qo_heads, uint32_t num_kv_heads, uint32_t rotary_dim, uint32_t head_dim,
     size_t q_stride_n, size_t q_stride_h, size_t k_stride_n, size_t k_stride_h,
     size_t q_rope_stride_n, size_t q_rope_stride_h, size_t k_rope_stride_n, size_t k_rope_stride_h,
@@ -1460,7 +1460,7 @@ cudaError_t BatchQKApplyRotaryPosIds(
 
 template <typename DType, typename IdType>
 cudaError_t BatchQKApplyRotary(DType* q, DType* k, DType* q_rope, DType* k_rope,
-                               IdType* __restrict__ indptr, IdType* __restrict__ offsets,
+                               IdType*  indptr, IdType*  offsets,
                                uint32_t batch_size, uint32_t num_qo_heads, uint32_t num_kv_heads,
                                uint32_t rotary_dim, uint32_t head_dim, size_t q_stride_n,
                                size_t q_stride_h, size_t k_stride_n, size_t k_stride_h,
@@ -1511,8 +1511,8 @@ cudaError_t BatchQKApplyRotary(DType* q, DType* k, DType* q_rope, DType* k_rope,
 }
 
 template <typename DType, typename IdType>
-cudaError_t BatchQKApplyRotaryInPlace(DType* __restrict__ q, DType* __restrict__ k,
-                                      IdType* __restrict__ indptr, IdType* __restrict__ offsets,
+cudaError_t BatchQKApplyRotaryInPlace(DType*  q, DType*  k,
+                                      IdType*  indptr, IdType*  offsets,
                                       uint32_t batch_size, uint32_t num_qo_heads,
                                       uint32_t num_kv_heads, uint32_t rotary_dim, uint32_t head_dim,
                                       size_t q_stride_n, size_t q_stride_h, size_t k_stride_n,
@@ -1526,8 +1526,8 @@ cudaError_t BatchQKApplyRotaryInPlace(DType* __restrict__ q, DType* __restrict__
 
 template <typename DType, typename IdType>
 cudaError_t BatchQKApplyLlama31Rotary(
-    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType* __restrict__ indptr,
-    IdType* __restrict__ offsets, uint32_t batch_size, uint32_t num_qo_heads, uint32_t num_kv_heads,
+    DType* q, DType* k, DType* q_rope, DType* k_rope, IdType*  indptr,
+    IdType*  offsets, uint32_t batch_size, uint32_t num_qo_heads, uint32_t num_kv_heads,
     uint32_t rotary_dim, uint32_t head_dim, size_t q_stride_n, size_t q_stride_h, size_t k_stride_n,
     size_t k_stride_h, size_t q_rope_stride_n, size_t q_rope_stride_h, size_t k_rope_stride_n,
     size_t k_rope_stride_h, bool interleave, float rope_scale, float rope_theta,
