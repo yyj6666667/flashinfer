@@ -109,8 +109,34 @@ foreach ($key in $groups.Keys) {
 if (-not $firstFail) {
     Log ""
     Log "*** ALL GROUPS PASSED (bug did not reproduce on minimal source) ***"
-    Log "    Implication: the failure is specific to the real .cu source,"
-    Log "    not to the flag set. Next step: reproduce on csrc/norm.cu."
+    Log "    Flag set is innocent; the failure must be in something else."
+    Log "    Next: replay the full flag set but with an output path whose"
+    Log "    directory components contain dots (mirrors 0.6.7 in real cache)."
+    Log ""
+
+    $dotDir = Join-Path $TmpDir '0.6.7\89\cached_ops\norm'
+    New-Item -ItemType Directory -Force -Path $dotDir | Out-Null
+    $dotObj = Join-Path $dotDir 't.cuda.obj'
+    $argv = @($cum + @('-c', $SrcFile, '-o', $dotObj))
+
+    Log "=== Try: L_dots_in_outpath ==="
+    Log ("  argv: " + ($argv -join ' '))
+    $out = & $nvcc @argv 2>&1
+    $ec  = $LASTEXITCODE
+    if ($out) {
+        (($out | Out-String).TrimEnd()).Split("`n") | ForEach-Object { Log ("    " + $_) }
+    }
+    Log "  => exit=$ec"
+    if ($ec -ne 0) {
+        $firstFail = 'L_dots_in_outpath'
+        Log ""
+        Log "*** CONFIRMED: nvcc chokes on output path whose directory segment"
+        Log "    contains dots (e.g. '0.6.7'). This is the real root cause."
+    } else {
+        Log ""
+        Log "*** L_dots_in_outpath PASSED. Root cause is elsewhere (maybe"
+        Log "    specific to the real norm.cu source). Next hypothesis needed."
+    }
 }
 
 # --- Write UTF-8 without BOM so Linux tooling reads it directly ---
