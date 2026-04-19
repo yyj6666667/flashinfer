@@ -34,9 +34,10 @@ namespace norm {
 using namespace tensorrt_llm::common;
 
 template <uint32_t VEC_SIZE, typename T>
-__global__ void RMSNormKernel(T* __restrict__ input, T* __restrict__ weight, T* __restrict__ output,
-                              const uint32_t d, const uint32_t stride_input,
-                              const uint32_t stride_output, float weight_bias, float eps) {
+__global__ void __launch_bounds__(1024)
+    RMSNormKernel(T* __restrict__ input, T* __restrict__ weight, T* __restrict__ output,
+                  const uint32_t d, const uint32_t stride_input,
+                  const uint32_t stride_output, float weight_bias, float eps) {
   const uint32_t bx = blockIdx.x;
   const uint32_t tx = threadIdx.x, ty = threadIdx.y;
   constexpr uint32_t warp_size = 32;
