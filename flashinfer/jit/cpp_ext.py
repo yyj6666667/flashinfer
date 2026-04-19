@@ -270,14 +270,19 @@ def build_cuda_cflags(
             "-Xcompiler=/EHsc",
             "-Xcompiler=/MD",
             "-Xcompiler=/bigobj",
-            # Host-side only: MSVC accepts __restrict (no trailing underscore)
-            # but not __restrict__. Alias the token in the cl.exe preprocessor
-            # so flashinfer headers that use __restrict__ on host functions
-            # parse cleanly. nvcc's device frontend already accepts both
-            # spellings so device code is unaffected, and Linux is untouched
-            # because this flag is only emitted on Windows.
-            "-Xcompiler=/D__restrict__=__restrict",
         ]
+        # Host-side only: force-include a compat shim via /FI so cl.exe
+        # #undef's and redefines __restrict__ -> __restrict before seeing
+        # any flashinfer header. /D at either nvcc or cl level failed to
+        # rewrite the token (MSVC appears to reserve __restrict__ at a
+        # level that command-line macros can't override); /FI injects a
+        # header at the preprocessor root, which does work. Linux never
+        # adds this flag so Linux source sees __restrict__ unchanged.
+        shim_path = (
+            Path(__file__).resolve().parents[2]
+            / "scripts" / "windows" / "msvc_shim.h"
+        )
+        cuda_cflags.append(f"-Xcompiler=/FI{shim_path}")
         # MSVC accepts __restrict but not __restrict__ (GCC/clang-only
         # spelling). nvcc passes the declarations straight through to
         # cl.exe unchanged, so non-__global__ host functions that use
