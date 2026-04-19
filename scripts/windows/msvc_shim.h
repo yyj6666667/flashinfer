@@ -11,17 +11,12 @@
 
 #pragma once
 
-#if defined(_MSC_VER)
-#  pragma message("FLASHINFER: msvc_shim.h applied")
-#  ifdef __restrict__
-#    pragma message("FLASHINFER: __restrict__ was already a macro, undefing")
-#    undef __restrict__
-#  endif
-// Diagnostic: define as empty. If the host-side parse errors on
-// __restrict__ disappear, then substitution IS happening and the
-// problem is that __restrict (MSVC keyword) is disallowed in template
-// parameter positions. If errors persist, substitution isn't reaching
-// the error site.
-#  define __restrict__
-#  pragma message("FLASHINFER: __restrict__ now defined as EMPTY")
-#endif
+// Windows-only helpers consumed via -Xcompiler=/FI.
+//
+// (Formerly attempted to redefine __restrict__; MSVC reserves the token
+// at a level below the preprocessor — both -D and /FI + #define are
+// silently ignored on it — so that path was abandoned. Source code uses
+// the FI_RESTRICT macro instead, defined in include/flashinfer/_compat.h,
+// which is Linux-token-equivalent.)
+
+#pragma once
