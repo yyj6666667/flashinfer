@@ -482,7 +482,12 @@ def gen_jit_spec(
             "-O0",
             "-G",
             "-lineinfo",
-            "--ptxas-options=-v",
+            # -Xptxas=-v (canonical) rather than --ptxas-options=-v: the latter
+            # form with a dash-prefixed value trips the Windows nvcc argv
+            # parser, which splits "-v" off as a separate token and then
+            # mis-counts inputs, raising "A single input file is required for
+            # a non-link phase when an outputfile is specified".
+            "-Xptxas=-v",
             "-DCUTLASS_DEBUG_TRACE_LEVEL=2",
         ]
     else:
