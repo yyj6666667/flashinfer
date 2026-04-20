@@ -30,24 +30,46 @@ os.makedirs(jit_env.FLASHINFER_WORKSPACE_DIR, exist_ok=True)
 
 
 def _ensure_windows_dll_search_path() -> None:
-    """On Windows, register CUDA's bin directory with the dll search path so
-    that JIT-built DLLs which import ``cublasLt64_12.dll`` / ``cudnn*.dll``
-    etc. can actually resolve their transitive dependencies at load time.
-    Modern Windows LoadLibraryEx no longer searches ``PATH`` by default, so
-    setting ``CUDA_PATH\\bin`` on ``PATH`` from activate.ps1 is not enough.
-    Runs once per process; no-op on Linux."""
+    """On Windows, make sure CUDA's runtime DLLs are reachable when loading a
+    JIT-built module. Modern LoadLibraryEx ignores ``PATH`` for "safe"
+    dependency resolution, so setting ``CUDA_PATH\\bin`` on ``PATH`` is not
+    enough.
+
+    We do two things (both best-effort, runs once per process, no-op on
+    Linux):
+
+      1. ``os.add_dll_directory(CUDA_PATH/bin)`` — helps when the loader
+         uses ``LOAD_LIBRARY_SEARCH_USER_DIRS``.
+      2. Explicitly preload known CUDA runtime DLLs (``cudart*``, ``cublas*``,
+         ``cublasLt*``, ``cudnn*``). Once a DLL is loaded in the process
+         any subsequent ``LoadLibrary`` resolves it by name, regardless of
+         which search flags the caller used.
+    """
     if not IS_WINDOWS:
         return
     if getattr(_ensure_windows_dll_search_path, "_done", False):
         return
+    _ensure_windows_dll_search_path._done = True
     try:
         from .cpp_ext import get_cuda_path
         cuda_bin = Path(get_cuda_path()) / "bin"
-        if cuda_bin.is_dir() and hasattr(os, "add_dll_directory"):
+    except Exception:
+        return
+    if not cuda_bin.is_dir():
+        return
+    if hasattr(os, "add_dll_directory"):
+        try:
             os.add_dll_directory(str(cuda_bin))
-    except Exception:  # pragma: no cover — best-effort only
-        pass
-    _ensure_windows_dll_search_path._done = True
+        except Exception:
+            pass
+    # Preload the runtime libs that JIT modules commonly depend on.
+    import ctypes
+    for pattern in ("cudart64_*.dll", "cublas64_*.dll", "cublasLt64_*.dll"):
+        for dll_path in cuda_bin.glob(pattern):
+            try:
+                ctypes.WinDLL(str(dll_path))
+            except OSError:
+                pass
 
 
 class MissingJITCacheError(RuntimeError):
