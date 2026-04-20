@@ -29,6 +29,7 @@
 #include "utils.cuh"
 #ifndef GENERATE_CUBIN
 #include <cuda_runtime.h>
+#include <string>   // std::stoi — MSVC's <string> is where it is declared
 
 #include "hostUtils.h"
 #ifndef NDEBUG

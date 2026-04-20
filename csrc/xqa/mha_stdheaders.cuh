@@ -34,6 +34,18 @@
 #define HOST_DEVICE_FUNC __host__ __device__
 #define DEVICE_FUNC __device__
 
+// Microsoft's SAL (Source Annotation Language, sal.h) defines __in / __out /
+// __inout as preprocessor macros that expand to annotations. The libstdc++-
+// flavored tuple code below uses __in as a plain parameter name, which gets
+// obliterated by the macro substitution ("_M_tail()" becomes ".M_tail()"
+// and nvcc's host pass errors on the dot. Undef the SAL macros so the
+// tuple code parses. Harmless on Linux where sal.h is absent.
+#if defined(_MSC_VER)
+#undef __in
+#undef __out
+#undef __inout
+#endif
+
 namespace mha {
 
 #ifndef GENERATE_CUBIN
