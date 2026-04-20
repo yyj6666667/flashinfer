@@ -38,12 +38,16 @@ using DecodeParams = BatchPrefillPagedParams<DTypeQ, DTypeKV, DTypeO, IdType>;
             USE_SLIDING_WINDOW_P, USE_SLIDING_WINDOW_D, USE_LOGITS_SOFT_CAP, ...)   \
   DISPATCH_MASK_MODE(mask_mode_p, MASK_MODE_P, {                                    \
     DISPATCH_MASK_MODE(mask_mode_d, MASK_MODE_D, {                                  \
+      static constexpr bool use_custom_mask_p =                                     \
+          (MASK_MODE_P == MaskMode::kCustom);                                       \
+      static constexpr bool use_custom_mask_d =                                     \
+          (MASK_MODE_D == MaskMode::kCustom);                                       \
       using PrefillAttentionVariant =                                               \
-          DefaultAttention<(MASK_MODE_P == MaskMode::kCustom),                      \
+          DefaultAttention</*use_custom_mask=*/use_custom_mask_p,                   \
                            USE_SLIDING_WINDOW_P, USE_LOGITS_SOFT_CAP,               \
                            /*use_alibi_bias=*/false>;                               \
       using DecodeAttentionVariant =                                                \
-          DefaultAttention<(MASK_MODE_D == MaskMode::kCustom),                      \
+          DefaultAttention</*use_custom_mask=*/use_custom_mask_d,                   \
                            USE_SLIDING_WINDOW_D, USE_LOGITS_SOFT_CAP,               \
                            /*use_alibi_bias=*/false>;                               \
       __VA_ARGS__();                                                                \
