@@ -133,10 +133,16 @@ def _gen_module(
             source = f.read()
         write_if_different(dest_path, source)
 
+    # mamba headers (`include/flashinfer/mamba/*.cuh`) use C++20 explicit
+    # lambda template parameters (e.g. `[]<typename T>(T x){...}`), which nvcc
+    # rejects under the default -std=c++17. Bump the language level for this
+    # module (later flags override earlier ones in nvcc).
+    extra = list(extra_cuda_cflags or [])
+    extra.append("-std=c++20")
     return gen_jit_spec(
         uri,
         source_paths,
-        extra_cuda_cflags=extra_cuda_cflags or [],
+        extra_cuda_cflags=extra,
     )
 
 
