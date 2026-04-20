@@ -118,3 +118,11 @@ mla,bf16,D_ckv=512/D_kpe=64/heads=64,batch=32/seq=8192,5266.96,3517.33,1.50,
 # 1) nvcc ICE in CUTLASS: cutlass_fused_moe_kernels.cuh(1565) "could not lookup variable in map!"
 # 2) MSVC CRT C2641 cascade on __vcrt_assert_va_start_is_not_reference in corecrt_wstdio.h
 # Fixed before hitting these: cudaUtils.h C99 designated init, deep_gemm operator keywords via <ciso646>
+packbits,bool,bitorder=big,n=1024,20.74,6.11,3.39,
+packbits,bool,bitorder=little,n=1024,19.68,8.77,2.24,
+packbits,bool,bitorder=big,n=131072,28.22,6.51,4.33,
+packbits,bool,bitorder=little,n=131072,26.06,7.26,3.59,
+packbits,bool,bitorder=big,n=1048576,64.66,9.22,7.02,
+packbits,bool,bitorder=little,n=1048576,64.61,9.25,6.99,
+packbits,bool,bitorder=big,n=16777216,758.14,56.32,13.46,
+packbits,bool,bitorder=little,n=16777216,756.51,56.00,13.51,
