@@ -65,7 +65,23 @@ if (Get-Command cl.exe -ErrorAction SilentlyContinue) {
 }
 
 # -------- CUDA (nvcc.exe) --------
+# Auto-detect the newest CUDA install under Program Files if CUDA_PATH is
+# unset. Users can still pin a specific version by exporting CUDA_PATH
+# before dot-sourcing this script.
 if (-not (Get-Command nvcc.exe -ErrorAction SilentlyContinue)) {
+    if (-not ($env:CUDA_PATH -and (Test-Path (Join-Path $env:CUDA_PATH 'bin\nvcc.exe')))) {
+        $cudaRoot = "$env:ProgramFiles\NVIDIA GPU Computing Toolkit\CUDA"
+        if (Test-Path $cudaRoot) {
+            $latest = Get-ChildItem $cudaRoot -Directory |
+                Where-Object { $_.Name -match '^v(\d+)\.(\d+)$' } |
+                Sort-Object { [version]($_.Name.TrimStart('v')) } -Descending |
+                Select-Object -First 1
+            if ($latest -and (Test-Path (Join-Path $latest.FullName 'bin\nvcc.exe'))) {
+                $env:CUDA_PATH = $latest.FullName
+                _log "auto-detected CUDA_PATH: $env:CUDA_PATH" 'Green'
+            }
+        }
+    }
     if ($env:CUDA_PATH -and (Test-Path (Join-Path $env:CUDA_PATH 'bin\nvcc.exe'))) {
         $env:PATH = "$env:CUDA_PATH\bin;$env:PATH"
         _log "added CUDA_PATH\bin to PATH: $env:CUDA_PATH\bin" 'Green'
