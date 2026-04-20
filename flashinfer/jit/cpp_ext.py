@@ -280,6 +280,8 @@ def build_cuda_cflags(
             # garbage filenames like "\ufffd\u07b7..." that fail with
             #   C1083: cannot open source file: <garbage>: No such file
             "-Xcompiler=/utf-8",
+            # MSVC gates M_PI/M_SQRT1_2/etc. in <math.h> behind this macro.
+            "-D_USE_MATH_DEFINES",
         ]
         # Host-side only: force-include a compat shim via /FI so cl.exe
         # #undef's and redefines __restrict__ -> __restrict before seeing
