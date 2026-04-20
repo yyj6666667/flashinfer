@@ -86,6 +86,24 @@ def _define_flag(macro: str) -> str:
     return f"-D{macro}"
 
 
+def _quote_win_path(path) -> str:
+    """Wrap a path in double quotes on Windows.
+
+    nvcc.exe / cl.exe tokenise argv on whitespace, so unquoted paths like
+    ``C:\\Program Files\\...\\CUDA\\v12.9`` are split into separate tokens
+    (``GPU``, ``Computing``, ...) and nvcc reports the misleading::
+
+        nvcc fatal : A single input file is required for a non-link phase
+
+    Because ninja variables (``$cuda_home``) can expand to space-containing
+    paths after we generate the build.ninja, we cannot reliably detect at
+    generation time whether quoting is required. Quoting unconditionally
+    costs nothing on paths without whitespace. A trailing backslash would
+    escape the closing quote on MSVC's argv parser, so strip it first.
+    """
+    return '"' + str(path).rstrip("\\") + '"'
+
+
 def _include_flag(path) -> str:
     """Return a compiler-specific include directive.
 
@@ -95,11 +113,13 @@ def _include_flag(path) -> str:
     equivalently to ``/I``, so this is a safe universal form.
     """
     if IS_WINDOWS:
-        return f"-I{path}"
+        return f"-I{_quote_win_path(path)}"
     return f"-isystem {path}"
 
 
 def _user_include_flag(path) -> str:
+    if IS_WINDOWS:
+        return f"-I{_quote_win_path(path)}"
     return f"-I{path}"
 
 
@@ -297,7 +317,7 @@ def build_cuda_cflags(
             Path(__file__).resolve().parents[2]
             / "scripts" / "windows" / "msvc_shim.h"
         )
-        cuda_cflags.append(f"-Xcompiler=/FI{shim_path}")
+        cuda_cflags.append(f"-Xcompiler=/FI{_quote_win_path(shim_path)}")
     else:
         cuda_cflags.append("--compiler-options=-fPIC")
     cuda_version = get_cuda_version()
@@ -346,9 +366,9 @@ def _build_link_flags(cuda_home: str) -> List[str]:
     if IS_WINDOWS:
         ldflags = ["/DLL", "/nologo"]
         for d in _cuda_lib_dirs("$cuda_home"):
-            # Avoid backslash-escaped quote handling: $cuda_home is already
-            # rendered into the ninja file as an absolute path.
-            ldflags.append(f"/LIBPATH:{d}")
+            # $cuda_home is rendered into the ninja file as an absolute path
+            # that may contain spaces (``C:\Program Files\...``); quote it.
+            ldflags.append(f"/LIBPATH:{_quote_win_path(d)}")
         ldflags += ["cudart.lib", "cuda.lib"]
         # tvm_ffi ships its own Windows import library; without linking
         # against it the final DLL's link step fails with LNK2019 on every
@@ -356,7 +376,7 @@ def _build_link_flags(cuda_home: str) -> List[str]:
         # On Linux the equivalent dlopen/lazy-resolve path does not need
         # an explicit link-time reference.
         implib = tvm_ffi.libinfo.find_windows_implib()
-        ldflags.append(f"/LIBPATH:{os.path.dirname(implib)}")
+        ldflags.append(f"/LIBPATH:{_quote_win_path(os.path.dirname(implib))}")
         ldflags.append(os.path.basename(implib))
         return ldflags
 
