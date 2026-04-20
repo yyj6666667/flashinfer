@@ -110,15 +110,17 @@ def get_batch_mla_uri(
     head_dim_kpe: int,
     use_profiler: bool,
 ) -> str:
-    return (
-        f"batch_mla_attention_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
-        f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
-        f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
-        f"dtype_idx_{filename_safe_dtype_map[dtype_idx]}_"
-        f"head_dim_ckv_{head_dim_ckv}_"
-        f"head_dim_kpe_{head_dim_kpe}_"
-        f"profiler_{use_profiler}"
-    ) + ("_sm90" if backend == "fa3" else "")
+    return _win_short_uri(
+        (
+            f"batch_mla_attention_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
+            f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
+            f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
+            f"dtype_idx_{filename_safe_dtype_map[dtype_idx]}_"
+            f"head_dim_ckv_{head_dim_ckv}_"
+            f"head_dim_kpe_{head_dim_kpe}_"
+            f"profiler_{use_profiler}"
+        ) + ("_sm90" if backend == "fa3" else "")
+    )
 
 
 def gen_batch_mla_module(
@@ -227,7 +229,7 @@ def get_batch_decode_mla_uri(
     use_logits_soft_cap: bool,
     arc: str,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"batch_decode_mla_with_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
@@ -366,7 +368,7 @@ def get_pod_uri(
     use_sliding_window_d: bool,
     use_logits_soft_cap_d: bool,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"pod_with_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
@@ -420,7 +422,7 @@ def get_batch_prefill_attention_sink_uri(
     pos_encoding_mode: int,
     use_sliding_window: bool,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"batch_prefill_with_attention_sink_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
@@ -442,7 +444,7 @@ def get_batch_attention_uri(
     use_logits_soft_cap: bool,
     use_profiler: bool,
 ) -> str:
-    return (
+    return _win_short_uri(
         f"batch_attention_with_kv_cache_dtype_q_{filename_safe_dtype_map[dtype_q]}_"
         f"dtype_kv_{filename_safe_dtype_map[dtype_kv]}_"
         f"dtype_o_{filename_safe_dtype_map[dtype_o]}_"
