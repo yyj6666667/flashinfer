@@ -84,10 +84,12 @@ def bench_one(batch, qo_len, kv_len, qh, kvh, hd, page_size, dtype, num_iters):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--batches", nargs="+", type=int, default=[1, 8, 32])
-    p.add_argument("--qo-lens", nargs="+", type=int, default=[128, 512])
+    # BatchAttention uses cooperative launch; total blocks per launch must
+    # fit the GPU's SM count simultaneously. Keep the default sizes modest.
+    p.add_argument("--batches", nargs="+", type=int, default=[1, 4])
+    p.add_argument("--qo-lens", nargs="+", type=int, default=[64, 256])
     p.add_argument("--kv-lens", nargs="+", type=int, default=[512, 2048])
-    p.add_argument("--qh", type=int, default=32)
+    p.add_argument("--qh", type=int, default=8)
     p.add_argument("--kvh", type=int, default=8)
     p.add_argument("--hd", type=int, default=128)
     p.add_argument("--page-size", type=int, default=16)
