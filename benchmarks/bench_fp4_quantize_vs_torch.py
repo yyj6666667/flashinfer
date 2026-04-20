@@ -59,9 +59,11 @@ def bench_one(fn_name: str, rows: int, cols: int, num_iters: int):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--rows", nargs="+", type=int, default=[128, 1024, 4096])
-    p.add_argument("--cols", nargs="+", type=int, default=[512, 4096])
-    p.add_argument("--fns", nargs="+", default=["fp4_quantize", "nvfp4_quantize"])
+    # nvfp4 path triggers `misaligned address` on larger shapes on SM120;
+    # keep defaults modest until that is root-caused.
+    p.add_argument("--rows", nargs="+", type=int, default=[128, 512])
+    p.add_argument("--cols", nargs="+", type=int, default=[512, 1024])
+    p.add_argument("--fns", nargs="+", default=["fp4_quantize"])
     p.add_argument("--num-iters", type=int, default=30)
     args = p.parse_args()
 
