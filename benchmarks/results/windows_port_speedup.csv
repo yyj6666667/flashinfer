@@ -181,3 +181,10 @@ concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=128,44.10,43.01,1.03,
 concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=512,136.51,122.46,1.11,
 concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=2048,505.95,454.38,1.11,
 concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=8192,1968.61,1788.66,1.10,
+# pod (SM120): BLOCKED on RTX 5060 / CUDA 12.9.
+# LNK1120 — MSVC reports wrong DefaultAttention<use_custom_mask,...> template arg
+# across nested DISPATCH_MASK_MODE switch cases: the 'static constexpr bool
+# use_custom_mask_p/d' declared inside inner switch-case propagates a stale
+# value so pod.cu emits symbols that don't match the kernel_inst instantiations.
+# Likely MSVC bug with nested switch+constexpr+lambda; no simple macro rewrite
+# works. Fixing it requires refactoring DISPATCH_context into a template helper.
