@@ -305,6 +305,14 @@ def build_cuda_cflags(
             # Stop <windef.h> from defining min/max as macros, which break
             # std::min/std::max in any transitively-included header.
             "-DNOMINMAX",
+            # CUDA 12.9 advertises support up to MSVC 14.40; on boxes with
+            # 14.44+ nvcc otherwise raises an "unsupported compiler" check
+            # before even parsing the file.
+            "-allow-unsupported-compiler",
+            # The newer MSVC STL (14.44 SDK 26100) adds compile-time asserts
+            # that reject the effective _MSC_VER combo. Loosen the check so
+            # vendor headers still compile under nvcc's host pass.
+            "-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH",
         ]
         # Host-side only: force-include a compat shim via /FI so cl.exe
         # #undef's and redefines __restrict__ -> __restrict before seeing
