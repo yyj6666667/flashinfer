@@ -29,6 +29,27 @@ os.makedirs(jit_env.FLASHINFER_WORKSPACE_DIR, exist_ok=True)
 # which may be read-only after installation
 
 
+def _ensure_windows_dll_search_path() -> None:
+    """On Windows, register CUDA's bin directory with the dll search path so
+    that JIT-built DLLs which import ``cublasLt64_12.dll`` / ``cudnn*.dll``
+    etc. can actually resolve their transitive dependencies at load time.
+    Modern Windows LoadLibraryEx no longer searches ``PATH`` by default, so
+    setting ``CUDA_PATH\\bin`` on ``PATH`` from activate.ps1 is not enough.
+    Runs once per process; no-op on Linux."""
+    if not IS_WINDOWS:
+        return
+    if getattr(_ensure_windows_dll_search_path, "_done", False):
+        return
+    try:
+        from .cpp_ext import get_cuda_path
+        cuda_bin = Path(get_cuda_path()) / "bin"
+        if cuda_bin.is_dir() and hasattr(os, "add_dll_directory"):
+            os.add_dll_directory(str(cuda_bin))
+    except Exception:  # pragma: no cover — best-effort only
+        pass
+    _ensure_windows_dll_search_path._done = True
+
+
 class MissingJITCacheError(RuntimeError):
     """
     Exception raised when JIT compilation is disabled and the JIT cache
@@ -313,6 +334,7 @@ class JitSpec:
             run_ninja(self.build_dir, self.ninja_path, verbose)
 
     def load(self, so_path: Path):
+        _ensure_windows_dll_search_path()
         return tvm_ffi.load_module(str(so_path))
 
     def build_and_load(self):
