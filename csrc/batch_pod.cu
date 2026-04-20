@@ -314,14 +314,11 @@ void batch_pod_with_kv_cache_tensor(
           }
         }
 
-        static constexpr bool use_custom_mask_p = (MASK_MODE_P == MaskMode::kCustom);
-        using PrefillAttentionVariant =
-            DefaultAttention</*use_custom_mask=*/use_custom_mask_p, USE_SLIDING_WINDOW_P,
-                             USE_LOGITS_SOFT_CAP, /*use_alibi_bias=*/false>;
-        static constexpr bool use_custom_mask_d = (MASK_MODE_D == MaskMode::kCustom);
-        using DecodeAttentionVariant =
-            DefaultAttention</*use_custom_mask=*/use_custom_mask_d, USE_SLIDING_WINDOW_D,
-                             USE_LOGITS_SOFT_CAP, /*use_alibi_bias=*/false>;
+        // use_custom_mask_p/d and PrefillAttentionVariant/DecodeAttentionVariant
+        // are declared by DISPATCH_context in the enclosing switch-case scope
+        // (moving them out of this [&] lambda is required because MSVC drops
+        // constexpr-ness when a variable is captured by reference, which
+        // breaks use of MASK_MODE_P/D as a template argument).
 
         int dev_id = 0;
         FLASHINFER_CUDA_CALL(cudaGetDevice(&dev_id));

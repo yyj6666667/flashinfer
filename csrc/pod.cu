@@ -255,14 +255,10 @@ void pod_with_kv_cache_tensor(
           }
         }
 
-        static constexpr bool use_custom_mask_p = (MASK_MODE_P == MaskMode::kCustom);
-        using PrefillAttentionVariant =
-            DefaultAttention</*use_custom_mask=*/use_custom_mask_p, USE_SLIDING_WINDOW_P,
-                             USE_LOGITS_SOFT_CAP, /*use_alibi_bias=*/false>;
-        static constexpr bool use_custom_mask_d = (MASK_MODE_D == MaskMode::kCustom);
-        using DecodeAttentionVariant =
-            DefaultAttention</*use_custom_mask=*/use_custom_mask_d, USE_SLIDING_WINDOW_D,
-                             USE_LOGITS_SOFT_CAP, /*use_alibi_bias=*/false>;
+        // use_custom_mask_p/d and PrefillAttentionVariant/DecodeAttentionVariant
+        // are declared in the enclosing switch case by the DISPATCH_context macro
+        // so that constexpr context isn't lost through the [&] lambda capture
+        // (MSVC loses constexpr-ness of captured vars).
         // DISPATCH_CTA_TILE_Q(plan_info.cta_tile_q, CTA_TILE_Q, {
         constexpr size_t CTA_TILE_Q = 16;
         cudaError_t status = flashinfer::PODWithKVCacheTensorDispatched<
