@@ -160,34 +160,34 @@ __global__ void BatchDecodeWithPagedKVCacheKernelMlaCuteSM80(Params params) {
   const uint32_t q_head_idx_start = mapped_batch_idx * num_qo_heads + blockIdx.y * QO_TILE_LEN;
   const uint32_t o_head_idx_start = batch_idx * num_qo_heads + blockIdx.y * QO_TILE_LEN;
 
-  Tensor gmem_q_nope_chunk =
+  cute::Tensor gmem_q_nope_chunk =
       make_tensor(make_gmem_ptr(q_nope_ptr + q_head_idx_start * HEAD_DIM_CKV), LayoutQnope{});
-  Tensor gmem_q_pe_chunk =
+  cute::Tensor gmem_q_pe_chunk =
       make_tensor(make_gmem_ptr(q_pe_ptr + q_head_idx_start * HEAD_DIM_KPE), LayoutQpe{});
-  Tensor gmem_output_chunk =
+  cute::Tensor gmem_output_chunk =
       make_tensor(make_gmem_ptr(output_ptr + o_head_idx_start * HEAD_DIM_CKV), LayoutQo{});
 
   extern __shared__ char smem_data[];
   size_t* ckv_offset_smem = (size_t*)smem_data;
   size_t* kpe_offset_smem = ckv_offset_smem + k_warp_rows * 32;
-  Tensor smem_q_nope = make_tensor(make_smem_ptr((DTypeKV*)(kpe_offset_smem + k_warp_rows * 32)),
+  cute::Tensor smem_q_nope = make_tensor(make_smem_ptr((DTypeKV*)(kpe_offset_smem + k_warp_rows * 32)),
                                    LayoutSwizzleQnope{});
-  Tensor smem_q_pe = make_tensor(
+  cute::Tensor smem_q_pe = make_tensor(
       make_smem_ptr(smem_q_nope.data() + cute::cosize(LayoutSwizzleQnope{})), LayoutSwizzleQpe{});
 
-  Tensor smem_ckv_chunk = make_tensor(
+  cute::Tensor smem_ckv_chunk = make_tensor(
       make_smem_ptr(smem_q_pe.data() + cute::cosize(LayoutSwizzleQpe{})), LayoutSwizzleCkv{});
-  Tensor smem_kpe_chunk = make_tensor(
+  cute::Tensor smem_kpe_chunk = make_tensor(
       make_smem_ptr(smem_ckv_chunk.data() + cute::cosize(LayoutSwizzleCkv{})), LayoutSwizzleKpe{});
 
-  Tensor smem_att = make_tensor(
+  cute::Tensor smem_att = make_tensor(
       make_smem_ptr((float*)(smem_kpe_chunk.data().ptr_ + cute::cosize(LayoutSwizzleKpe{}))),
       LayoutAtt{});
 
   float* ptr_o_scale = (float*)(smem_att.data().ptr_ + cute::cosize(LayoutAtt{}));
-  Tensor smem_o_scale = make_tensor(make_smem_ptr(ptr_o_scale), LayoutOScaleVec{});
+  cute::Tensor smem_o_scale = make_tensor(make_smem_ptr(ptr_o_scale), LayoutOScaleVec{});
   float* ptr_denom = ptr_o_scale + cute::cosize(LayoutOScaleVec{});
-  Tensor smem_denom = make_tensor(make_smem_ptr(ptr_denom), LayoutOScaleVec{});
+  cute::Tensor smem_denom = make_tensor(make_smem_ptr(ptr_denom), LayoutOScaleVec{});
 
   constexpr uint32_t k_thr_g2s_tile_m = k_kv_tile_len;                        // 8
   constexpr uint32_t k_thr_g2s_tile_k = k_warp_rows * 32 / k_thr_g2s_tile_m;  // 16
@@ -198,11 +198,11 @@ __global__ void BatchDecodeWithPagedKVCacheKernelMlaCuteSM80(Params params) {
   const uint32_t thr_k_idx_within_tile = tx / k_thr_g2s_tile_m;
 
   // load q data to smem
-  Tensor gmem_q_nope_chunk_128bit = recast<cute::uint128_t>(gmem_q_nope_chunk);
-  Tensor gmem_q_nope_part_128bit =
+  cute::Tensor gmem_q_nope_chunk_128bit = recast<cute::uint128_t>(gmem_q_nope_chunk);
+  cute::Tensor gmem_q_nope_part_128bit =
       local_partition(gmem_q_nope_chunk_128bit, layout_thr_g2s_tile, tx);
-  Tensor smem_q_nope_128bit = recast<cute::uint128_t>(smem_q_nope);
-  Tensor smem_q_nope_part_128bit = local_partition(smem_q_nope_128bit, layout_thr_g2s_tile, tx);
+  cute::Tensor smem_q_nope_128bit = recast<cute::uint128_t>(smem_q_nope);
+  cute::Tensor smem_q_nope_part_128bit = local_partition(smem_q_nope_128bit, layout_thr_g2s_tile, tx);
   if (tx < k_warp_rows * 32) {
 #pragma unroll
     for (int n = 0; n < size<0>(gmem_q_nope_part_128bit); ++n)
@@ -211,11 +211,11 @@ __global__ void BatchDecodeWithPagedKVCacheKernelMlaCuteSM80(Params params) {
         smem_q_nope_part_128bit(n, k) = gmem_q_nope_part_128bit(n, k);
       }
     if (thr_k_idx_within_tile < (HEAD_DIM_KPE * sizeof(DTypeKV) / sizeof(cute::uint128_t))) {
-      Tensor gmem_q_pe_chunk_128bit = recast<cute::uint128_t>(gmem_q_pe_chunk);
-      Tensor gmem_q_pe_part_128bit =
+      cute::Tensor gmem_q_pe_chunk_128bit = recast<cute::uint128_t>(gmem_q_pe_chunk);
+      cute::Tensor gmem_q_pe_part_128bit =
           local_partition(gmem_q_pe_chunk_128bit, layout_thr_g2s_tile, tx);
-      Tensor smem_q_pe_128bit = recast<cute::uint128_t>(smem_q_pe);
-      Tensor smem_q_pe_part_128bit = local_partition(smem_q_pe_128bit, layout_thr_g2s_tile, tx);
+      cute::Tensor smem_q_pe_128bit = recast<cute::uint128_t>(smem_q_pe);
+      cute::Tensor smem_q_pe_part_128bit = local_partition(smem_q_pe_128bit, layout_thr_g2s_tile, tx);
       static_assert(size<1>(gmem_q_pe_part_128bit) == 1);
 #pragma unroll
       for (int n = 0; n < size<0>(gmem_q_pe_part_128bit); ++n) {
@@ -226,11 +226,11 @@ __global__ void BatchDecodeWithPagedKVCacheKernelMlaCuteSM80(Params params) {
   block.sync();
 
   // initialize variables needed by phase2
-  Tensor smem_ckv_chunk_128bit = recast<cute::uint128_t>(smem_ckv_chunk);
-  Tensor smem_ckv_load_part_128bit =
+  cute::Tensor smem_ckv_chunk_128bit = recast<cute::uint128_t>(smem_ckv_chunk);
+  cute::Tensor smem_ckv_load_part_128bit =
       local_partition(smem_ckv_chunk_128bit, layout_thr_g2s_tile, tx);
-  Tensor smem_kpe_chunk_128bit = recast<cute::uint128_t>(smem_kpe_chunk);
-  Tensor smem_kpe_load_part_128bit =
+  cute::Tensor smem_kpe_chunk_128bit = recast<cute::uint128_t>(smem_kpe_chunk);
+  cute::Tensor smem_kpe_load_part_128bit =
       local_partition(smem_kpe_chunk_128bit, layout_thr_g2s_tile, tx);
 
   constexpr uint32_t k_mma_att_tile_k = 16;
@@ -240,47 +240,47 @@ __global__ void BatchDecodeWithPagedKVCacheKernelMlaCuteSM80(Params params) {
   TiledMmaAtt tiled_mma_att;
   auto thr_mma = tiled_mma_att.get_slice(tx);
 
-  Tensor smem_q_nope_local_tiles = local_tile(
+  cute::Tensor smem_q_nope_local_tiles = local_tile(
       smem_q_nope, make_tile(Int<QO_TILE_LEN>{}, Int<k_mma_att_tile_k>{}), make_coord(_0{}, _));
-  Tensor reg_q_nope_tile_part = thr_mma.partition_fragment_A(smem_q_nope_local_tiles(_, _, 0));
+  cute::Tensor reg_q_nope_tile_part = thr_mma.partition_fragment_A(smem_q_nope_local_tiles(_, _, 0));
 
-  Tensor smem_ckv_local_tiles =
+  cute::Tensor smem_ckv_local_tiles =
       local_tile(smem_ckv_chunk, make_tile(Int<k_kv_tile_len>{}, Int<k_mma_att_tile_k>{}),
                  make_coord(_0{}, _));
-  Tensor reg_ckv_tile_part = thr_mma.partition_fragment_B(smem_ckv_local_tiles(_, _, _0{}, _0{}));
+  cute::Tensor reg_ckv_tile_part = thr_mma.partition_fragment_B(smem_ckv_local_tiles(_, _, _0{}, _0{}));
 
   auto s2r_tiled_copy_a = make_tiled_copy_A(Copy_Atom<SM75_U32x4_LDSM_N, DTypeKV>{}, tiled_mma_att);
   auto s2r_thr_copy_a = s2r_tiled_copy_a.get_slice(tx);
-  Tensor smem_q_nope_tiles_part = s2r_thr_copy_a.partition_S(smem_q_nope_local_tiles);
-  Tensor reg_q_nope_tile_part_view = s2r_thr_copy_a.retile_D(reg_q_nope_tile_part);
+  cute::Tensor smem_q_nope_tiles_part = s2r_thr_copy_a.partition_S(smem_q_nope_local_tiles);
+  cute::Tensor reg_q_nope_tile_part_view = s2r_thr_copy_a.retile_D(reg_q_nope_tile_part);
 
   auto s2r_tiled_copy_b = make_tiled_copy_B(Copy_Atom<SM75_U32x2_LDSM_N, DTypeKV>{}, tiled_mma_att);
   auto s2r_thr_copy_b = s2r_tiled_copy_b.get_slice(tx);
 
-  Tensor smem_ckv_tiles_part = s2r_thr_copy_b.partition_S(smem_ckv_local_tiles);
-  Tensor reg_ckv_tile_part_view = s2r_thr_copy_b.retile_D(reg_ckv_tile_part);
+  cute::Tensor smem_ckv_tiles_part = s2r_thr_copy_b.partition_S(smem_ckv_local_tiles);
+  cute::Tensor reg_ckv_tile_part_view = s2r_thr_copy_b.retile_D(reg_ckv_tile_part);
 
-  Tensor smem_q_pe_local_tiles = local_tile(
+  cute::Tensor smem_q_pe_local_tiles = local_tile(
       smem_q_pe, make_tile(Int<QO_TILE_LEN>{}, Int<k_mma_att_tile_k>{}), make_coord(_0{}, _));
-  Tensor reg_q_pe_tile_part = thr_mma.partition_fragment_A(smem_q_pe_local_tiles(_, _, _0{}));
+  cute::Tensor reg_q_pe_tile_part = thr_mma.partition_fragment_A(smem_q_pe_local_tiles(_, _, _0{}));
 
-  Tensor smem_kpe_local_tiles =
+  cute::Tensor smem_kpe_local_tiles =
       local_tile(smem_kpe_chunk, make_tile(Int<k_kv_tile_len>{}, Int<k_mma_att_tile_k>{}),
                  make_coord(_0{}, _));
-  Tensor reg_kpe_tile_part = thr_mma.partition_fragment_B(smem_kpe_local_tiles(_, _, _0{}, _0{}));
+  cute::Tensor reg_kpe_tile_part = thr_mma.partition_fragment_B(smem_kpe_local_tiles(_, _, _0{}, _0{}));
 
-  Tensor smem_q_pe_tiles_part = s2r_thr_copy_a.partition_S(smem_q_pe_local_tiles);
-  Tensor reg_q_pe_tile_part_view = s2r_thr_copy_a.retile_D(reg_q_pe_tile_part);
+  cute::Tensor smem_q_pe_tiles_part = s2r_thr_copy_a.partition_S(smem_q_pe_local_tiles);
+  cute::Tensor reg_q_pe_tile_part_view = s2r_thr_copy_a.retile_D(reg_q_pe_tile_part);
 
-  Tensor smem_kpe_tiles_part = s2r_thr_copy_b.partition_S(smem_kpe_local_tiles);
-  Tensor reg_kpe_tile_part_view = s2r_thr_copy_b.retile_D(reg_kpe_tile_part);
+  cute::Tensor smem_kpe_tiles_part = s2r_thr_copy_b.partition_S(smem_kpe_local_tiles);
+  cute::Tensor reg_kpe_tile_part_view = s2r_thr_copy_b.retile_D(reg_kpe_tile_part);
 
-  Tensor smem_att_part_c = thr_mma.partition_C(smem_att);
-  Tensor reg_att_part_c = make_fragment_like(smem_att_part_c);
+  cute::Tensor smem_att_part_c = thr_mma.partition_C(smem_att);
+  cute::Tensor reg_att_part_c = make_fragment_like(smem_att_part_c);
 
   using LayoutOScaleMat = Layout<Shape<Int<QO_TILE_LEN>, Int<HEAD_DIM_CKV>>, Stride<_1, _0>>;
-  Tensor o_scale_broadcast_mat = make_tensor((ptr_o_scale), LayoutOScaleMat{});
-  Tensor denom_broadcast_mat = make_tensor(make_smem_ptr(ptr_denom), LayoutOScaleMat{});
+  cute::Tensor o_scale_broadcast_mat = make_tensor((ptr_o_scale), LayoutOScaleMat{});
+  cute::Tensor denom_broadcast_mat = make_tensor(make_smem_ptr(ptr_denom), LayoutOScaleMat{});
 
   // initialize variables needed by phase3
   using TiledMmaOutput = decltype(make_tiled_mma(
@@ -289,36 +289,36 @@ __global__ void BatchDecodeWithPagedKVCacheKernelMlaCuteSM80(Params params) {
   TiledMmaOutput tiled_mma_output;
   auto thr_mma_output = tiled_mma_output.get_slice(tx);
 
-  Tensor smem_att_part_a = thr_mma_output.partition_A(smem_att);
-  Tensor reg_att_part_a =
+  cute::Tensor smem_att_part_a = thr_mma_output.partition_A(smem_att);
+  cute::Tensor reg_att_part_a =
       thr_mma_output.partition_fragment_A(make_tensor((DTypeKV*)0x0, LayoutAtt{}));
 
   auto layout_ckv_trans =
       make_layout(make_shape(Int<HEAD_DIM_CKV>{}, Int<k_kv_tile_len>{}, Int<k_smem_stages>{}),
                   make_stride(Int<k_kv_tile_len>{}, _1{}, Int<HEAD_DIM_CKV * k_kv_tile_len>{}));
   auto layout_ckv_trans_cps = composition(smem_ckv_chunk.layout(), layout_ckv_trans);
-  Tensor smem_ckv_trans = make_tensor(smem_ckv_chunk.data(), layout_ckv_trans_cps);
+  cute::Tensor smem_ckv_trans = make_tensor(smem_ckv_chunk.data(), layout_ckv_trans_cps);
 
   auto s2r_tiled_copy_b_ckv =
       make_tiled_copy_B(Copy_Atom<SM75_U16x2_LDSM_T, DTypeKV>{}, tiled_mma_output);
   auto s2r_thr_copy_b_ckv = s2r_tiled_copy_b_ckv.get_slice(tx);
-  Tensor smem_v_part = s2r_thr_copy_b_ckv.partition_S(smem_ckv_trans);
+  cute::Tensor smem_v_part = s2r_thr_copy_b_ckv.partition_S(smem_ckv_trans);
 
   auto layout_ckv_trans_no_stage =
       make_layout(make_shape(Int<HEAD_DIM_CKV>{}, Int<k_kv_tile_len>{}),
                   make_stride(Int<k_kv_tile_len>{}, _1{}));
-  Tensor reg_v_part =
+  cute::Tensor reg_v_part =
       thr_mma_output.partition_fragment_B(make_tensor((DTypeKV*)0x0, layout_ckv_trans_no_stage));
-  Tensor reg_v_part_view = s2r_thr_copy_b_ckv.retile_D(reg_v_part);
+  cute::Tensor reg_v_part_view = s2r_thr_copy_b_ckv.retile_D(reg_v_part);
 
-  Tensor gmem_output_chunk_part = thr_mma_output.partition_C(gmem_output_chunk);
+  cute::Tensor gmem_output_chunk_part = thr_mma_output.partition_C(gmem_output_chunk);
   // Tensor reg_output_part = make_fragment_like(gmem_output_chunk_part);
-  Tensor reg_output_part =
+  cute::Tensor reg_output_part =
       thr_mma_output.partition_fragment_C(make_tensor((float*)0x0, LayoutQo{}));
   clear(reg_output_part);
 
-  Tensor o_scale_mat_part = thr_mma_output.partition_C(o_scale_broadcast_mat);
-  Tensor denom_mat_part = thr_mma_output.partition_C(denom_broadcast_mat);
+  cute::Tensor o_scale_mat_part = thr_mma_output.partition_C(o_scale_broadcast_mat);
+  cute::Tensor denom_mat_part = thr_mma_output.partition_C(denom_broadcast_mat);
 
   // init paged-cache read offset to be used
   uint32_t q, r;
