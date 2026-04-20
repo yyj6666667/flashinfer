@@ -1167,7 +1167,11 @@ class OrderedMutexAccessor {
     _phase ^= 1;
   }
 
-  __device__ State exportState() { return {.phase = _phase}; }
+  __device__ State exportState() {
+    State s;
+    s.phase = _phase;
+    return s;
+  }
 };
 
 template <typename T, T VALUE>
