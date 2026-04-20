@@ -314,11 +314,11 @@ void batch_pod_with_kv_cache_tensor(
           }
         }
 
-        constexpr bool use_custom_mask_p = MASK_MODE_P == MaskMode::kCustom;
+        static constexpr bool use_custom_mask_p = (MASK_MODE_P == MaskMode::kCustom);
         using PrefillAttentionVariant =
             DefaultAttention</*use_custom_mask=*/use_custom_mask_p, USE_SLIDING_WINDOW_P,
                              USE_LOGITS_SOFT_CAP, /*use_alibi_bias=*/false>;
-        constexpr bool use_custom_mask_d = MASK_MODE_D == MaskMode::kCustom;
+        static constexpr bool use_custom_mask_d = (MASK_MODE_D == MaskMode::kCustom);
         using DecodeAttentionVariant =
             DefaultAttention</*use_custom_mask=*/use_custom_mask_d, USE_SLIDING_WINDOW_D,
                              USE_LOGITS_SOFT_CAP, /*use_alibi_bias=*/false>;
