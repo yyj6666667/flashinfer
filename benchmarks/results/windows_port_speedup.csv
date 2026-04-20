@@ -227,3 +227,19 @@ xqa,fp16,qh=8/kvh=8/hd=128/page_size=16,batch=32/kv_len=8192,19699.50,2686.66,7.
 # cudnn batch_decode (SM120): cudnn-frontend 1.22.1 Python wheel
 # raises `Unable to load any libcudart.so.*` on Windows — wheel's
 # Windows ABI glue is incomplete. Not a flashinfer bug; skipped.
+topk_radix,fp32,k=50,batch=1/vocab=4096,27.68,43.14,0.64,
+topk_radix,fp32,k=50,batch=1/vocab=32000,81.25,52.37,1.55,
+topk_radix,fp32,k=50,batch=1/vocab=128000,89.41,54.46,1.64,
+topk_radix,fp32,k=50,batch=32/vocab=4096,39.73,55.81,0.71,
+topk_radix,fp32,k=50,batch=32/vocab=32000,147.26,92.83,1.59,
+topk_radix,fp32,k=50,batch=32/vocab=128000,290.48,181.73,1.60,
+topk_radix,fp32,k=50,batch=256/vocab=4096,156.82,103.06,1.52,
+topk_radix,fp32,k=50,batch=256/vocab=32000,655.28,312.38,2.10,
+topk_radix,fp32,k=50,batch=256/vocab=128000,2127.33,1002.80,2.12,
+fp4_quantize,bf16,block_size=16,rows=128/cols=512,47.33,8.67,5.46,
+fp4_quantize,bf16,block_size=16,rows=128/cols=1024,50.94,7.76,6.56,
+fp4_quantize,bf16,block_size=16,rows=512/cols=512,60.77,8.16,7.45,
+fp4_quantize,bf16,block_size=16,rows=512/cols=1024,76.06,10.18,7.47,
+# nvfp4_quantize triggers cudaErrorMisalignedAddress on shapes > ~1024
+# cols on SM120 / CUDA 12.9; smoke at (128,512) passes but bench runs
+# over multiple shapes crash. Recorded; root-cause deferred.
