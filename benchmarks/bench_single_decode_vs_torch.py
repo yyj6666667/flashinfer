@@ -24,11 +24,11 @@ def torch_single_decode(
         rep = H // H_kv
         k = k.repeat_interleave(rep, dim=-2)
         v = v.repeat_interleave(rep, dim=-2)
-    q_t = q.unsqueeze(0).transpose(1, 2)  # [1, H, 1, D]
-    k_t = k.transpose(0, 1).unsqueeze(0)  # [1, H, kv_len, D]
-    v_t = v.transpose(0, 1).unsqueeze(0)  # [1, H, kv_len, D]
+    q_t = q.reshape(1, H, 1, D)                # [1, H, 1, D]
+    k_t = k.transpose(0, 1).unsqueeze(0)        # [1, H, kv_len, D]
+    v_t = v.transpose(0, 1).unsqueeze(0)        # [1, H, kv_len, D]
     out = F.scaled_dot_product_attention(q_t, k_t, v_t, scale=sm_scale, is_causal=False)
-    return out.squeeze(0).squeeze(-2)  # -> [H, D]
+    return out.squeeze(0).squeeze(1)            # -> [H, D]
 
 
 @torch.inference_mode()
