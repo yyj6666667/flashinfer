@@ -282,6 +282,9 @@ def build_cuda_cflags(
             "-Xcompiler=/utf-8",
             # MSVC gates M_PI/M_SQRT1_2/etc. in <math.h> behind this macro.
             "-D_USE_MATH_DEFINES",
+            # Stop <windef.h> from defining min/max as macros, which break
+            # std::min/std::max in any transitively-included header.
+            "-DNOMINMAX",
         ]
         # Host-side only: force-include a compat shim via /FI so cl.exe
         # #undef's and redefines __restrict__ -> __restrict before seeing
