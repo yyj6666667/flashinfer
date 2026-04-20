@@ -220,3 +220,10 @@ xqa,fp16,qh=8/kvh=8/hd=128/page_size=16,batch=32/kv_len=8192,19699.50,2686.66,7.
 # std::conditional<..., void, char>[], and narrowing long long ->
 # unsigned long long in list-init. Too many per-file edits to take
 # on in this pass; recorded as blocker.
+# BatchAttention (holistic): JIT+plan+run all pass on 5060, but the
+# cooperative-launch "persistent paged attention" kernel overflows
+# the 30-SM budget on non-trivial configs ("too many blocks in
+# cooperative launch"). Smoke-only; bench skipped.
+# cudnn batch_decode (SM120): cudnn-frontend 1.22.1 Python wheel
+# raises `Unable to load any libcudart.so.*` on Windows — wheel's
+# Windows ABI glue is incomplete. Not a flashinfer bug; skipped.
