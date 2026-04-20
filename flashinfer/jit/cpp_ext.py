@@ -418,7 +418,23 @@ def generate_ninja_build_for_op(
         ldflags += env_extra_ldflags
 
     if extra_ldflags is not None:
-        ldflags += extra_ldflags
+        if IS_WINDOWS:
+            # Module-level extra_ldflags are written in GCC-style (e.g.
+            # `-lcublas`, `-lcublasLt`). MSVC link.exe does not understand
+            # those and would miss the library, leading to LNK2019 on every
+            # symbol from the lib. Translate `-l<name>` -> `<name>.lib` and
+            # drop the Linux-only `-lcuda` since we already link `cuda.lib`
+            # from the CUDA toolkit `lib/x64`.
+            for flag in extra_ldflags:
+                if flag.startswith("-l"):
+                    name = flag[2:]
+                    if name == "cuda" or name == "cudart":
+                        continue  # already linked in the Windows base set
+                    ldflags.append(f"{name}.lib")
+                else:
+                    ldflags.append(flag)
+        else:
+            ldflags += extra_ldflags
 
     cxx = os.environ.get("CXX", DEFAULT_CXX)
     nvcc = os.environ.get(
