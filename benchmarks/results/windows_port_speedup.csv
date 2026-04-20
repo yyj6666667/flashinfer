@@ -1,3 +1,5 @@
+# Rows above 2026-04-20 host migration: RTX 4090 / SM89 / CUDA 12.6.
+# Rows below host migration: RTX 5060 / SM120 / CUDA 12.9, torch 2.11.0+cu128.
 module,dtype,config,shape,torch_us,flashinfer_us,speedup,tbps
 rmsnorm,fp16,,batch=1/hidden=1024,92.67,5.12,18.10,0.00
 rmsnorm,fp16,,batch=1/hidden=4096,40.45,6.14,6.58,0.00
