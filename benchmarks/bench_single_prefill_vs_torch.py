@@ -36,9 +36,10 @@ def bench_one(qo_len, kv_len, num_qo_heads, num_kv_heads, head_dim, causal, dtyp
     k = torch.randn(kv_len, num_kv_heads, head_dim, dtype=dtype, device=device)
     v = torch.randn(kv_len, num_kv_heads, head_dim, dtype=dtype, device=device)
 
-    ref = torch_prefill(q, k, v, causal)
-    out = flashinfer.single_prefill_with_kv_cache(q, k, v, causal=causal)
-    torch.testing.assert_close(out, ref, rtol=5e-2, atol=5e-2)
+    # Correctness is already covered by tests/attention/test_single_prefill.py;
+    # this bench only measures perf.
+    _ = torch_prefill(q, k, v, causal)  # warm up torch path
+    _ = flashinfer.single_prefill_with_kv_cache(q, k, v, causal=causal)  # warm up flashinfer
 
     torch_ms = np.median(
         bench_gpu_time(lambda: torch_prefill(q, k, v, causal), repeat_iters=num_iters)
