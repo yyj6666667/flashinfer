@@ -188,3 +188,6 @@ concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=8192,1968.61,1788.66,1.10,
 # value so pod.cu emits symbols that don't match the kernel_inst instantiations.
 # Likely MSVC bug with nested switch+constexpr+lambda; no simple macro rewrite
 # works. Fixing it requires refactoring DISPATCH_context into a template helper.
+single_decode,fp16,qh=32/kvh=8/hd=128,kv_len=512,106.00,21.57,4.91,
+single_decode,fp16,qh=32/kvh=8/hd=128,kv_len=2048,390.66,33.44,11.68,
+single_decode,fp16,qh=32/kvh=8/hd=128,kv_len=8192,1502.70,94.26,15.94,
