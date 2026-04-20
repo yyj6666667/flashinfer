@@ -114,3 +114,7 @@ mla,bf16,D_ckv=512/D_kpe=64/heads=16,batch=32/seq=2048,1056.21,897.70,1.18,
 mla,bf16,D_ckv=512/D_kpe=64/heads=64,batch=32/seq=2048,1348.74,903.78,1.49,
 mla,bf16,D_ckv=512/D_kpe=64/heads=16,batch=32/seq=8192,4039.66,3511.66,1.15,
 mla,bf16,D_ckv=512/D_kpe=64/heads=64,batch=32/seq=8192,5266.96,3517.33,1.50,
+# fused_moe (SM120): BLOCKED on RTX 5060 / CUDA 12.9.
+# 1) nvcc ICE in CUTLASS: cutlass_fused_moe_kernels.cuh(1565) "could not lookup variable in map!"
+# 2) MSVC CRT C2641 cascade on __vcrt_assert_va_start_is_not_reference in corecrt_wstdio.h
+# Fixed before hitting these: cudaUtils.h C99 designated init, deep_gemm operator keywords via <ciso646>
