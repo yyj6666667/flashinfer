@@ -19,11 +19,12 @@
 // the FI_RESTRICT macro instead, defined in include/flashinfer/_compat.h,
 // which is Linux-token-equivalent.)
 
-// Enable the C++ alternative operator keywords (and/or/not/xor/compl/...).
-// MSVC's default mode (without /permissive- or /Za) disables these tokens;
-// TensorRT-LLM headers pulled in from csrc/nv_internal use them freely.
-// <ciso646> (standard since C++98) defines them as macros. GCC/Clang
-// recognise the tokens natively, so including the header has no effect.
-#include <ciso646>
+// NOTE: Do NOT add `#include <ciso646>` here. On MSVC that header drags in
+// <yvals_core.h> and half of the CRT *before* nvcc's host pass emits its
+// own `#line`-preserved CRT includes, which then fires dozens of C2011
+// (struct/enum redefinition) errors deep inside <corecrt.h>. Use
+// `-Xcompiler=/permissive-` on a per-module basis when operator keywords
+// (`and`/`or`/`not`) need recognising — the flag lives in gen_*_module()
+// next to the code that actually relies on it.
 
 #pragma once
