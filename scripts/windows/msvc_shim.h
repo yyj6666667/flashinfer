@@ -19,4 +19,11 @@
 // the FI_RESTRICT macro instead, defined in include/flashinfer/_compat.h,
 // which is Linux-token-equivalent.)
 
+// Enable the C++ alternative operator keywords (and/or/not/xor/compl/...).
+// MSVC's default mode (without /permissive- or /Za) disables these tokens;
+// TensorRT-LLM headers pulled in from csrc/nv_internal use them freely.
+// <ciso646> (standard since C++98) defines them as macros. GCC/Clang
+// recognise the tokens natively, so including the header has no effect.
+#include <ciso646>
+
 #pragma once

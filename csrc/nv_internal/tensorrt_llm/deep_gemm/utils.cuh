@@ -46,7 +46,7 @@ class AssertionException : public std::exception {
 #else
 #define DG_HOST_ASSERT(cond)                                                         \
   do {                                                                               \
-    if (not(cond)) {                                                                 \
+    if (!(cond)) {                                                                 \
       printf("Assertion failed: %s:%d, condition: %s\n", __FILE__, __LINE__, #cond); \
       throw AssertionException("Assertion failed: " #cond);                          \
     }                                                                                \
@@ -57,7 +57,7 @@ class AssertionException : public std::exception {
 #ifndef DG_DEVICE_ASSERT
 #define DG_DEVICE_ASSERT(cond)                                                       \
   do {                                                                               \
-    if (not(cond)) {                                                                 \
+    if (!(cond)) {                                                                 \
       printf("Assertion failed: %s:%d, condition: %s\n", __FILE__, __LINE__, #cond); \
       asm("trap;");                                                                  \
     }                                                                                \
