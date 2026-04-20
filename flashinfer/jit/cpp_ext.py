@@ -259,6 +259,11 @@ def build_cflags(
         # CRT (matching the CPython runtime), which is what extension modules
         # need. Position-independent code is implicit on x64.
         cflags += ["/EHsc", "/MD", "/bigobj", "/permissive-"]
+        # Mirror the NOMINMAX / _USE_MATH_DEFINES guards from cuda_cflags so
+        # plain .cpp files in a module's source list see the same macro state
+        # (otherwise e.g. nv_internal/common/cudaUtils.h trips C2589 on
+        # std::max when <windef.h> smuggles in the `max` macro).
+        cflags += ["/D_USE_MATH_DEFINES", "/DNOMINMAX"]
     else:
         cflags.append("-fPIC")
     if extra_cflags is not None:
