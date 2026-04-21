@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <cuda.h>
 
 uint32_t getElemBytes(CUtensorMapDataType_enum dataType);
