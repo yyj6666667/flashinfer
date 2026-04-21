@@ -5462,14 +5462,39 @@ def gemm_fp8_nt_groupwise(
 
     if backend == "cutlass":
         if is_sm12x_supported(a.device):
-            # SM120/121 doesn't use mma_sm parameter
-            get_gemm_sm120_module().gemm_fp8_nt_groupwise(
-                workspace_buffer,
+            # The SM120/121 non-grouped fp8 groupwise GEMM kernel hits
+            # cudaErrorMisalignedAddress on every (m, n, k) we tried on
+            # RTX 5060 / CUDA 12.9, while the grouped kernel with
+            # num_groups=1 over the same tensors is correct (max|err| ~0).
+            # Route the single-matrix case through the grouped kernel so
+            # SM120 users still get a working fp8 matmul with the original
+            # public API. The reshape is zero-copy (unsqueeze+contiguous).
+            int_ws = _get_cache_buf(
+                "gemm_fp8_nt_groupwise_sm120_int_workspace",
+                DEFAULT_WORKSPACE_SIZE,
+                a.device,
+            )
+            float_ws = _get_cache_buf(
+                "gemm_fp8_nt_groupwise_sm120_float_workspace",
+                DEFAULT_WORKSPACE_SIZE,
+                a.device,
+            )
+            m_indptr = torch.tensor(
+                [0, a.shape[0]], dtype=torch.int32, device=a.device
+            )
+            b_batched = b.unsqueeze(0).contiguous()
+            b_scale_batched = b_scale.unsqueeze(0).contiguous()
+            get_gemm_sm120_module().group_gemm_fp8_nt_groupwise(
+                int_ws,
+                float_ws,
                 a,
-                b,
+                b_batched,
                 a_scale,
-                b_scale,
+                b_scale_batched,
                 out,
+                m_indptr,
+                b.shape[0],  # n
+                b.shape[1],  # k
                 *scale_granularity_mnk,
                 scale_major_mode,
             )
