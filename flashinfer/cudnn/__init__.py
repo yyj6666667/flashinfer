@@ -49,7 +49,12 @@ if sys.platform == "win32":
                     _cudnn_pkg = _cand
                     break
         _release_dir = os.path.join(_cudnn_pkg, "Release") if _cudnn_pkg else None
-        _alias_dirs = [_torch_lib, _cudnn_pkg, _release_dir]
+        # The wheel's loader also consults CUDA_PATH / CUDA_HOME at
+        # runtime — drop aliases into <cuda>\bin so the env-var-driven
+        # lookup succeeds.
+        _cuda_path = os.environ.get("CUDA_PATH") or os.environ.get("CUDA_HOME")
+        _cuda_bin = os.path.join(_cuda_path, "bin") if _cuda_path else None
+        _alias_dirs = [_torch_lib, _cudnn_pkg, _release_dir, _cuda_bin]
         if os.path.isfile(_cudart_src):
             for _d in _alias_dirs:
                 if not _d or not os.path.isdir(_d):
