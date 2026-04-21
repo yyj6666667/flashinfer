@@ -293,19 +293,24 @@ struct Sm90ScatterPtrArray {
     using CopyOpR2GRed = decltype(get_reduction_op<ElementOutput, MaxVecSize>());
     using CopyOpR2GStg = UniversalCopy<uint_bit_t<Copy_Atom<CopyOpR2GRed,ElementOutput>::NumValSrc * sizeof_bits_v<ElementOutput>>>;
 
+    // MSVC + nvcc on Windows can't use reference-captured `args` in a
+    // constexpr context inside a lambda (Note #2767-D: *this cannot be used
+    // as a constant). Re-derive the compile-time type from the capture via
+    // decltype{} so size<>() operates on a prvalue, not a reference.
+    using EpiTileT = cute::remove_cvref_t<decltype(args.epi_tile)>;
     auto make_tiled_r2g = [&](auto copy_op)
     {
       using CopyAtomR2G = Copy_Atom<decltype(copy_op),ElementOutput>;
       constexpr int VecSize = CopyAtomR2G::NumValSrc;
       if constexpr (cutlass::gemm::detail::is_k_major<StrideOutput>()) {
-        constexpr int ThreadsMajor = size<1>(args.epi_tile) / VecSize;
+        constexpr int ThreadsMajor = size<1>(EpiTileT{}) / VecSize;
         constexpr int ThreadsMinor = NumThreads / ThreadsMajor;
         return make_tiled_copy(CopyAtomR2G{},
           Layout<Shape<Int<ThreadsMinor>, Int<ThreadsMajor>>, Stride<Int<ThreadsMajor>, _1>>{},
           Layout<Shape<_1, Int<VecSize>>>{});
       }
       else if constexpr (cutlass::gemm::detail::is_mn_major<StrideOutput>()) {
-        constexpr int ThreadsMajor = size<0>(args.epi_tile) / VecSize;
+        constexpr int ThreadsMajor = size<0>(EpiTileT{}) / VecSize;
         constexpr int ThreadsMinor = NumThreads / ThreadsMajor;
         return make_tiled_copy(CopyAtomR2G{},
           Layout<Shape<Int<ThreadsMajor>, Int<ThreadsMinor>>, Stride<_1, Int<ThreadsMajor>>>{},

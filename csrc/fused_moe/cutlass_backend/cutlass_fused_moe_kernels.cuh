@@ -1582,55 +1582,6 @@ void expandInputRowsKernelLauncher(
   int64_t const blocks = std::min(smCount * 8, std::max(num_rows * k, num_padding_tokens));
   int64_t const threads = EXPAND_THREADS_PER_BLOCK;
 
-  auto func = [&]() {
-#ifdef ENABLE_FP8
-    // Always MXFP8
-    if constexpr (std::is_same_v<ExpandedActivationsType, __nv_fp8_e4m3> &&
-                  !std::is_same_v<InputActivationsType, __nv_fp8_e4m3>) {
-      TLLM_CHECK_WITH_INFO(quant_params.mxfp8_mxfp4.fc1.weight_block_scale ||
-                               quant_params.mxfp8_mxfp8.fc1.weight_block_scale || prequant_scales,
-                           "MXFP8 block scaling or prequant_scales parameters not provided");
-      return prequant_scales
-                 ? &expandInputRowsKernel<
-                       InputActivationsType, ExpandedActivationsType,
-                       TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NONE, true>
-                 : &expandInputRowsKernel<
-                       InputActivationsType, ExpandedActivationsType,
-                       TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::MXFPX, false>;
-    }
-    // Could be either regular FP8 or MXFP8
-    else if constexpr (std::is_same_v<ExpandedActivationsType, __nv_fp8_e4m3> &&
-                       std::is_same_v<InputActivationsType, __nv_fp8_e4m3>) {
-      TLLM_CHECK_WITH_INFO(!prequant_scales, "FP8 is not supported for AWQ");
-      return (quant_params.mxfp8_mxfp4.fc1.weight_block_scale ||
-              quant_params.mxfp8_mxfp8.fc1.weight_block_scale)
-                 ? &expandInputRowsKernel<
-                       InputActivationsType, ExpandedActivationsType,
-                       TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::MXFPX, false>
-                 : &expandInputRowsKernel<
-                       InputActivationsType, ExpandedActivationsType,
-                       TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NONE, false>;
-    } else
-#endif
-#ifdef ENABLE_FP4
-        if constexpr (std::is_same_v<ExpandedActivationsType, __nv_fp4_e2m1>) {
-      TLLM_CHECK_WITH_INFO(quant_params.fp4.fc1.weight_block_scale,
-                           "NVFP4 block scaling is expected for FP4xFP4");
-      TLLM_CHECK_WITH_INFO(!prequant_scales, "NVFP4 is not supported for AWQ");
-      return &expandInputRowsKernel<InputActivationsType, ExpandedActivationsType,
-                                    TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NVFP4,
-                                    false>;
-    } else
-#endif
-    {
-      TLLM_CHECK_WITH_INFO(!prequant_scales,
-                           "w4afp8 Prequant scales provided for non-FP8 data type");
-      return &expandInputRowsKernel<InputActivationsType, ExpandedActivationsType,
-                                    TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NONE,
-                                    false>;
-    }
-  }();
-
   cudaLaunchConfig_t config;
   config.gridDim = blocks;
   config.blockDim = threads;
@@ -1641,12 +1592,71 @@ void expandInputRowsKernelLauncher(
   attrs[0].val.programmaticStreamSerializationAllowed = enable_pdl;
   config.numAttrs = 1;
   config.attrs = attrs;
-  cudaLaunchKernelEx(&config, func, unpermuted_input, permuted_output, unpermuted_scales,
-                     permuted_scales, permuted_row_to_unpermuted_row, num_rows, hidden_size, k,
-                     quant_params.fp4.fc1.act_global_scale, use_per_expert_act_scale,
-                     expert_first_token_offset, fc1_act_sf_flat, input_sf, swizzled_input_sf,
-                     num_experts_per_node,
-                     reinterpret_cast<InputActivationsType const*>(prequant_scales));
+
+  // NOTE: avoid wrapping the if-constexpr kernel-pointer choice in an
+  // immediately-invoked lambda fed to cudaLaunchKernelEx. MSVC + nvcc 12.9
+  // triggers an internal compiler error ("could not lookup variable in map!")
+  // on that pattern; inlining the dispatch at the call site is equivalent and
+  // works around the ICE.
+  auto launch_kernel = [&](auto kernel_ptr) {
+    cudaLaunchKernelEx(&config, kernel_ptr, unpermuted_input, permuted_output, unpermuted_scales,
+                       permuted_scales, permuted_row_to_unpermuted_row, num_rows, hidden_size, k,
+                       quant_params.fp4.fc1.act_global_scale, use_per_expert_act_scale,
+                       expert_first_token_offset, fc1_act_sf_flat, input_sf, swizzled_input_sf,
+                       num_experts_per_node,
+                       reinterpret_cast<InputActivationsType const*>(prequant_scales));
+  };
+
+#ifdef ENABLE_FP8
+  // Always MXFP8
+  if constexpr (std::is_same_v<ExpandedActivationsType, __nv_fp8_e4m3> &&
+                !std::is_same_v<InputActivationsType, __nv_fp8_e4m3>) {
+    TLLM_CHECK_WITH_INFO(quant_params.mxfp8_mxfp4.fc1.weight_block_scale ||
+                             quant_params.mxfp8_mxfp8.fc1.weight_block_scale || prequant_scales,
+                         "MXFP8 block scaling or prequant_scales parameters not provided");
+    if (prequant_scales) {
+      launch_kernel(&expandInputRowsKernel<
+                    InputActivationsType, ExpandedActivationsType,
+                    TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NONE, true>);
+    } else {
+      launch_kernel(&expandInputRowsKernel<
+                    InputActivationsType, ExpandedActivationsType,
+                    TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::MXFPX, false>);
+    }
+  }
+  // Could be either regular FP8 or MXFP8
+  else if constexpr (std::is_same_v<ExpandedActivationsType, __nv_fp8_e4m3> &&
+                     std::is_same_v<InputActivationsType, __nv_fp8_e4m3>) {
+    TLLM_CHECK_WITH_INFO(!prequant_scales, "FP8 is not supported for AWQ");
+    if (quant_params.mxfp8_mxfp4.fc1.weight_block_scale ||
+        quant_params.mxfp8_mxfp8.fc1.weight_block_scale) {
+      launch_kernel(&expandInputRowsKernel<
+                    InputActivationsType, ExpandedActivationsType,
+                    TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::MXFPX, false>);
+    } else {
+      launch_kernel(&expandInputRowsKernel<
+                    InputActivationsType, ExpandedActivationsType,
+                    TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NONE, false>);
+    }
+  } else
+#endif
+#ifdef ENABLE_FP4
+      if constexpr (std::is_same_v<ExpandedActivationsType, __nv_fp4_e2m1>) {
+    TLLM_CHECK_WITH_INFO(quant_params.fp4.fc1.weight_block_scale,
+                         "NVFP4 block scaling is expected for FP4xFP4");
+    TLLM_CHECK_WITH_INFO(!prequant_scales, "NVFP4 is not supported for AWQ");
+    launch_kernel(&expandInputRowsKernel<
+                  InputActivationsType, ExpandedActivationsType,
+                  TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NVFP4, false>);
+  } else
+#endif
+  {
+    TLLM_CHECK_WITH_INFO(!prequant_scales,
+                         "w4afp8 Prequant scales provided for non-FP8 data type");
+    launch_kernel(&expandInputRowsKernel<
+                  InputActivationsType, ExpandedActivationsType,
+                  TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType::NONE, false>);
+  }
 }
 
 #define INSTANTIATE_EXPAND_INPUT_ROWS(InputActivationsType, ExpandedActivationsType)               \

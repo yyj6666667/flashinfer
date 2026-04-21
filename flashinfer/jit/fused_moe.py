@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import shutil
+import sys
 from typing import List
 
 from . import env as jit_env
@@ -26,6 +28,75 @@ from .core import (
     sm89_nvcc_flags,
 )
 from .cpp_ext import is_cuda_version_at_least
+
+
+def _prepare_cutlass_msvc_patch():
+    """Stage a shadow copy of cutlass headers with MSVC-specific patches.
+
+    Returns the patch include directory (should be prepended to ``-I`` so it
+    takes precedence over the pristine submodule headers), or ``None`` on
+    non-Windows platforms / if the upstream file already compiles.
+
+    Current patch: cute/stride.hpp line ~299, replace
+    ``typename Lambda::template seq<Shape>`` (which MSVC misbinds against the
+    global ``template <int... Ints> using seq = ...`` alias → C3545) with an
+    explicit ``conditional_t<is_same<Major, LayoutLeft>, tuple_seq<Shape>,
+    tuple_rseq<Shape>>``, which is semantically identical but avoids the
+    ambiguous name-lookup path.
+    """
+    if sys.platform != "win32":
+        return None
+
+    patch_dir = jit_env.FLASHINFER_GEN_SRC_DIR / "cutlass_msvc_patch"
+    cute_dir = patch_dir / "cute"
+    cute_dir.mkdir(parents=True, exist_ok=True)
+
+    src = jit_env.CUTLASS_INCLUDE_DIRS[0] / "cute" / "stride.hpp"
+    dst = cute_dir / "stride.hpp"
+    # Always copy-and-patch fresh: the upstream file might have been updated
+    # by a submodule bump, and the patch is idempotent.
+    shutil.copyfile(src, dst)
+
+    text = dst.read_text(encoding="utf-8")
+    marker = "MSVC C3545 workaround"
+    if marker in text:
+        return patch_dir
+
+    # Match both LF and CRLF line endings emitted by git on Windows.
+    for line_sep in ("\n", "\r\n"):
+        old = (
+            "  if constexpr (is_tuple<Shape>::value) { // Shape::tuple Current::int"
+            f"{line_sep}"
+            "    using Lambda = CompactLambda<Major>;                  // Append or Prepend"
+            f"{line_sep}"
+            "    using Seq    = typename Lambda::template seq<Shape>;  // Seq or RSeq"
+            f"{line_sep}"
+        )
+        if old in text:
+            new = (
+                "  if constexpr (is_tuple<Shape>::value) { // Shape::tuple Current::int"
+                f"{line_sep}"
+                "    using Lambda = CompactLambda<Major>;                  // Append or Prepend"
+                f"{line_sep}"
+                f"    // {marker}: MSVC misbinds Lambda::template seq<Shape>"
+                f"{line_sep}"
+                f"    // against the global `template <int... Ints> using seq = ...`"
+                f"{line_sep}"
+                f"    // alias and errors with C3545. Resolve seq directly from Major."
+                f"{line_sep}"
+                "    using Seq    = cute::conditional_t<"
+                "cute::is_same<Major, LayoutLeft>::value,"
+                f"{line_sep}"
+                "                                       tuple_seq<Shape>, tuple_rseq<Shape>>;"
+                f"{line_sep}"
+            )
+            dst.write_text(text.replace(old, new, 1), encoding="utf-8", newline="")
+            return patch_dir
+
+    raise RuntimeError(
+        f"cutlass MSVC patch target not found in {src}; the submodule layout "
+        "may have changed — inspect CompactLambda::seq usage around line 299."
+    )
 from .cubin_loader import (
     get_artifact,
     get_meta_hash,
@@ -61,10 +132,15 @@ def gen_cutlass_fused_moe_sm120_module(use_fast_build: bool = False) -> JitSpec:
         "-DCOMPILE_BLACKWELL_SM120_TMA_GROUPED_GEMMS",
         "-DENABLE_BF16",
         "-DENABLE_FP8",
-        "-DENABLE_FP4",
         "-DUSING_OSS_CUTLASS_MOE_GEMM",
         "-DCUTLASS_ENABLE_GDC_FOR_SM100=1",
     ]
+    # NVFP4 MoE path hits an nvcc ICE on MSVC/Windows for SM120 ("could not
+    # lookup variable in map!" at cutlass_fused_moe_kernels.cuh). Disable the
+    # FP4 instantiations on Windows; bf16/fp16/fp8 paths remain fully working
+    # and match what the vs-torch benchmark exercises.
+    if sys.platform != "win32":
+        nvcc_flags.append("-DENABLE_FP4")
 
     nvcc_flags += current_compilation_context.get_nvcc_flags_list(
         supported_major_versions=[12]
@@ -158,6 +234,12 @@ def gen_cutlass_fused_moe_module(
     except Exception as e:
         raise RuntimeError(f"Failed to generate Cutlass kernels: {e}") from e
 
+    # On Windows, stage a shadow-include directory with MSVC-patched cutlass
+    # headers (see _prepare_cutlass_msvc_patch for the patched file list).
+    # The patch dir must precede the pristine cutlass include so the patched
+    # copies win lookup.
+    msvc_patch_dir = _prepare_cutlass_msvc_patch()
+
     return gen_jit_spec(
         f"fused_moe_{device_arch}",
         [
@@ -216,28 +298,31 @@ def gen_cutlass_fused_moe_module(
         extra_cuda_cflags=nvcc_flags,
         extra_cflags=["-DFAST_BUILD"] if use_fast_build else [],
         extra_ldflags=["-lnvrtc"],
-        extra_include_paths=[
-            jit_env.FLASHINFER_CSRC_DIR / "nv_internal",
-            jit_env.FLASHINFER_CSRC_DIR / "nv_internal" / "include",
-            jit_env.FLASHINFER_CSRC_DIR
-            / "nv_internal"
-            / "tensorrt_llm"
-            / "cutlass_extensions"
-            / "include",
-            jit_env.FLASHINFER_CSRC_DIR
-            / "nv_internal"
-            / "tensorrt_llm"
-            / "kernels"
-            / "cutlass_kernels"
-            / "include",
-            jit_env.FLASHINFER_CSRC_DIR
-            / "nv_internal"
-            / "tensorrt_llm"
-            / "kernels"
-            / "cutlass_kernels",
-            # Include the generated output directory for header files
-            output_dir,
-        ],
+        extra_include_paths=(
+            ([msvc_patch_dir] if msvc_patch_dir else [])
+            + [
+                jit_env.FLASHINFER_CSRC_DIR / "nv_internal",
+                jit_env.FLASHINFER_CSRC_DIR / "nv_internal" / "include",
+                jit_env.FLASHINFER_CSRC_DIR
+                / "nv_internal"
+                / "tensorrt_llm"
+                / "cutlass_extensions"
+                / "include",
+                jit_env.FLASHINFER_CSRC_DIR
+                / "nv_internal"
+                / "tensorrt_llm"
+                / "kernels"
+                / "cutlass_kernels"
+                / "include",
+                jit_env.FLASHINFER_CSRC_DIR
+                / "nv_internal"
+                / "tensorrt_llm"
+                / "kernels"
+                / "cutlass_kernels",
+                # Include the generated output directory for header files
+                output_dir,
+            ]
+        ),
     )
 
 
