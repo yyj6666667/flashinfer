@@ -323,3 +323,21 @@ gemm_fp8,e4m3->bf16,mode=MN,m=512/n=4096/k=4096,489.46,329.30,1.49,
 # MN-mode yields large numeric error (rel>1) via our group_gemm routing.
 # Likely the group kernel treats scale_granularity_m=128 + scale_major_mode=MN
 # differently for a_scale layout; not investigated further.
+# mm_fp8 (SM120): FIXED. On SM120 now routes through the CUTLASS groupwise
+# fallback (commit 9259ca97): prepare_low_latency_gemm_weights becomes a
+# no-op on SM12x returning raw (n,k) fp8; mm_fp8 constructs degenerate
+# per-block scales and calls gemm_fp8_nt_groupwise(backend='cutlass').
+# Trade-off: kernel is generic groupwise, not TRTLLM's sm100f low-latency
+# micro-kernel, so perf is bf16-baseline-ish on small shapes and reaches
+# parity/beats only on m*n*k >= ~512*4096*4096.
+# blockscaled MN-mode (SM120): FIXED — gemm_fp8_nt_blockscaled now auto-
+# transposes a_scale/b_scale to K-mode on SM12x (commit d325d1c9). Both
+# MN and K modes now return max|err|<0.005 at m,n,k up to 1024.
+mm_fp8,e4m3->bf16,,m=128/n=1024/k=1024,23.65,195.18,0.12,
+mm_fp8,e4m3->bf16,,m=128/n=1024/k=4096,49.15,259.06,0.19,
+mm_fp8,e4m3->bf16,,m=128/n=4096/k=1024,59.86,256.91,0.23,
+mm_fp8,e4m3->bf16,,m=128/n=4096/k=4096,293.95,378.43,0.78,
+mm_fp8,e4m3->bf16,,m=512/n=1024/k=1024,58.66,236.32,0.25,
+mm_fp8,e4m3->bf16,,m=512/n=1024/k=4096,198.75,281.89,0.71,
+mm_fp8,e4m3->bf16,,m=512/n=4096/k=1024,134.34,315.33,0.43,
+mm_fp8,e4m3->bf16,,m=512/n=4096/k=4096,487.84,450.54,1.08,
