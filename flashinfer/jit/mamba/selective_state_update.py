@@ -97,7 +97,7 @@ def _gen_module(
     # Render the config .inc
     with open(
         jit_env.FLASHINFER_CSRC_DIR / "selective_state_update_customize_config.jinja"
-    ) as f:
+    , encoding="utf-8") as f:
         config_templ = jinja2.Template(f.read())
 
     state_scale_type = (

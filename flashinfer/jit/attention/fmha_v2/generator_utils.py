@@ -3742,13 +3742,13 @@ def generate_files(specs_names: list[tuple[kernel_spec, str, str, str]]) -> None
     api_code = get_api_code(valid_specs_names).replace(
         "__guard_fmhca_placeholder__", "false"
     )
-    with open("./generated/fused_multihead_attention_api.h", "w") as f:
+    with open("./generated/fused_multihead_attention_api.h", "w", encoding="utf-8") as f:
         f.write(api_code)
 
     api_code = get_api_code(valid_specs_names).replace(
         "__guard_fmhca_placeholder__", "true"
     )
-    with open("./generated/fused_multihead_cross_attention_api.h", "w") as f:
+    with open("./generated/fused_multihead_cross_attention_api.h", "w", encoding="utf-8") as f:
         f.write(api_code)
 
     mk_code = get_makefile_code(valid_specs_names)
@@ -3757,7 +3757,7 @@ def generate_files(specs_names: list[tuple[kernel_spec, str, str, str]]) -> None
         f.write(mk_code)
 
     print_kernel_traits_code = get_kernel_traits_code(valid_specs_names)
-    with open("./generated/print_kernel_traits.cu", "w") as f:
+    with open("./generated/print_kernel_traits.cu", "w", encoding="utf-8") as f:
         f.write(print_kernel_traits_code)
 
     # Make sure we have a bin directory.
@@ -3791,7 +3791,7 @@ def generate_files(specs_names: list[tuple[kernel_spec, str, str, str]]) -> None
     if generate_cu_trtllm:
         cubin_header = modify_cubin_header(cubin_header)
 
-    with open("./generated/fmha_cubin.h", "w") as f:
+    with open("./generated/fmha_cubin.h", "w", encoding="utf-8") as f:
         f.write(cubin_header)
 
 

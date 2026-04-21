@@ -75,7 +75,7 @@ def gen_gemm_sm100_module_cutlass_fp4() -> JitSpec:
         jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass.cu",
     ]
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half"]
         cta_m_n_k_list = [
@@ -124,7 +124,7 @@ def gen_gemm_sm103_module_cutlass_fp4() -> JitSpec:
         jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass_sm103.cu",
     ]
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass_sm103.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass_sm103.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half"]
         cta_m_n_k_list = [(128, 128, 768), (128, 192, 768), (128, 256, 768)]
@@ -143,7 +143,7 @@ def gen_gemm_sm103_module_cutlass_fp4() -> JitSpec:
                 )
                 write_if_different(dest_path, source)
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half"]
         cta_m_n_k_list = [
@@ -192,7 +192,7 @@ def gen_gemm_sm120_module_cutlass_fp4() -> JitSpec:
         jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass_sm120.cu",
     ]
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass_sm120.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "fp4_gemm_cutlass_sm120.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half"]
         # SM120/121 tile configurations with implied 1x1x1 cluster shape
@@ -241,7 +241,7 @@ def gen_gemm_sm100_module_cutlass_fp8() -> JitSpec:
         jit_env.FLASHINFER_CSRC_DIR / "fp8_gemm_cutlass.cu",
     ]
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "fp8_gemm_cutlass.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "fp8_gemm_cutlass.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half"]
         cta_m_n_k_list = [
@@ -292,7 +292,7 @@ def gen_gemm_sm100_module_cutlass_bf16() -> JitSpec:
         jit_env.FLASHINFER_CSRC_DIR / "bf16_gemm_cutlass.cu",
     ]
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "bf16_gemm_cutlass.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "bf16_gemm_cutlass.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half", "float"]
         cta_m_n_k_list = [
@@ -342,7 +342,7 @@ def gen_gemm_sm100_module_cutlass_mxfp8() -> JitSpec:
         jit_env.FLASHINFER_CSRC_DIR / "mxfp8_gemm_cutlass.cu",
     ]
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "mxfp8_gemm_cutlass.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "mxfp8_gemm_cutlass.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half"]
         cta_m_n_k_list = [
@@ -390,7 +390,7 @@ def gen_gemm_sm120_module_cutlass_mxfp8() -> JitSpec:
         jit_env.FLASHINFER_CSRC_DIR / "mxfp8_gemm_cutlass_sm120.cu",
     ]
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / "mxfp8_gemm_cutlass_sm120.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "mxfp8_gemm_cutlass_sm120.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
         dtype_list = ["__nv_bfloat16", "half"]
         # SM120 tile configs matching CutlassTileConfigSM120 enum entries.
@@ -439,7 +439,7 @@ def gen_gemm_sm100_module() -> JitSpec:
     for prefix in ["gemm_groupwise", "group_gemm_fp8_groupwise"]:
         with open(
             jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm100_kernel_inst.jinja"
-        ) as f:
+        , encoding="utf-8") as f:
             kernel_inst_templ = jinja2.Template(f.read())
         dtype_in_list = [torch.float8_e4m3fn, torch.float8_e5m2]
         dtype_out_list = [torch.float16, torch.bfloat16]
@@ -463,7 +463,7 @@ def gen_gemm_sm100_module() -> JitSpec:
             )
             write_if_different(dest_path, source)
     prefix = "group_gemm_mxfp4_groupwise"
-    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm100_kernel_inst.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm100_kernel_inst.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
     dtype_a_list = [torch.float8_e4m3fn, torch.float8_e5m2]
     dtype_d_list = [torch.float16, torch.bfloat16]
@@ -526,7 +526,7 @@ def gen_gemm_sm120_module() -> JitSpec:
     scale_major_k_list = ["true", "false"]
     # SM120/SM121 uses fixed 128x128x128 tiles with Cooperative schedule
 
-    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
 
     for dtype_in, dtype_out, scale_major_k in product(
@@ -550,7 +550,7 @@ def gen_gemm_sm120_module() -> JitSpec:
 
     # Generate group gemm kernel instantiations
     prefix = "group_gemm_fp8_groupwise"
-    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
 
     for dtype_in, dtype_out, scale_major_k in product(
@@ -574,7 +574,7 @@ def gen_gemm_sm120_module() -> JitSpec:
 
     # Generate group gemm kernel instantiations
     prefix = "group_gemm_mxfp4_groupwise"
-    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
 
     dtype_a_list = [torch.float8_e4m3fn, torch.float8_e5m2]
@@ -594,7 +594,7 @@ def gen_gemm_sm120_module() -> JitSpec:
 
     # Generate group gemm kernel instantiations for NVFP4
     prefix = "group_gemm_nvfp4_groupwise"
-    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / f"{prefix}_sm120_kernel_inst.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
 
     dtype_d_list = [torch.float16, torch.bfloat16]
@@ -728,7 +728,7 @@ def gen_tgv_gemm_sm10x_module(
     ]
 
     # Read the Jinja template
-    with open(jit_env.FLASHINFER_CSRC_DIR / "tgv_gemm.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "tgv_gemm.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
 
     # Define tile size configurations (cta_m, cta_n, dma_stages)
@@ -778,7 +778,7 @@ def gen_gemm_sm90_module() -> JitSpec:
     gen_directory = jit_env.FLASHINFER_GEN_SRC_DIR / "gen_gemm_sm90"
     os.makedirs(gen_directory, exist_ok=True)
     source_paths = []
-    with open(jit_env.FLASHINFER_CSRC_DIR / "group_gemm_sm90_kernel_inst.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "group_gemm_sm90_kernel_inst.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
     for dtype_in, dtype_out in [
         (torch.float16, torch.float16),

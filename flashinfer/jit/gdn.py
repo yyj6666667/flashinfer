@@ -42,7 +42,7 @@ def gen_gdn_prefill_sm90_module() -> JitSpec:
     source_paths = []
 
     # Load kernel instantiation template
-    with open(jit_env.FLASHINFER_CSRC_DIR / "gdn_prefill_sm90_kernel_inst.jinja") as f:
+    with open(jit_env.FLASHINFER_CSRC_DIR / "gdn_prefill_sm90_kernel_inst.jinja", encoding="utf-8") as f:
         kernel_inst_templ = jinja2.Template(f.read())
 
     # Generate 64 separate instance files (2 dtypes × 32 boolean combinations)

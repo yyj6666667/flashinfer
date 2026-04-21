@@ -635,7 +635,7 @@ def get_kernel_code(kspec: FMHAv2KernelSpec, kname: str, lname: str) -> Optional
     template_dir = jit_env.FLASHINFER_CSRC_DIR / "fmha_v2" / "templates"
     if effective_sm < 90:
         if kspec.flash_attention:
-            with open(template_dir / "fa_kernel.jinja", "r") as f:
+            with open(template_dir / "fa_kernel.jinja", "r", encoding="utf-8") as f:
                 template = jinja2.Template(f.read())
 
             tmp["MAX_STGS_PER_LOOP"] = MAX_STGS_PER_LOOP
@@ -646,7 +646,7 @@ def get_kernel_code(kspec: FMHAv2KernelSpec, kname: str, lname: str) -> Optional
             tmp["reload_q"] = kspec.tiled and kspec.head_size > 64
             code = template.render(tmp)
         else:
-            with open(template_dir / "kernel.jinja", "r") as f:
+            with open(template_dir / "kernel.jinja", "r", encoding="utf-8") as f:
                 template = jinja2.Template(f.read())
             tmp["MAX_STGS_PER_LOOP"] = MAX_STGS_PER_LOOP
             use_multi_cta = 1 if kspec.ctas_per_head > 1 else 0
@@ -657,13 +657,13 @@ def get_kernel_code(kspec: FMHAv2KernelSpec, kname: str, lname: str) -> Optional
         if kspec.ldgsts_q:
             use_tma = 0
         if kspec.warp_specialization:
-            with open(template_dir / "kernel_hopper_ws.jinja", "r") as f:
+            with open(template_dir / "kernel_hopper_ws.jinja", "r", encoding="utf-8") as f:
                 template = jinja2.Template(f.read())
             tmp["use_tma"] = use_tma
             tmp["bytes_per_elt"] = dtype2bytes[kspec.dtype]
             code = template.render(tmp)
         else:
-            with open(template_dir / "kernel_hopper.jinja", "r") as f:
+            with open(template_dir / "kernel_hopper.jinja", "r", encoding="utf-8") as f:
                 template = jinja2.Template(f.read())
             tmp["use_tma"] = use_tma
             code = template.render(tmp)
