@@ -297,3 +297,16 @@ group_gemm_fp8,e4m3->bf16,num_groups=1,m=512/n=4096/k=1024,134.30,80.90,1.66,
 group_gemm_fp8,e4m3->bf16,num_groups=1,m=512/n=4096/k=4096,488.03,258.19,1.89,
 # group_gemm_fp8 (SM120) limited to num_groups=1 by a flashinfer backend
 # guard ('has correctness issues for num_groups > 1 on SM120/121').
+# gemm_fp8 (SM120): FIXED. gemm_fp8_nt_groupwise(cutlass) now works on
+# SM120 after routing the single-matrix case through the grouped CUTLASS
+# kernel with num_groups=1 (commit fc7722bb). Non-grouped SM120 kernel
+# itself still has an upstream alignment bug but is no longer reachable.
+# mm_fp8 stays broken on SM120 (trtllm_low_latency cubin is sm100f only).
+gemm_fp8,e4m3->bf16,mode=MN,m=128/n=1024/k=1024,24.96,94.26,0.26,
+gemm_fp8,e4m3->bf16,mode=MN,m=128/n=1024/k=4096,48.13,131.23,0.37,
+gemm_fp8,e4m3->bf16,mode=MN,m=128/n=4096/k=1024,58.45,126.35,0.46,
+gemm_fp8,e4m3->bf16,mode=MN,m=128/n=4096/k=4096,294.29,183.12,1.61,
+gemm_fp8,e4m3->bf16,mode=MN,m=512/n=1024/k=1024,56.88,109.62,0.52,
+gemm_fp8,e4m3->bf16,mode=MN,m=512/n=1024/k=4096,199.23,220.37,0.90,
+gemm_fp8,e4m3->bf16,mode=MN,m=512/n=4096/k=1024,136.40,163.78,0.83,
+gemm_fp8,e4m3->bf16,mode=MN,m=512/n=4096/k=4096,489.46,329.30,1.49,
