@@ -287,3 +287,13 @@ logits_processor,fp32,minp,batch=256/vocab=128000,6770.85,1494.93,4.53,
 # junctions. Remaining: the trtllm_low_latency GEMM kernel itself returns
 # non-zero at run time ('Check failed: gemm.run(...) == 0'). Likely
 # SM100-tuned cubin that does not apply to SM120 consumer Blackwell.
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=128/n=1024/k=1024,23.49,26.19,0.90,
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=128/n=1024/k=4096,49.18,61.97,0.79,
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=128/n=4096/k=1024,58.37,40.18,1.45,
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=128/n=4096/k=4096,293.97,113.30,2.59,
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=512/n=1024/k=1024,56.69,39.66,1.43,
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=512/n=1024/k=4096,197.63,111.49,1.77,
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=512/n=4096/k=1024,134.30,80.90,1.66,
+group_gemm_fp8,e4m3->bf16,num_groups=1,m=512/n=4096/k=4096,488.03,258.19,1.89,
+# group_gemm_fp8 (SM120) limited to num_groups=1 by a flashinfer backend
+# guard ('has correctness issues for num_groups > 1 on SM120/121').
