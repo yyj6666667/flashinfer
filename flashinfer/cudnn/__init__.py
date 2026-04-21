@@ -1,27 +1,16 @@
 import os
-import shutil
 import sys
 
-# On Windows, the `cudnn` pip wheel (nvidia-cudnn-frontend 1.22.1) has
-# two Windows-broken code paths we work around here:
-#
-# 1) At `import cudnn`, the Python layer does
-#        ctypes.windll.LoadLibrary("cudnn64_9.dll")
-#    but the DLL ships with PyTorch under `<torch>/lib` and is not on
-#    the default DLL search path. We prepend `<torch>/lib` with
-#    `os.add_dll_directory`.
-#
-# 2) Inside the wheel's native pyd (`_compiled_module.cp312-win_amd64.pyd`)
-#    the CUDA runtime loader uses the Linux-style filenames
-#    `libcudart.so.12` / `libcudart.so.13` / `libcudart.so.*`. Those
-#    calls trip `Unable to load any libcudart.so.* library` on Windows,
-#    because `cudart64_12.dll` is what's present. Windows
-#    `LoadLibrary` searches by exact filename regardless of extension,
-#    so we materialise aliases in a flashinfer-managed cache dir and add
-#    that dir to the DLL search path. Cheap (one 600 KB file copy the
-#    first time flashinfer.cudnn is imported).
-#
-# Both workarounds are no-ops on Linux.
+# On Windows, the `cudnn` pip wheel (nvidia-cudnn-frontend) does
+# `ctypes.windll.LoadLibrary("cudnn64_9.dll")` at import time. That DLL
+# ships with the PyTorch wheel under `<torch>/lib` and is NOT on the
+# default DLL search path. Add it so `import cudnn` at least succeeds.
+# Executing cuDNN graphs is still broken upstream: the wheel's native
+# module hard-codes `libcudart.so.{12,13}` in the runtime loader and
+# raises `Unable to load any libcudart.so.*` at Graph.build() time.
+# Working around that via filename aliasing triggers access violations
+# from duplicated cudart mappings, so we stop at the import-time fix.
+# No-op on Linux.
 if sys.platform == "win32":
     try:
         import torch
@@ -29,64 +18,6 @@ if sys.platform == "win32":
         _torch_lib = os.path.join(os.path.dirname(torch.__file__), "lib")
         if os.path.isdir(_torch_lib):
             os.add_dll_directory(_torch_lib)
-
-        # Materialise libcudart.so.* / libcuda.so.1 aliases next to the
-        # wheel's own native module — Windows searches the directory of
-        # the calling binary before anything else, and the wheel's native
-        # loader appears to bypass LOAD_LIBRARY_SEARCH_USER_DIRS.
-        _cudart_src = os.path.join(_torch_lib, "cudart64_12.dll")
-        try:
-            import cudnn as _cudnn_probe_for_dir  # noqa: F401
-
-            _cudnn_pkg = os.path.dirname(_cudnn_probe_for_dir.__file__)
-        except Exception:
-            import site
-
-            _cudnn_pkg = None
-            for _sp in site.getsitepackages() + [site.getusersitepackages()]:
-                _cand = os.path.join(_sp, "cudnn")
-                if os.path.isdir(_cand):
-                    _cudnn_pkg = _cand
-                    break
-        _release_dir = os.path.join(_cudnn_pkg, "Release") if _cudnn_pkg else None
-        # The wheel's loader also consults CUDA_PATH / CUDA_HOME at
-        # runtime — drop aliases into <cuda>\bin so the env-var-driven
-        # lookup succeeds.
-        _cuda_path = os.environ.get("CUDA_PATH") or os.environ.get("CUDA_HOME")
-        _cuda_bin = os.path.join(_cuda_path, "bin") if _cuda_path else None
-        _alias_dirs = [_torch_lib, _cudnn_pkg, _release_dir, _cuda_bin]
-        if os.path.isfile(_cudart_src):
-            for _d in _alias_dirs:
-                if not _d or not os.path.isdir(_d):
-                    continue
-                # The wheel's loader rejects "multiple libcudart versions
-                # found", so materialise only one (.12, matching the cu12
-                # ABI torch ships). Clean up stale .13 / bare .so left by
-                # earlier flashinfer versions.
-                for _stale in ("libcudart.so.13", "libcudart.so"):
-                    _stale_path = os.path.join(_d, _stale)
-                    if os.path.isfile(_stale_path):
-                        try:
-                            os.remove(_stale_path)
-                        except OSError:
-                            pass
-                _dst = os.path.join(_d, "libcudart.so.12")
-                if not os.path.isfile(_dst):
-                    try:
-                        shutil.copy2(_cudart_src, _dst)
-                    except OSError:
-                        pass
-        _nvcuda = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "nvcuda.dll")
-        if os.path.isfile(_nvcuda):
-            for _d in _alias_dirs:
-                if not _d or not os.path.isdir(_d):
-                    continue
-                _dst = os.path.join(_d, "libcuda.so.1")
-                if not os.path.isfile(_dst):
-                    try:
-                        shutil.copy2(_nvcuda, _dst)
-                    except OSError:
-                        pass
     except Exception:
         pass
 
