@@ -310,8 +310,11 @@ def ensure_symlink(
             # Stale link, file, or directory from a previous version; remove it.
             if link.is_symlink() or link.is_file():
                 link.unlink()
-            elif sys.platform == "win32" and _is_link(link):
-                # Junctions are removed via os.unlink on Windows.
+            elif sys.platform == "win32":
+                # On Windows, directory-like symlinks, junctions, and real
+                # directories all report is_dir()==True; is_symlink() is
+                # inconsistent across versions. Try unlink first (handles
+                # symlinks/junctions), fall back to rmtree for real dirs.
                 try:
                     os.unlink(str(link))
                 except OSError:
