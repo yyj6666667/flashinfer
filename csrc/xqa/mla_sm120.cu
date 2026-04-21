@@ -18,6 +18,7 @@
 #include "defines.h"
 #include "mha.h"
 #if IS_MLA
+#include <string>  // std::stoi (MSVC does not transitively include via cuda headers)
 #include "barriers.cuh"
 #include "mhaUtils.cuh"
 #include "mha_components.cuh"
