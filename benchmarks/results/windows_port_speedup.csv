@@ -261,3 +261,7 @@ logits_processor,fp32,minp,batch=256/vocab=32000,1553.01,291.39,5.33,
 logits_processor,fp32,temp+topk,batch=256/vocab=128000,4003.34,2137.31,1.87,
 logits_processor,fp32,temp+topp,batch=256/vocab=128000,26367.14,1340.18,19.67,
 logits_processor,fp32,minp,batch=256/vocab=128000,6770.85,1494.93,4.53,
+# attention_sink (SM120): probe only — BatchPrefillWithPagedKVCacheWrapper.run(..., sinks=tensor)
+# runs to completion on default fa2 path, but sinks argument is silently
+# unused (max|out_no - out_sink| = 0.0000). API surface exists on Windows;
+# effective use requires FA3 / dedicated sink variant, not a bench target.
