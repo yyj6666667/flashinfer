@@ -30,28 +30,48 @@ if sys.platform == "win32":
         if os.path.isdir(_torch_lib):
             os.add_dll_directory(_torch_lib)
 
-        # Provide libcudart.so.12 / libcudart.so.13 / libcudart.so aliases
-        # directly inside torch/lib (we already added it to the DLL search
-        # path above). Placing them next to torch's real DLLs makes them
-        # visible regardless of the specific LoadLibrary flag combination
-        # the wheel's native loader chose. libcuda.so.1 maps to the driver.
+        # Materialise libcudart.so.* / libcuda.so.1 aliases next to the
+        # wheel's own native module — Windows searches the directory of
+        # the calling binary before anything else, and the wheel's native
+        # loader appears to bypass LOAD_LIBRARY_SEARCH_USER_DIRS.
         _cudart_src = os.path.join(_torch_lib, "cudart64_12.dll")
+        try:
+            import cudnn as _cudnn_probe_for_dir  # noqa: F401
+
+            _cudnn_pkg = os.path.dirname(_cudnn_probe_for_dir.__file__)
+        except Exception:
+            import site
+
+            _cudnn_pkg = None
+            for _sp in site.getsitepackages() + [site.getusersitepackages()]:
+                _cand = os.path.join(_sp, "cudnn")
+                if os.path.isdir(_cand):
+                    _cudnn_pkg = _cand
+                    break
+        _release_dir = os.path.join(_cudnn_pkg, "Release") if _cudnn_pkg else None
+        _alias_dirs = [_torch_lib, _cudnn_pkg, _release_dir]
         if os.path.isfile(_cudart_src):
-            for _alias in ("libcudart.so.12", "libcudart.so.13", "libcudart.so"):
-                _dst = os.path.join(_torch_lib, _alias)
-                if not os.path.isfile(_dst):
-                    try:
-                        shutil.copy2(_cudart_src, _dst)
-                    except OSError:
-                        pass
+            for _d in _alias_dirs:
+                if not _d or not os.path.isdir(_d):
+                    continue
+                for _alias in ("libcudart.so.12", "libcudart.so.13", "libcudart.so"):
+                    _dst = os.path.join(_d, _alias)
+                    if not os.path.isfile(_dst):
+                        try:
+                            shutil.copy2(_cudart_src, _dst)
+                        except OSError:
+                            pass
         _nvcuda = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "nvcuda.dll")
         if os.path.isfile(_nvcuda):
-            _dst = os.path.join(_torch_lib, "libcuda.so.1")
-            if not os.path.isfile(_dst):
-                try:
-                    shutil.copy2(_nvcuda, _dst)
-                except OSError:
-                    pass
+            for _d in _alias_dirs:
+                if not _d or not os.path.isdir(_d):
+                    continue
+                _dst = os.path.join(_d, "libcuda.so.1")
+                if not os.path.isfile(_dst):
+                    try:
+                        shutil.copy2(_nvcuda, _dst)
+                    except OSError:
+                        pass
     except Exception:
         pass
 
