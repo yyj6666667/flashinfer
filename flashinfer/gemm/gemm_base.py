@@ -5800,6 +5800,19 @@ def gemm_fp8_nt_blockscaled(
     Block-scaled scaling is a special case of groupwise scaling where the scale granularity
     is (128, 128, 128).
     """
+    if (
+        scale_major_mode == "MN"
+        and is_sm12x_supported(a.device)
+    ):
+        # On SM120/121 the block-scaled MN layout produces wrong numerics
+        # via the CUTLASS groupwise fallback (K-mode is correct). Transpose
+        # the scales so we re-enter the kernel in K-mode; this is valid
+        # because blockscaled scales are square-tiled (granularity_m =
+        # granularity_n = 128) — swapping the two leading dims just moves
+        # the per-tile scale from (k_tile, *_tile) into (*_tile, k_tile).
+        a_scale = a_scale.transpose(0, 1).contiguous()
+        b_scale = b_scale.transpose(0, 1).contiguous()
+        scale_major_mode = "K"
     return gemm_fp8_nt_groupwise(
         a,
         b,
