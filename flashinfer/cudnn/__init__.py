@@ -59,13 +59,23 @@ if sys.platform == "win32":
             for _d in _alias_dirs:
                 if not _d or not os.path.isdir(_d):
                     continue
-                for _alias in ("libcudart.so.12", "libcudart.so.13", "libcudart.so"):
-                    _dst = os.path.join(_d, _alias)
-                    if not os.path.isfile(_dst):
+                # The wheel's loader rejects "multiple libcudart versions
+                # found", so materialise only one (.12, matching the cu12
+                # ABI torch ships). Clean up stale .13 / bare .so left by
+                # earlier flashinfer versions.
+                for _stale in ("libcudart.so.13", "libcudart.so"):
+                    _stale_path = os.path.join(_d, _stale)
+                    if os.path.isfile(_stale_path):
                         try:
-                            shutil.copy2(_cudart_src, _dst)
+                            os.remove(_stale_path)
                         except OSError:
                             pass
+                _dst = os.path.join(_d, "libcudart.so.12")
+                if not os.path.isfile(_dst):
+                    try:
+                        shutil.copy2(_cudart_src, _dst)
+                    except OSError:
+                        pass
         _nvcuda = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "nvcuda.dll")
         if os.path.isfile(_nvcuda):
             for _d in _alias_dirs:
