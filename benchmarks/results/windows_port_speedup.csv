@@ -279,3 +279,11 @@ logits_processor,fp32,minp,batch=256/vocab=128000,6770.85,1494.93,4.53,
 # `cutlass.cute` which is shipped by the nvidia-cutlass-dsl PyPI wheel.
 # That wheel has no Windows build; our requirements.txt already gates it
 # out (linux-only). Not solvable in this pass.
+# mm_fp8 (SM120): RUNTIME FAIL on RTX 5060 / CUDA 12.9.
+# Compiles and loads OK after fixes: trtllm_low_latency_gemm_runner.cu C99
+# designated initializer (same pattern as cudaUtils.h), cubin_loader.h
+# needed __declspec(dllexport) on FlashInferSetCubinCallback /
+# FlashInferSetCurrentCubin, ensure_symlink rmtree fallback for Windows
+# junctions. Remaining: the trtllm_low_latency GEMM kernel itself returns
+# non-zero at run time ('Check failed: gemm.run(...) == 0'). Likely
+# SM100-tuned cubin that does not apply to SM120 consumer Blackwell.
