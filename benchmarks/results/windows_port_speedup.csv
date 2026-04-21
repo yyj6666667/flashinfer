@@ -181,7 +181,7 @@ concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=128,44.10,43.01,1.03,
 concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=512,136.51,122.46,1.11,
 concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=2048,505.95,454.38,1.11,
 concat_mla_k,bf16,heads=128/nope=128/rope=64,tokens=8192,1968.61,1788.66,1.10,
-# pod (SM120): BLOCKED on RTX 5060 / CUDA 12.9.
+# pod (SM120): BLOCKED - MSVC resolves `using PrefillAttentionVariant/DecodeAttentionVariant`
 # LNK1120 — MSVC reports wrong DefaultAttention<use_custom_mask,...> template arg
 # across nested DISPATCH_MASK_MODE switch cases: the 'static constexpr bool
 # use_custom_mask_p/d' declared inside inner switch-case propagates a stale
@@ -243,3 +243,21 @@ fp4_quantize,bf16,block_size=16,rows=512/cols=1024,76.06,10.18,7.47,
 # nvfp4_quantize triggers cudaErrorMisalignedAddress on shapes > ~1024
 # cols on SM120 / CUDA 12.9; smoke at (128,512) passes but bench runs
 # over multiple shapes crash. Recorded; root-cause deferred.
+logits_processor,fp32,temp+topk,batch=1/vocab=32000,190.54,45.02,4.23,
+logits_processor,fp32,temp+topp,batch=1/vocab=32000,208.32,23.26,8.95,
+logits_processor,fp32,minp,batch=1/vocab=32000,178.06,25.86,6.89,
+logits_processor,fp32,temp+topk,batch=1/vocab=128000,218.06,134.46,1.62,
+logits_processor,fp32,temp+topp,batch=1/vocab=128000,265.41,45.87,5.79,
+logits_processor,fp32,minp,batch=1/vocab=128000,201.58,61.71,3.27,
+logits_processor,fp32,temp+topk,batch=32/vocab=32000,261.68,100.59,2.60,
+logits_processor,fp32,temp+topp,batch=32/vocab=32000,579.09,56.30,10.29,
+logits_processor,fp32,minp,batch=32/vocab=32000,229.42,56.56,4.06,
+logits_processor,fp32,temp+topk,batch=32/vocab=128000,514.18,371.15,1.39,
+logits_processor,fp32,temp+topp,batch=32/vocab=128000,2656.86,206.56,12.86,
+logits_processor,fp32,minp,batch=32/vocab=128000,694.45,252.88,2.75,
+logits_processor,fp32,temp+topk,batch=256/vocab=32000,1133.81,488.22,2.32,
+logits_processor,fp32,temp+topp,batch=256/vocab=32000,6302.94,289.47,21.77,
+logits_processor,fp32,minp,batch=256/vocab=32000,1553.01,291.39,5.33,
+logits_processor,fp32,temp+topk,batch=256/vocab=128000,4003.34,2137.31,1.87,
+logits_processor,fp32,temp+topp,batch=256/vocab=128000,26367.14,1340.18,19.67,
+logits_processor,fp32,minp,batch=256/vocab=128000,6770.85,1494.93,4.53,
