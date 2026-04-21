@@ -316,3 +316,10 @@ gemm_fp8,e4m3->bf16,mode=MN,m=512/n=4096/k=4096,489.46,329.30,1.49,
 # mxfp8 groupwise kernel on every (m, n, k) tried (unlike fp8 where routing
 # through the grouped kernel with num_groups=1 worked). Needs upstream
 # alignment fix in mxfp8_gemm_cutlass_sm120.cu.
+# mm_fp4 (SM120): cudaErrorMisalignedAddress in CUTLASS fp4 kernel. Same
+# category as mm_mxfp8 / nvfp4_quantize — SM120 CUTLASS block-scaled kernels
+# share an alignment issue. Not fixed in this pass.
+# gemm_fp8_nt_blockscaled (SM120): K-mode works (max|err|=0 at tested shapes),
+# MN-mode yields large numeric error (rel>1) via our group_gemm routing.
+# Likely the group kernel treats scale_granularity_m=128 + scale_major_mode=MN
+# differently for a_scale layout; not investigated further.
