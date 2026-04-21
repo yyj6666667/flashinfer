@@ -210,7 +210,20 @@ def prepare_low_latency_gemm_weights(
     -------
     block_layout_shuffled_weights: torch.Tensor
         The shuffled and block-layout weight tensor, shape (k // 128, n, 128), fp8 e4m3.
+
+        On SM120/121 (consumer Blackwell) the TRTLLM-GEN low-latency cubin
+        is SM100-only, so :func:`mm_fp8` falls back to the CUTLASS groupwise
+        path which consumes raw ``(n, k)`` weights. We short-circuit this
+        helper to return ``w`` unchanged on SM12x, keeping user code
+        platform-agnostic.
     """
+
+    from .utils import is_sm12x_supported
+
+    if is_sm12x_supported(w.device):
+        # No shuffle/block-layout needed for the CUTLASS groupwise fallback
+        # used by mm_fp8 on SM120. Return the raw (n, k) weight untouched.
+        return w
 
     epilogue_tile_m = 128  # NOTE: should be aligned with kernel configuration.
 

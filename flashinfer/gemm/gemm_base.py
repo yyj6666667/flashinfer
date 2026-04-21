@@ -3220,6 +3220,51 @@ def mm_fp8(
     supported_out_dtypes = (torch.bfloat16,)
     supported_backends = ("trtllm_low_latency",)
 
+    # On SM120/121 the TRTLLM low-latency cubin is SM100-only; route mm_fp8
+    # through the CUTLASS fp8 groupwise path. ``b`` is expected as raw (n, k)
+    # fp8 here because prepare_low_latency_gemm_weights is a no-op on SM12x.
+    if is_sm12x_supported(a.device):
+        if b.ndim != 2:
+            raise ValueError(
+                "mm_fp8 on SM12x expects b as a 2-D (n, k) fp8 tensor; "
+                "the SM100 block-layout weights are not supported on this GPU."
+            )
+        m, k = a.shape
+        n = b.shape[0]
+        if b.shape[1] != k:
+            raise ValueError(
+                f"mm_fp8 on SM12x: expected b of shape (n, {k}), got {tuple(b.shape)}"
+            )
+        if k % 128 != 0 or n % 128 != 0:
+            raise ValueError(
+                f"mm_fp8 on SM12x requires k and n to be multiples of 128, got k={k}, n={n}"
+            )
+        # Construct degenerate per-block scales so the output equals
+        # (a_q @ b_q.T) * alpha. a_scale absorbs alpha; b_scale is 1.
+        if alpha is None:
+            alpha_val = 1.0
+        elif torch.is_tensor(alpha):
+            alpha_val = float(alpha.detach().flatten()[0].item())
+        else:
+            alpha_val = float(alpha)
+        a_scale = torch.full(
+            (k // 128, m), alpha_val, dtype=torch.float32, device=a.device
+        )
+        b_scale = torch.ones(
+            (k // 128, n // 128), dtype=torch.float32, device=a.device
+        )
+        return gemm_fp8_nt_groupwise(
+            a,
+            b,
+            a_scale,
+            b_scale,
+            scale_major_mode="MN",
+            scale_granularity_mnk=(1, 128, 128),
+            out=out,
+            out_dtype=out_dtype,
+            backend="cutlass",
+        )
+
     if backend == "trtllm_low_latency":
         m = a.shape[0]
         n = b.shape[1]
