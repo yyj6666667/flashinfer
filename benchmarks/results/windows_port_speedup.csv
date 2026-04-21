@@ -272,3 +272,10 @@ logits_processor,fp32,minp,batch=256/vocab=128000,6770.85,1494.93,4.53,
 # pass a heavily-aligned type by value; GCC/Clang accept it. Fixing requires
 # reworking Vec value-parameter API into const-ref or tag-dispatched
 # overloads — non-trivial on shared xqa code. Not in this pass.
+# gdn_decode / gdn_prefill (SM120): BLOCKED on Windows by missing cutlass-dsl.
+# Python modules import fine but calling gated_delta_rule_decode /
+# chunk_gated_delta_rule resolves run_nontranspose_decode / cuTe kernel
+# handle to None: the cute-DSL kernels (flashinfer/gdn_kernels/*.py) import
+# `cutlass.cute` which is shipped by the nvidia-cutlass-dsl PyPI wheel.
+# That wheel has no Windows build; our requirements.txt already gates it
+# out (linux-only). Not solvable in this pass.
