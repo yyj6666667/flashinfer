@@ -31,20 +31,27 @@ if sys.platform == "win32":
             os.add_dll_directory(_torch_lib)
 
         # Provide libcudart.so.12 / libcudart.so.13 / libcudart.so aliases
-        # that the wheel's native loader asks for.
+        # directly inside torch/lib (we already added it to the DLL search
+        # path above). Placing them next to torch's real DLLs makes them
+        # visible regardless of the specific LoadLibrary flag combination
+        # the wheel's native loader chose. libcuda.so.1 maps to the driver.
         _cudart_src = os.path.join(_torch_lib, "cudart64_12.dll")
         if os.path.isfile(_cudart_src):
-            _cache_dir = os.path.join(
-                os.environ.get("LOCALAPPDATA", os.path.expanduser("~")),
-                "flashinfer",
-                "win_dll_aliases",
-            )
-            os.makedirs(_cache_dir, exist_ok=True)
             for _alias in ("libcudart.so.12", "libcudart.so.13", "libcudart.so"):
-                _dst = os.path.join(_cache_dir, _alias)
+                _dst = os.path.join(_torch_lib, _alias)
                 if not os.path.isfile(_dst):
-                    shutil.copy2(_cudart_src, _dst)
-            os.add_dll_directory(_cache_dir)
+                    try:
+                        shutil.copy2(_cudart_src, _dst)
+                    except OSError:
+                        pass
+        _nvcuda = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "nvcuda.dll")
+        if os.path.isfile(_nvcuda):
+            _dst = os.path.join(_torch_lib, "libcuda.so.1")
+            if not os.path.isfile(_dst):
+                try:
+                    shutil.copy2(_nvcuda, _dst)
+                except OSError:
+                    pass
     except Exception:
         pass
 
