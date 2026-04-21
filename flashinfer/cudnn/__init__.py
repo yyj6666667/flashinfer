@@ -1,11 +1,27 @@
 import os
+import shutil
 import sys
 
-# On Windows, the `cudnn` pip wheel (nvidia-cudnn-frontend) does
-# `ctypes.windll.LoadLibrary("cudnn64_9.dll")` at import time. That DLL
-# ships with the PyTorch wheel under <torch>/lib and is NOT on the default
-# Windows DLL search path. Add it before any `import cudnn` downstream so
-# the frontend can find the runtime.  No-op on Linux.
+# On Windows, the `cudnn` pip wheel (nvidia-cudnn-frontend 1.22.1) has
+# two Windows-broken code paths we work around here:
+#
+# 1) At `import cudnn`, the Python layer does
+#        ctypes.windll.LoadLibrary("cudnn64_9.dll")
+#    but the DLL ships with PyTorch under `<torch>/lib` and is not on
+#    the default DLL search path. We prepend `<torch>/lib` with
+#    `os.add_dll_directory`.
+#
+# 2) Inside the wheel's native pyd (`_compiled_module.cp312-win_amd64.pyd`)
+#    the CUDA runtime loader uses the Linux-style filenames
+#    `libcudart.so.12` / `libcudart.so.13` / `libcudart.so.*`. Those
+#    calls trip `Unable to load any libcudart.so.* library` on Windows,
+#    because `cudart64_12.dll` is what's present. Windows
+#    `LoadLibrary` searches by exact filename regardless of extension,
+#    so we materialise aliases in a flashinfer-managed cache dir and add
+#    that dir to the DLL search path. Cheap (one 600 KB file copy the
+#    first time flashinfer.cudnn is imported).
+#
+# Both workarounds are no-ops on Linux.
 if sys.platform == "win32":
     try:
         import torch
@@ -13,6 +29,22 @@ if sys.platform == "win32":
         _torch_lib = os.path.join(os.path.dirname(torch.__file__), "lib")
         if os.path.isdir(_torch_lib):
             os.add_dll_directory(_torch_lib)
+
+        # Provide libcudart.so.12 / libcudart.so.13 / libcudart.so aliases
+        # that the wheel's native loader asks for.
+        _cudart_src = os.path.join(_torch_lib, "cudart64_12.dll")
+        if os.path.isfile(_cudart_src):
+            _cache_dir = os.path.join(
+                os.environ.get("LOCALAPPDATA", os.path.expanduser("~")),
+                "flashinfer",
+                "win_dll_aliases",
+            )
+            os.makedirs(_cache_dir, exist_ok=True)
+            for _alias in ("libcudart.so.12", "libcudart.so.13", "libcudart.so"):
+                _dst = os.path.join(_cache_dir, _alias)
+                if not os.path.isfile(_dst):
+                    shutil.copy2(_cudart_src, _dst)
+            os.add_dll_directory(_cache_dir)
     except Exception:
         pass
 
