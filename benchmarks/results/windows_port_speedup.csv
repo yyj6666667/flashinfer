@@ -265,3 +265,10 @@ logits_processor,fp32,minp,batch=256/vocab=128000,6770.85,1494.93,4.53,
 # runs to completion on default fa2 path, but sinks argument is silently
 # unused (max|out_no - out_sink| = 0.0000). API surface exists on Windows;
 # effective use requires FA3 / dedicated sink variant, not a bench target.
+# xqa_mla (SM120): BLOCKED on RTX 5060 / CUDA 12.9 / MSVC 14.44.
+# Fixed before hitting: tensorMap.h missing <cstdint>, mla_sm120.cu missing <string>.
+# Remaining error: utils.h(115)/(122) C2719 "128-aligned parameter will not
+# be aligned" on Vec<T,size_>::fill(T val) / filled(T val). MSVC refuses to
+# pass a heavily-aligned type by value; GCC/Clang accept it. Fixing requires
+# reworking Vec value-parameter API into const-ref or tag-dispatched
+# overloads — non-trivial on shared xqa code. Not in this pass.
