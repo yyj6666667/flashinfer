@@ -10,7 +10,10 @@ try:
     import cudnn
 
     CUDNN_AVAILABLE = True
-except ImportError:
+except Exception:
+    # On Windows the wheel raises FileNotFoundError/OSError rather than
+    # ImportError when cudnn64_9.dll cannot be located; treat any
+    # failure as "cudnn unavailable".
     cudnn = None
     CUDNN_AVAILABLE = False
 
