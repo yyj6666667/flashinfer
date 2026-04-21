@@ -247,11 +247,10 @@ void trtllm_low_latency_gemm(TensorView workspace_buffer, TensorView a, TensorVi
     tactic = select_kernel(m, n, k, gemm::gemm::GemmInterface());
   }
 
-  auto runner =
-      flashinfer::TrtllmLowLatencyGemmRunner(flashinfer::TrtllmLowLatencyGemmRunnerOptions{
-          .eltType = gemm::trtllm::gen::Dtype::E4m3,
-          .outputType = gemm::trtllm::gen::Dtype::Bfloat16,
-      });
+  flashinfer::TrtllmLowLatencyGemmRunnerOptions opts{};
+  opts.eltType = gemm::trtllm::gen::Dtype::E4m3;
+  opts.outputType = gemm::trtllm::gen::Dtype::Bfloat16;
+  auto runner = flashinfer::TrtllmLowLatencyGemmRunner(opts);
 
   auto stream = get_stream(a.device());
 
@@ -281,11 +280,10 @@ Array<int64_t> trtllm_low_latency_gemm_tactics(int64_t m, int64_t n, int64_t k, 
   TVM_FFI_ICHECK_EQ(output_dtype, static_cast<int64_t>(Dtype::Bfloat16))
       << "Unsupported output dtype";
 
-  auto runner =
-      flashinfer::TrtllmLowLatencyGemmRunner(flashinfer::TrtllmLowLatencyGemmRunnerOptions{
-          .eltType = gemm::trtllm::gen::Dtype::E4m3,
-          .outputType = gemm::trtllm::gen::Dtype::Bfloat16,
-      });
+  flashinfer::TrtllmLowLatencyGemmRunnerOptions opts{};
+  opts.eltType = gemm::trtllm::gen::Dtype::E4m3;
+  opts.outputType = gemm::trtllm::gen::Dtype::Bfloat16;
+  auto runner = flashinfer::TrtllmLowLatencyGemmRunner(opts);
 
   return runner.getValidTactics(m, n, k);
 }
