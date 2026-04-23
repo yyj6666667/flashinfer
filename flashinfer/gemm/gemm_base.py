@@ -63,18 +63,29 @@ from ..jit.gemm import gen_fp8_blockscale_gemm_sm90_module
 from ..tllm_enums import DtypeTrtllmGen, SfLayout
 
 
-CUDNN_AVAILABLE = False
-try:
-    import cudnn
+# The ``cudnn`` (nvidia-cudnn-frontend) module is imported lazily via
+# flashinfer.cudnn._lazy: on Windows the wheel loads ``cudnn64_*.dll`` at
+# import and most consumer users don't touch this GEMM path. Expose the
+# familiar ``cudnn`` / ``is_cudnn_available`` names via an attribute-access
+# proxy that resolves to the real module on first use, with a one-shot
+# RuntimeWarning on failure.
+from ..cudnn._lazy import get_cudnn as _get_cudnn
+from ..cudnn._lazy import is_available as is_cudnn_available
 
-    CUDNN_AVAILABLE = True
-except ImportError:
-    pass
-except OSError as e:
-    error_msg = str(e).lower()
-    is_lib_missing = any(ext in error_msg for ext in [".so", ".dll"])
-    if not is_lib_missing:
-        raise
+
+class _CudnnProxy:
+    __slots__ = ()
+
+    def __getattr__(self, name: str):
+        m = _get_cudnn()
+        if m is None:
+            raise AttributeError(
+                f"cudnn module unavailable; cannot access cudnn.{name}"
+            )
+        return getattr(m, name)
+
+
+cudnn = _CudnnProxy()
 
 
 from ..jit.cubin_loader import setup_cubin_loader
@@ -1657,7 +1668,7 @@ class UIDs(Enum):
 
 def _check_cudnn_availability():
     """Check if cuDNN is available and raise exception if not."""
-    if not CUDNN_AVAILABLE:
+    if not is_cudnn_available():
         raise RuntimeError(
             "cuDNN is not available. Please install cuDNN to use FP8 GEMM functions. "
             "You can install it with: pip install nvidia-cudnn-cu12 nvidia-cudnn-frontend"
@@ -1737,7 +1748,7 @@ def _check_cudnn_override_shape_availability():
 
 def is_cudnn_override_shape_available() -> bool:
     """Return True if the installed cuDNN backend supports is_override_shape_enabled."""
-    if not CUDNN_AVAILABLE:
+    if not is_cudnn_available():
         return False
     try:
         if cudnn.backend_version() < 92100:
@@ -4870,7 +4881,7 @@ def _heuristic_func_mm_fp4(
     # If cuda version is 13 or greater and cudnn version is 9.15 or greater:
     # On SM103 (B300), cutlass is more performant than cudnn.
     # On SM100 (B200), cudnn is more performant than cutlass.
-    if CUDNN_AVAILABLE and cuda_major >= 13 and cudnn.backend_version() >= 91500:
+    if is_cudnn_available() and cuda_major >= 13 and cudnn.backend_version() >= 91500:
         if is_sm103:
             candidate_backends = ("cutlass", "cudnn")
         else:
@@ -5226,7 +5237,7 @@ def _heuristic_func_bmm_fp8(
             heuristic_backends.append("cutlass_sm12x")
     if "cublas" in suitable_backends:
         heuristic_backends.append("cublas")
-    if CUDNN_AVAILABLE and "cudnn" in suitable_backends:
+    if is_cudnn_available() and "cudnn" in suitable_backends:
         heuristic_backends.append("cudnn")
     return heuristic_backends
 
@@ -5323,7 +5334,7 @@ def bmm_fp8(
         backends = _heuristic_func_bmm_fp8(
             ["cutlass"], A, B, A_scale, B_scale, dtype, out, backend
         )
-    elif backend == "cudnn" and CUDNN_AVAILABLE:
+    elif backend == "cudnn" and is_cudnn_available():
         backends = ["cudnn"]
     else:
         backends = [backend]
@@ -7404,7 +7415,7 @@ def _heuristic_func_bmm_mxfp8(
     major, _ = get_compute_capability(A.device)
     if major == 12 and "cutlass" in suitable_backends:
         heuristic_backends.append("cutlass")
-    elif CUDNN_AVAILABLE and "cudnn" in suitable_backends:
+    elif is_cudnn_available() and "cudnn" in suitable_backends:
         heuristic_backends.append("cudnn")
     return heuristic_backends
 
@@ -7491,7 +7502,7 @@ def bmm_mxfp8(
         return out
 
     if resolved_backend == "cudnn":
-        if not CUDNN_AVAILABLE:
+        if not is_cudnn_available():
             raise ValueError("cudnn is not available")
         mxfp8_gemm_sm100(A, B, A_scale, B_scale, out, workspace_buffer, ["cudnn"])
         return out

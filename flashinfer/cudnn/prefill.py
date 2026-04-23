@@ -4,15 +4,8 @@ from typing import Optional
 import torch
 
 from ..api_logging import flashinfer_api
+from ._lazy import get_cudnn, is_available
 from .utils import get_cudnn_fmha_gen_module
-
-try:
-    import cudnn
-
-    CUDNN_AVAILABLE = True
-except Exception:
-    cudnn = None
-    CUDNN_AVAILABLE = False
 
 # Global cudnn handle. need to make it per device in future
 _cudnn_handle = None
@@ -30,7 +23,7 @@ def _get_dummy_scale_tensor(device: torch.device):
 
 def _create_cudnn_handle(stream: torch.cuda.Stream):
     global _cudnn_handle
-
+    cudnn = get_cudnn()  # caller guarantees is_available()
     if _cudnn_handle is None:
         _cudnn_handle = cudnn.create_handle()
     cudnn.set_stream(_cudnn_handle, stream.cuda_stream)
@@ -129,11 +122,21 @@ def _sdpa_prefill_key_fn(
     return key
 
 
-if CUDNN_AVAILABLE:
+# Lazy — see decode.py for rationale.
+_build_prefill_graph = None
+
+
+def _get_build_prefill_graph():
+    global _build_prefill_graph
+    if _build_prefill_graph is not None:
+        return _build_prefill_graph
+    cudnn = get_cudnn()
+    if cudnn is None:
+        return None
 
     @cudnn.jit(heur_modes=[cudnn.heur_mode.A])
     @cudnn.graph_cache(key_fn=_sdpa_prefill_key_fn)
-    def _build_prefill_graph(
+    def _build(
         q: torch.Tensor,
         k_cache: torch.Tensor,
         v_cache: torch.Tensor,
@@ -458,6 +461,9 @@ if CUDNN_AVAILABLE:
 
             return g, tensors_to_return
 
+    _build_prefill_graph = _build
+    return _build
+
 
 def _batch_prefill_with_kv_cache(
     q: torch.Tensor,
@@ -485,7 +491,13 @@ def _batch_prefill_with_kv_cache(
     lse: Optional[torch.Tensor] = None,
     o_data_type: Optional[torch.dtype] = None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
-    graph, tensors = _build_prefill_graph(
+    build = _get_build_prefill_graph()
+    if build is None:
+        raise RuntimeError(
+            "cudnn backend requested but 'cudnn' module is unavailable; "
+            "install nvidia-cudnn-frontend or use a non-cudnn path."
+        )
+    graph, tensors = build(
         q=q,
         k_cache=k_cache,
         v_cache=v_cache,
@@ -660,7 +672,7 @@ def cudnn_batch_prefill_with_kv_cache(
         out_shape = (num_tokens, h_qo, d_vo)
         out = torch.empty(out_shape, device=q.device, dtype=o_data_type)
 
-    if CUDNN_AVAILABLE and backend != "cubin":
+    if is_available() and backend != "cubin":
         return _batch_prefill_with_kv_cache(
             q=q,
             k_cache=k_cache,

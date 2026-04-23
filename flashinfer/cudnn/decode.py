@@ -4,18 +4,8 @@ from typing import Optional
 import torch
 
 from ..api_logging import flashinfer_api
+from ._lazy import get_cudnn, is_available
 from .utils import get_cudnn_fmha_gen_module
-
-try:
-    import cudnn
-
-    CUDNN_AVAILABLE = True
-except Exception:
-    # On Windows the wheel raises FileNotFoundError/OSError rather than
-    # ImportError when cudnn64_9.dll cannot be located; treat any
-    # failure as "cudnn unavailable".
-    cudnn = None
-    CUDNN_AVAILABLE = False
 
 # Global cudnn handle. need to make it per device in future
 _cudnn_handle = None
@@ -23,6 +13,7 @@ _cudnn_handle = None
 
 def _create_cudnn_handle(stream: torch.cuda.Stream):
     global _cudnn_handle
+    cudnn = get_cudnn()  # caller guarantees is_available()
     if _cudnn_handle is None:
         _cudnn_handle = cudnn.create_handle()
     cudnn.set_stream(_cudnn_handle, stream.cuda_stream)
@@ -74,11 +65,23 @@ def _sdpa_decode_key_fn(
     )
 
 
-if CUDNN_AVAILABLE:
+# The graph builder depends on the ``cudnn`` module being importable, so we
+# construct it lazily on first call — otherwise ``import flashinfer`` would
+# trigger the cudnn DLL load on every Windows install.
+_build_decode_graph = None
+
+
+def _get_build_decode_graph():
+    global _build_decode_graph
+    if _build_decode_graph is not None:
+        return _build_decode_graph
+    cudnn = get_cudnn()
+    if cudnn is None:
+        return None
 
     @cudnn.jit(heur_modes=[cudnn.heur_mode.A])
     @cudnn.graph_cache(key_fn=_sdpa_decode_key_fn)
-    def _build_decode_graph(
+    def _build(
         q: torch.Tensor,
         k_cache: torch.Tensor,
         v_cache: torch.Tensor,
@@ -196,6 +199,9 @@ if CUDNN_AVAILABLE:
 
         return g, tensors_to_return
 
+    _build_decode_graph = _build
+    return _build
+
 
 def _batch_decode_with_kv_cache(
     q: torch.Tensor,
@@ -215,7 +221,13 @@ def _batch_decode_with_kv_cache(
     batch_offsets_v: Optional[torch.Tensor] = None,
     out: torch.Tensor,
 ) -> torch.Tensor:
-    graph, tensors = _build_decode_graph(
+    build = _get_build_decode_graph()
+    if build is None:
+        raise RuntimeError(
+            "cudnn backend requested but 'cudnn' module is unavailable; "
+            "install nvidia-cudnn-frontend or use a non-cudnn path."
+        )
+    graph, tensors = build(
         q=q,
         k_cache=k_cache,
         v_cache=v_cache,
@@ -309,7 +321,7 @@ def cudnn_batch_decode_with_kv_cache(
     if out is None:
         out = torch.empty(bs, h_qo, d_vo, device=q.device, dtype=q.dtype)
 
-    if not CUDNN_AVAILABLE:
+    if not is_available():
         actual_seq_lens_kv_gpu = actual_seq_lens_kv.to(q.device, non_blocking=True)
 
         run_func = get_cudnn_fmha_gen_module().decode
