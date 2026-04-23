@@ -30,21 +30,14 @@
 // This is a C API so that we can use it with ctypes and don't rely on pybind11,
 // because pybind11 support of arbitrary callback requires >=python3.11.
 
+#include "_compat.h"  // FI_EXPORT
+
 // Callback into the python function that will get us the requested cubin.
 void (*callbackGetCubin)(const char* path, const char* sha256) = nullptr;
 
-// Windows DLLs do not export extern "C" symbols by default; dllexport is
-// needed for ctypes to resolve them via GetProcAddress. On Linux every
-// visible symbol is exported already, so the macro is a no-op.
-#if defined(_WIN32)
-#define FI_CUBIN_EXPORT __declspec(dllexport)
-#else
-#define FI_CUBIN_EXPORT
-#endif
-
 // Set the python callback, called by the python code using ctypes.
-extern "C" FI_CUBIN_EXPORT void FlashInferSetCubinCallback(void (*callback)(const char* path,
-                                                                            const char* sha256)) {
+extern "C" FI_EXPORT void FlashInferSetCubinCallback(void (*callback)(const char* path,
+                                                                     const char* sha256)) {
   callbackGetCubin = callback;
 }
 
@@ -53,7 +46,7 @@ extern "C" FI_CUBIN_EXPORT void FlashInferSetCubinCallback(void (*callback)(cons
 thread_local std::string current_cubin;
 
 // Called by the callback to set the current cubin.
-extern "C" FI_CUBIN_EXPORT void FlashInferSetCurrentCubin(const char* binary, int size) {
+extern "C" FI_EXPORT void FlashInferSetCurrentCubin(const char* binary, int size) {
   current_cubin = std::string(binary, size);
 }
 
