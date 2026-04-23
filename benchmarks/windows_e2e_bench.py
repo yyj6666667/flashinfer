@@ -111,8 +111,8 @@ def bench_hf(
     torch_dtype = getattr(torch, dtype)
     tok = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
-        model_path, torch_dtype=torch_dtype, trust_remote_code=True, device_map="cuda"
-    ).eval()
+        model_path, torch_dtype=torch_dtype, trust_remote_code=True
+    ).to("cuda").eval()
 
     enc = tok(prompt, return_tensors="pt").to("cuda")
 
