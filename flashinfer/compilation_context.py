@@ -35,12 +35,18 @@ class CompilationContext:
         """Normalize a (major, minor) capability pair into a (major, minor_str)
         tuple with the correct architecture suffix for nvcc.
 
-        SM 9.x  -> 'a' suffix (e.g. compute_90a)
-        SM 12.x -> 'f' suffix with minor version preserved (e.g. compute_120f for SM120, compute_121f for SM121).
-        Each SM 12.x variant gets its own cubin to avoid running SM120 code on SM121 (DGX Spark) which
-        can cause cudaErrorIllegalInstruction. Requires CUDA >= 12.9.
-        SM 10+  -> 'a' suffix (e.g. compute_100a)
-        SM < 9  -> no suffix
+        SM 9.x   -> 'a' suffix (e.g. compute_90a)
+        SM 12.0  -> 'f' suffix on CUDA >= 12.9 (compute_120f, extra PTX feature
+                    set), 'a' suffix on CUDA 12.8 (compute_120a base ISA —
+                    covers all SM120 silicon, just without the 12.9-only
+                    feature extensions). This fallback is what lets consumer
+                    Blackwell (RTX 5060/5070/5080/5090) work on torch wheels
+                    that ship with cu128 runtime.
+        SM 12.1+ -> 'f' suffix, requires CUDA >= 12.9 (no fallback: DGX Spark
+                    silicon isn't code-compatible with sm_120, mixing up the
+                    cubins causes cudaErrorIllegalInstruction).
+        SM 10+   -> 'a' suffix (e.g. compute_100a)
+        SM < 9   -> no suffix
         """
         if major == 9:
             return (major, str(minor) + "a")
@@ -49,8 +55,12 @@ class CompilationContext:
 
             if is_cuda_version_at_least("12.9"):
                 return (major, str(minor) + "f")
-            else:
-                raise RuntimeError("SM 12.x requires CUDA >= 12.9")
+            if minor == 0 and is_cuda_version_at_least("12.8"):
+                return (major, str(minor) + "a")
+            raise RuntimeError(
+                "SM 12.x requires CUDA >= 12.9 "
+                "(CUDA 12.8 supports sm_120a only; sm_121 needs 12.9)"
+            )
         elif major >= 10:
             return (major, str(minor) + "a")
         return (major, str(minor))
@@ -71,11 +81,18 @@ class CompilationContext:
                     )
         else:
             try:
-                for device in range(torch.cuda.device_count()):
-                    major, minor = torch.cuda.get_device_capability(device)
-                    self.TARGET_CUDA_ARCHS.add(self._normalize_cuda_arch(major, minor))
+                device_count = torch.cuda.device_count()
             except Exception as e:
-                logger.warning(f"Failed to get device capability: {e}.")
+                logger.warning(f"Failed to query CUDA device count: {e}.")
+                device_count = 0
+            # Don't swallow _normalize_cuda_arch failures: silently emptying
+            # TARGET_CUDA_ARCHS produces a misleading downstream error
+            # ("requires GPUs with sm75 or higher") when the real problem is
+            # an unsupported CUDA/SM combination. Let that RuntimeError
+            # propagate with its actionable message intact.
+            for device in range(device_count):
+                major, minor = torch.cuda.get_device_capability(device)
+                self.TARGET_CUDA_ARCHS.add(self._normalize_cuda_arch(major, minor))
 
     def get_nvcc_flags_list(
         self, supported_major_versions: list[int] = None
