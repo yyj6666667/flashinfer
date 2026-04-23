@@ -63,20 +63,68 @@ Decode-throughput ratio holds at **~132 tok/s** regardless of prompt length (pre
 
 ---
 
-## Qwen1.5-MoE-A2.7B-Chat-GPTQ-Int4 (MoE, int4)
+## Qwen1.5-MoE-A2.7B-Chat-GPTQ-Int4 (MoE, int4) — two paths compared
 
-**Status**: end-to-end pipeline works (correctness verified via one generation
-producing `"The three primary colors are red, green, and blue."` prefix), but
-the 5060's 8GB VRAM cannot hold the ~7 GB int4 weights plus the KV cache +
-MoE activations simultaneously. We launched with `--cpu-offload-gb 2` to free
-VRAM; this makes the run complete but each forward pass pays the cost of
-PCIe-swapping experts.
+### Path 1: sglang with `--cpu-offload-gb 2` (naïve expert swapping over PCIe)
 
-Measured: ~240s e2e for 24 generated tokens on the first cold-cache request
-(includes one-shot JIT compile of `moe_wna16_marlin.cuh` which takes ~90s
-alone on the first invocation). Even after JIT-cache warms, expected
-steady-state is well under 1 tok/s — not a meaningful perf comparison against
-HF (which doesn't load the model at all on 8GB).
+End-to-end pipeline works (correctness verified via one generation producing
+`"The three primary colors are red, green, and blue."` prefix), but the
+5060's 8GB VRAM cannot hold the ~7 GB int4 weights plus the KV cache + MoE
+activations simultaneously. `--cpu-offload-gb` frees VRAM by shuffling MoE
+expert weights between CPU RAM and GPU VRAM on every forward pass; each
+forward pays the PCIe transfer cost.
+
+**Steady state**: ~0.10 tok/s (9.7 s / token).
+
+### Path 2: sglang + kt-kernel AVX2 (experts stay resident on CPU)
+
+The ktransformers windows-branch kt-kernel module builds on Windows with
+MSVC 14.44 + CUDA 12.9 (see `scripts/windows/patches/ktransformers/README.md`
+for the build recipe). Sglang's built-in `kt_ep_wrapper` drives it via the
+`--kt-*` family of server args. With `--kt-num-gpu-experts 0` all 60 experts
+× 24 MoE layers live on CPU; the GPU only does attention + gate + output.
+
+Measured on fi-win (Intel Core Ultra 9 285, 24 CPU cores, 20 used via
+`--kt-cpuinfer 20`), 3-run steady state:
+
+| Run | e2e (s) | tokens | tok/s |
+|---|---:|---:|---:|
+| 1 | 64.49 | 23 | 0.36 |
+| 2 | 59.39 | 23 | **0.39** |
+| 3 | 59.54 | 23 | **0.39** |
+
+Prompt = `"The capital of France is"`, `max_new_tokens=32`, `temperature=0`.
+Generated text degrades past ~10 tokens (same on both paths — checkpoint
+precision issue, not kt-specific).
+
+### Summary
+
+| Backend (same Qwen1.5-MoE-A2.7B-Chat-GPTQ-Int4, same hardware) | tok/s | ratio |
+|---|---:|---:|
+| sglang `--cpu-offload-gb 2` | 0.10 | 1.0× |
+| **sglang + kt-kernel AVX2 (`--kt-method GPTQ_INT4`)** | **0.39** | **3.9×** |
+
+**Interpretation**: 0.39 tok/s is still slow in absolute terms — on a 24-core
+Ultra 9 with AVX2 we'd expect closer to 1-2 tok/s for Qwen1.5-MoE-A2.7B
+(2.7B active params at int4 ≈ 1.4 GB of per-token compute). The 3.9× gap
+between the two paths reflects the raw cost of PCIe expert swapping vs
+keeping experts resident in CPU RAM — that cost is avoidable, and the
+remaining headroom (kt-kernel vs theoretical peak) likely comes from
+single-NUMA-node thread pool config, non-tuned prefill chunk size, and
+room to move a few hot experts to GPU via `--kt-num-gpu-experts > 0`.
+
+For the Windows port decision: **kt-kernel on Windows works end-to-end and
+is 4× better than the pure-PCIe alternative on the same consumer hardware**.
+Scaling past that requires either more VRAM (RTX 5070 16GB / 5080 16GB /
+5090 32GB so experts can overflow to GPU) or profiling the kt-kernel side
+to find where 1-2 tok/s is being left on the table.
+
+### Legacy first-run number (superseded)
+
+Prior cold-path number of 239 s / 24 tokens was the `--cpu-offload-gb` path
+**including** first-request JIT compile of the Marlin and MoE Marlin
+kernels (~90-120 s of the 239 s). After that, steady-state was the 0.10
+tok/s figure above.
 
 **What we're NOT yet measuring** (all blocked on larger consumer VRAM):
 - Qwen1.5-MoE Int4 throughput at no CPU offload (needs ≥12 GB VRAM for weights alone)
