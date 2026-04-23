@@ -100,6 +100,7 @@ Too many per-file edits to take on in this pass.
 | `import flashinfer` loading `cudnn64_9.dll` on Windows | Lazy cudnn import + one-shot `RuntimeWarning` on failure (commit `8437a17e`). |
 | `FI_CUBIN_EXPORT` / `FI_RESTRICT` scattered across headers | Consolidated into `include/flashinfer/_compat.h` (commit `49e7e25d`). |
 | tvm-ffi Windows branch missing `-gencode` and `cudart.lib` | Local patch script at `scripts/windows/patches/apply_tvm_ffi_patches.py` (commit `6ca26a63`). |
+| sglang MoE models not loadable on Windows (Qwen1.5/2/3-MoE, Mixtral, OLMoE, etc.) | Four-patch bundle at `scripts/windows/patches/sglang/apply_sglang_patches.py`: (1) lazy fallback for `kt_ep_wrapper.py`'s hard `sgl_kernel.gptq_marlin_repack` import, (2) skip GPTQ per-expert bias tensors in `qwen2_moe.py` load_weights, (3)+(4) rewrite `_GET_IF` macro in `gptq_marlin.cuh` / `moe_wna16_marlin.cuh` from `else if` to `if` to avoid MSVC C1061. Validated end-to-end on fi-win 2026-04-23: Qwen1.5-MoE-A2.7B-Chat-GPTQ-Int4 generates coherent tokens. |
 
 ---
 
